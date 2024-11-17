@@ -1,0 +1,100 @@
+# Common Ignore Rules
+.DS_Store
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.local
+.history
+
+# Editor Directories and Files
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary and Compiled Files
+*.tmp
+*.bak
+*.swp
+*~.nib
+*.tsbuildinfo
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Node.js and Vue.js (frontend)
+node_modules/
+dist/
+dist-ssr/
+coverage/
+/cypress/videos/
+/cypress/screenshots/
+
+# Vue CLI Service
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Spring Boot (backend)
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.nar
+*.tar.gz
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Eclipse/STS/IDEA
+.metadata
+.classpath
+.project
+.settings/
+.externalToolBuilders/
+.apt_generated/
+.springBeans
+.sts4-cache/
+.loadpath
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Compiled Java Class Files
+*.class
+
+# Virtual Machine Crash Logs
+hs_err_pid*
+replay_pid*
+
+# Log and Temporary Files
+*.log
+*.ctxt
+*.launch
+*.history
+*.vscode/*
+.history/
