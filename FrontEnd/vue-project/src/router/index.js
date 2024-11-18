@@ -8,6 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { showSearchBar: false, showFooterBar:true },
     },
     {
       path: '/about',
@@ -15,8 +16,28 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('@/views/InitView.vue'),
+      meta: { showSearchBar: false, showFooterBar:false },
     },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: () => import('@/views/MyProfilePage.vue'),
+      meta: { showSearchBar: false, showFooterBar:false },
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('@/views/MapView.vue'),
+      meta: { showSearchBar: true, showFooterBar:false },
+    },
+    {
+      path: '/archive',
+      name: 'archive',
+      component: () => import('@/views/ArchiveBoardView.vue'),
+      meta: { showSearchBar: true, showFooterBar:true },
+    }
+
   ],
 })
 
