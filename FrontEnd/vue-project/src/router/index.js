@@ -8,7 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { showSearchBar: false, showFooterBar:true },
+      meta: { showSearchBar: false, showFooterBar: true },
     },
     {
       path: '/about',
@@ -17,27 +17,32 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('@/views/InitView.vue'),
-      meta: { showSearchBar: false, showFooterBar:false },
+      meta: { showSearchBar: false, showFooterBar: false },
     },
     {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('@/views/MyProfilePage.vue'),
-      meta: { showSearchBar: false, showFooterBar:false },
+      component: () => import('@/views/MyPage.vue'),
+      meta: { showSearchBar: false, showFooterBar: false },
     },
     {
       path: '/map',
       name: 'map',
       component: () => import('@/views/MapView.vue'),
-      meta: { showSearchBar: true, showFooterBar:false },
+      meta: { showSearchBar: true, showFooterBar: false },
     },
     {
-      path: '/archive',
-      name: 'archive',
+      path: '/listings',
+      name: 'listings',
       component: () => import('@/views/ArchiveBoardView.vue'),
-      meta: { showSearchBar: true, showFooterBar:true },
-    }
-
+      meta: { showSearchBar: true, showFooterBar: true },
+    },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('@/views/MapView.vue'),
+      meta: { showSearchBar: true, showFooterBar: false },
+    },
   ],
 })
 

@@ -16,48 +16,26 @@
   
       <section class="user-posts-section">
         <div class="posts-image-container">
-          <div class="posts-image"></div>
+          <section class="popular-properties">
+            <div class="property-grid">
+              <HouseCardComponent></HouseCardComponent>
+              <HouseCardComponent></HouseCardComponent>
+            </div>
+          </section>
         </div>
-        <div class="posts-content">
-          <h2 class="section-title">My Posts</h2>
-          <p class="section-description">View all the posts you've created</p>
-          <ul class="posts-list">
-            <li class="post-item">
-              <span class="post-icon">😃</span>
-              <div class="post-details">
-                <h3 class="post-title">Post 1</h3>
-                <p class="post-date">Posted on 12-03-2023</p>
-              </div>
-            </li>
-            <li class="post-item">
-              <span class="post-icon">📝</span>
-              <div class="post-details">
-                <h3 class="post-title">Post 2</h3>
-                <p class="post-date">Posted on 15-05-2023</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <MyPageDetailComponent title="내가 올린 글" description="내가 올린 글을 봅니다"></MyPageDetailComponent>
         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/4375c0390c2ebe6f7cc8a48da21680487a9b51a064afdf60421a0e7a8892be8b?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e" alt="" class="background-image" />
       </section>
   
       <section class="user-interests-section">
-        <div class="interests-content">
-          <h2 class="section-title">My Interests</h2>
-          <p class="section-description">Explore posts you've saved</p>
-          <ul class="interests-list">
-            <li class="interest-item">
-              <span class="interest-icon">❤️</span>
-              <h3 class="interest-title">Interest 1</h3>
-            </li>
-            <li class="interest-item">
-              <span class="interest-icon">💡</span>
-              <h3 class="interest-title">Interest 2</h3>
-            </li>
-          </ul>
-        </div>
+        <MyPageDetailComponent title="관심목록" description="내가 찜한 관심목록을 봅니다"></MyPageDetailComponent>
         <div class="interests-image-container">
-          <div class="interests-image"></div>
+          <section class="popular-properties">
+            <div class="property-grid">
+              <HouseUserCardComponent></HouseUserCardComponent>
+              <HouseUserCardComponent></HouseUserCardComponent>
+            </div>
+          </section>
         </div>
         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/4375c0390c2ebe6f7cc8a48da21680487a9b51a064afdf60421a0e7a8892be8b?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e" alt="" class="background-image" />
       </section>
@@ -65,7 +43,22 @@
       
     </div>
   </template>
+
+<script>
+import HouseCardComponent from '@/components/HouseCardComponent.vue';
+import HouseUserCardComponent from '@/components/HouseUserCardComponent.vue';
+import MyPageDetailComponent from '@/components/MyPageDetailSection.vue';
+
+export default {
+  components: {
+    HouseCardComponent,
+    HouseUserCardComponent,
+    MyPageDetailComponent
+  }
+};
+</script>
   
   <style scoped>
 
   </style>
+
