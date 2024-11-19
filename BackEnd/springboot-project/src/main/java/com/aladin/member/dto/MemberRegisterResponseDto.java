@@ -10,7 +10,7 @@ public class MemberRegisterResponseDto {
 	private MemberRegisterResponseDto(boolean isSuccess) {
 		this.isSuccess = isSuccess;
 	}
-	
+
 	public static MemberRegisterResponseDto of(boolean isSuccess) {
 		return new MemberRegisterResponseDto(isSuccess);
 	}

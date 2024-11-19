@@ -8,7 +8,10 @@ import com.aladin.member.dto.MemberRegistRequestDto;
 @Mapper
 public interface MemberMapper {
 	int registerMember(MemberRegistRequestDto member);
+
 	boolean isDuplicatedUsername(String username);
+
 	boolean isDuplicatedEmail(String email);
+
 	LogInResponseDto findMemberByUsernameAndPassword(String username, String password);
 }

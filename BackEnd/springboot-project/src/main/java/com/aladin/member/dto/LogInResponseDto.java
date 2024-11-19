@@ -10,11 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogInResponseDto {
-    private String username;
-    private String name;
-    private String nickname;
-    private String email;
-    private String profileImagePath;
-    private String grade;
-    private String bio;
+	private String username;
+	private String name;
+	private String nickname;
+	private String email;
+	private String profileImagePath;
+	private String grade;
+	private String bio;
 }

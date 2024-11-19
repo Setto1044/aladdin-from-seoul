@@ -6,8 +6,11 @@ import com.aladin.member.dto.MemberRegistRequestDto;
 
 public interface MemberService {
 	boolean registMember(MemberRegistRequestDto memberDto);
+
 	boolean isDuplicatedUsername(String username);
+
 	boolean isDuplicatedEmail(String email);
+
 	LogInResponseDto loginMember(LogInRequestDto loginRequestDto);
-	
+
 }

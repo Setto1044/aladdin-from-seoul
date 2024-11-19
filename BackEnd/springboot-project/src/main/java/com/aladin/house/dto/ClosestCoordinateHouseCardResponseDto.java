@@ -10,12 +10,12 @@ import lombok.Data;
 public class ClosestCoordinateHouseCardResponseDto {
 	private int size;
 	private List<HouseCardVo> houseCards;
-	
+
 	private ClosestCoordinateHouseCardResponseDto(int size, List<HouseCardVo> houseCards) {
 		this.size = size;
 		this.houseCards = houseCards;
 	}
-	
+
 	public static ClosestCoordinateHouseCardResponseDto of(List<HouseCardVo> houseCards) {
 		return new ClosestCoordinateHouseCardResponseDto(houseCards.size(), houseCards);
 	}

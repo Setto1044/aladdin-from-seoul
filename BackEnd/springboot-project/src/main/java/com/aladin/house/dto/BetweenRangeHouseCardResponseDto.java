@@ -10,12 +10,12 @@ import lombok.Data;
 public class BetweenRangeHouseCardResponseDto {
 	private int size;
 	private List<HouseCardVo> houseCards;
-	
+
 	private BetweenRangeHouseCardResponseDto(int size, List<HouseCardVo> houseCards) {
 		this.size = size;
 		this.houseCards = houseCards;
 	}
-	
+
 	public static BetweenRangeHouseCardResponseDto of(List<HouseCardVo> houseCards) {
 		return new BetweenRangeHouseCardResponseDto(houseCards.size(), houseCards);
 	}

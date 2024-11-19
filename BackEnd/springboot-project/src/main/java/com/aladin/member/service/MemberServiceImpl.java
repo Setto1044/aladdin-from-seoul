@@ -8,17 +8,17 @@ import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.mapper.MemberMapper;
 
 @Service
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
 	private final MemberMapper memberMapper;
-	
+
 	public MemberServiceImpl(MemberMapper memberMapper) {
 		this.memberMapper = memberMapper;
 	}
-	
+
 	@Override
 	public boolean registMember(MemberRegistRequestDto memberDto) {
-		if( isDuplicatedEmail(memberDto.getEmail()) || isDuplicatedUsername(memberDto.getUsername())) {
+		if (isDuplicatedEmail(memberDto.getEmail()) || isDuplicatedUsername(memberDto.getUsername())) {
 			return false;
 		}
 		return memberMapper.registerMember(memberDto) > 0;

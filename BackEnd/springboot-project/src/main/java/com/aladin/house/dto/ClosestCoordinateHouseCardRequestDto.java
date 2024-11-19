@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ClosestCoordinateHouseCardRequestDto {
 	private double lat;
-    private double lng;
+	private double lng;
 }

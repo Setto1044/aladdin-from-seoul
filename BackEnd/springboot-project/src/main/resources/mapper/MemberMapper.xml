@@ -3,8 +3,7 @@
 <mapper namespace="com.aladin.member.mapper.MemberMapper">
 
 	<!-- Member 객체를 MemberVo로 매핑하는 ResultMap -->
-	<resultMap id="memberMap"
-		type="com.aladin.member.vo.MemberVo">
+	<resultMap id="memberMap" type="com.aladin.member.vo.MemberVo">
 		<result column="id" property="id" />
 		<result column="username" property="username" />
 		<result column="password" property="password" />
@@ -33,8 +32,7 @@
 		WHERE email = #{email}
 	</select>
 
-	<insert id="registerMember"
-		parameterType="com.aladin.member.dto.MemberRegistRequestDto">
+	<insert id="registerMember" parameterType="com.aladin.member.dto.MemberRegistRequestDto">
 		INSERT INTO members
 		(username, password, name, nickname,
 		email, grade)
@@ -49,8 +47,7 @@
 	</insert>
 
 	<!-- 로그인 시 사용자 정보를 조회하는 쿼리 -->
-	<select id="findMemberByUsernameAndPassword"
-		resultType="com.aladin.member.dto.LogInResponseDto">
+	<select id="findMemberByUsernameAndPassword" resultType="com.aladin.member.dto.LogInResponseDto">
 		SELECT username, name, nickname, email, profile_image_path AS
 		profileImagePath, grade, bio
 		FROM members
