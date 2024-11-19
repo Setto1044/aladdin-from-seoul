@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aladin.house.mapper.HouseMapper">
+    
+    <resultMap id="HouseCardResultMap" type="com.aladin.house.vo.HouseCardVo">
+        <id property="aptSeq" column="apt_seq" />
+        <result property="dongCode" column="dong_code" />
+        <result property="sidoName" column="sido_name" />
+        <result property="gugunName" column="gugun_name" />
+        <result property="dongName" column="dong_name" />
+        <result property="aptName" column="apt_name" />
+        <result property="jibun" column="jibun" />
+        <result property="latestDealAmount" column="latest_deal_amount" />
+        <result property="excluUseAr" column="exclu_use_ar" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="views" column="views" />
+        <result property="buildYear" column="build_year" />
+    </resultMap>
+
+    <!-- DTO를 사용한 범위 데이터 가져오기 -->
+    <select id="findHousesBetweenCoordinates" parameterType="com.aladin.house.dto.BetweenRangeHouseCardRequestDto"
+        resultMap="HouseCardResultMap">
+        SELECT
+            apt_seq,
+            dong_code,
+            sido_name,
+            gugun_name,
+            dong_name,
+            apt_name,
+            jibun,
+            latest_deal_amount,
+            exclu_use_ar,
+            latitude,
+            longitude,
+            views,
+            build_year
+        FROM housecards
+        WHERE
+            CAST(latitude AS DECIMAL(10,6)) BETWEEN #{latA} AND #{latB}
+            AND CAST(longitude AS DECIMAL(10,6)) BETWEEN #{lngA} AND #{lngB}
+    </select>
+
+    <!-- DTO를 사용한 특정 좌표 기준 데이터 가져오기 -->
+    <select id="findHousesClosestToCoordinates" parameterType="com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto"
+        resultMap="HouseCardResultMap">
+        SELECT
+            apt_seq,
+            dong_code,
+            sido_name,
+            gugun_name,
+            dong_name,
+            apt_name,
+            jibun,
+            latest_deal_amount,
+            exclu_use_ar,
+            latitude,
+            longitude,
+            views,
+            build_year,
+            LEAST(
+                ABS(CAST(latitude AS DECIMAL(10,6)) - #{lat}) + ABS(CAST(longitude AS DECIMAL(10,6)) - #{lng}),
+                ABS(CAST(latitude AS DECIMAL(10,6)) - #{lat}) + ABS(CAST(longitude AS DECIMAL(10,6)) - #{lng})
+            ) AS distance_approx
+        FROM housecards
+        WHERE
+            CAST(latitude AS DECIMAL(10,6)) BETWEEN #{lat} - 0.9 AND #{lat} + 0.9
+            AND CAST(longitude AS DECIMAL(10,6)) BETWEEN #{lng} - 1.14 AND #{lng} + 1.14
+        ORDER BY distance_approx
+        LIMIT 100
+    </select>
+</mapper>
