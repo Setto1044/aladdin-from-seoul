@@ -1,12 +1,19 @@
 <template>
-  <button @click.stop="toggleSidebar1">Open Sidebar 1</button>
   <div class="property-map">
-    <aside @click="handleOutsideClick">
-      <Sidebar1 :isOpen="isSidebar1Open" :openSidebar2="toggleSidebar2" @click.stop />
-      <Sidebar2 :isOpen="isSidebar2Open" @click.stop />
+    <aside>
+      <button @click="toggleSidebar1"></button>
+      <Sidebar1
+        class="sidebar"
+        :isOpen="isSidebar1Open"
+        :openSidebar2="toggleSidebar2"
+        @select-item="openSidebar2"
+        @click.stop
+        @close1="handleCloseSidebar12"
+      />
+      <Sidebar2 class="sidebar" :isOpen="isSidebar2Open" @close="handleCloseSidebar2" @click.stop />
     </aside>
 
-    <MapComponent />
+    <MapComponent ref="mapComponent" @click="handleMapClick" />
   </div>
 </template>
 
@@ -30,29 +37,33 @@ export default {
   },
   methods: {
     toggleSidebar1() {
+      console.log('오픈')
       this.isSidebar1Open = !this.isSidebar1Open
-      this.isSidebar2Open = false // 사이드바1이 닫힐 때 사이드바2도 닫기
+      this.isSidebar2Open = false // Close Sidebar 2 when Sidebar 1 is toggled
     },
     toggleSidebar2() {
       this.isSidebar2Open = true
     },
-    handleOutsideClick(event) {
-      // 클릭된 대상이 사이드바가 아닌 경우 모든 사이드바 닫기
-      if (!event.target.closest('.sidebar')) {
-        this.isSidebar1Open = false
-        this.isSidebar2Open = false
-      }
+    openSidebar2(params) {
+      console.log(params)
+      this.isSidebar2Open = true
     },
-  },
-  mounted() {
-    // 전역 클릭 이벤트를 등록
-    document.addEventListener('click', this.handleOutsideClick)
-  },
-  beforeUnmount() {
-    // 컴포넌트가 제거되기 전에 이벤트 리스너 제거
-    document.removeEventListener('click', this.handleOutsideClick)
+    handleMapClick() {
+      console.log('MapComponent clicked')
+      // this.isSidebar1Open = false
+      // this.isSidebar2Open = false
+    },
+    handleCloseSidebar2() {
+      this.isSidebar2Open = false
+    },
+    handleCloseSidebar12() {
+      this.isSidebar1Open = false
+      this.isSidebar2Open = false
+    },
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Add necessary styles */
+</style>

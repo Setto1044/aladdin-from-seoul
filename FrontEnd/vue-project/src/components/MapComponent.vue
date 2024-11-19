@@ -1,11 +1,7 @@
 <template>
   <div class="map-container">
     <div class="map-overlay">
-      <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/009a8c08cec76a4f9459a6869adf2ab88fb3598ee837e136054a2fd00ed506bf?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e"
-        alt="Map background"
-        class="map-background"
-      />
+      <div id="map-background" style="width: 100%; height: 70vh" />
       <div class="map-info">
         <img
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/0c373e77d902744930f38f210974560cdd3f84b91e159e7e12a8793c84cb2c58?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e"
@@ -23,6 +19,27 @@
   />
 </template>
 
-<script></script>
+<script>
+export default {
+  components: {},
+  data() {
+    return {}
+  },
+  mounted() {
+    this.initializeMap()
+  },
+  methods: {
+    initializeMap() {
+      const mapContainer = document.getElementById('map-background') // 지도를 표시할 div
+      const mapOption = {
+        center: new kakao.maps.LatLng(37.5665, 126.978), // 초기 중심 좌표 (예: 서울 시청)
+        level: 3, // 지도 확대 레벨
+      }
+
+      const map = new kakao.maps.Map(mapContainer, mapOption) // 지도를 생성합니다.
+    },
+  },
+}
+</script>
 
 <style scoped></style>
