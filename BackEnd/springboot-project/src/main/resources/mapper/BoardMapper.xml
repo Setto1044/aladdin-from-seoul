@@ -1,0 +1,40 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aladin.roomBoard.mapper.BoardMapper">
+
+	<!-- 게시글 테이블과 VO 매핑 -->
+	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
+		<id property="id" column="id" />
+		<result property="membersUsername" column="members_username" />
+		<result property="title" column="title" />
+		<result property="detail" column="detail" />
+		<result property="address" column="address" />
+		<result property="postcode" column="postcode" />
+		<result property="price" column="price" />
+		<result property="houseSize" column="house_size" />
+		<result property="pricePer" column="price_per" />
+		<result property="rentStart" column="rent_start" />
+		<result property="rentUntil" column="rent_until" />
+		<result property="hashtags" column="hashtags" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard" useGeneratedKeys="true" keyProperty="id" parameterType="map">
+		INSERT INTO roomboards (
+		members_username, title, detail, address, postcode, price, house_size,
+		price_per, rent_start, rent_until, hashtags, created_at, updated_at
+		) VALUES (
+		#{dto.membersUsername}, #{dto.title}, #{dto.detail}, #{dto.address},
+		#{dto.postcode}, #{dto.price}, #{dto.houseSize}, #{dto.pricePer},
+		#{dto.rentStart}, #{dto.rentUntil}, #{dto.hashtags, typeHandler=com.aladin.common.JsonTypeHandler}, NOW(), NOW()
+		)
+	</insert>
+
+
+	<!-- 사진 1장 저장 -->
+	<insert id="insertBoardImage" parameterType="map">
+		INSERT INTO roomboards_images (roomboards_id, url)
+		VALUES (#{boardId}, #{imageUrl});
+	</insert>
+</mapper>
