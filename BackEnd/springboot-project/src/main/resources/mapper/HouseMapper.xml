@@ -19,6 +19,19 @@
 		<result property="aptPhotoLink" column="apt_photo_link" />
 	</resultMap>
 
+	<!-- HouseDealResultMap 정의 -->
+	<resultMap id="HouseDealResultMap" type="com.aladin.house.vo.HouseDealVo">
+		<id property="no" column="no" />
+		<result property="aptSeq" column="apt_seq" />
+		<result property="aptDong" column="apt_dong" />
+		<result property="floor" column="floor" />
+		<result property="dealYear" column="deal_year" />
+		<result property="dealMonth" column="deal_month" />
+		<result property="dealDay" column="deal_day" />
+		<result property="excluUseAr" column="exclu_use_ar" />
+		<result property="dealAmount" column="deal_amount" />
+	</resultMap>
+
 	<!-- DTO를 사용한 범위 데이터 가져오기 -->
 	<select id="findHousesBetweenCoordinates" parameterType="com.aladin.house.dto.BetweenRangeHouseCardRequestDto" resultMap="HouseCardResultMap">
 		SELECT
@@ -70,4 +83,21 @@
 		ORDER BY distance_approx
 		LIMIT 100
 	</select>
+
+	<select id="findAllHouseDealsByAptSeq" parameterType="String" resultMap="HouseDealResultMap">
+		SELECT
+		no,
+		apt_seq,
+		apt_dong,
+		floor,
+		deal_year,
+		deal_month,
+		deal_day,
+		exclu_use_ar,
+		deal_amount
+		FROM housedeals
+		WHERE apt_seq = #{aptSeq}
+		ORDER BY deal_year DESC, deal_month DESC, deal_day DESC
+	</select>
+
 </mapper>
