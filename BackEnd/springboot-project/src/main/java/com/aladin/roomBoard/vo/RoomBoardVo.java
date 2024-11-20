@@ -19,6 +19,7 @@ public class RoomBoardVo {
 	private Integer price; // 가격
 	private Double houseSize; // 집 크기
 	private PricePer pricePer; // 가격 단위 (month 또는 week)
+	private Long views; // 조회수
 	private LocalDate rentStart; // 임대 시작 날짜
 	private LocalDate rentUntil; // 임대 종료 날짜
 	private String hashtags; // 해시태그 (JSON 문자열)

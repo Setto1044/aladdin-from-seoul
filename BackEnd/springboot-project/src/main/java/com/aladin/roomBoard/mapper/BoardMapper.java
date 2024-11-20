@@ -9,5 +9,6 @@ import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 public interface BoardMapper {
 	void insertBoard(@Param("dto") BoardInsertRequestDto boardInsertRequestDto);
 
-	void insertBoardImage(Long boardId, String imageUrl);
+	void insertBoardImage(Long boardId, String imageUrl, int imageOrder);
+
 }

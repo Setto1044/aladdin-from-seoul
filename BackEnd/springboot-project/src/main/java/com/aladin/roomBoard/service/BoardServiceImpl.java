@@ -34,13 +34,14 @@ public class BoardServiceImpl implements BoardService {
 			Long boardId = requestDto.getId(); // DTO에서 자동 생성된 ID 반환
 
 			// 사진 추가
+			int imageOrder = 0;
 			if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
 				try {
 					for (MultipartFile image : requestDto.getImages()) {
 						// 이미지 저장 후 URL 생성
 						String imageUrl = imageStorageMamager.saveImage(image, ImageType.POST);
 						// DB에 이미지 경로 저장
-						boardMapper.insertBoardImage(boardId, imageUrl);
+						boardMapper.insertBoardImage(boardId, imageUrl, imageOrder++);
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("이미지 저장 실패", e);
