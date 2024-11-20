@@ -1,15 +1,13 @@
 <template>
-  <article class="card" @click="goToHouseDetail">
+  <article class="card" @click="$emit('card-click', card)">
     <div class="card-image-container">
       <div class="card-image"></div>
     </div>
     <div class="card-content">
-      <h3 class="card-title">{{ title }}</h3>
-      <p class="card-description">{{ description }}</p>
+      <h3 class="card-title">{{ card.title }}</h3>
+      <p class="card-description">{{ card.description }}</p>
       <div class="card-tag">
-        <template v-for="(tag, index) in visibleTags" :key="index">
-          <span class="tag-label">{{ tag }}</span>
-        </template>
+        <span v-for="(tag, index) in visibleTags" :key="index" class="tag-label">{{ tag }}</span>
         <span
           v-if="hiddenTags.length > 0"
           class="more-tags"
@@ -18,9 +16,7 @@
         >
           +{{ hiddenTags.length }}개
           <div v-if="showTooltip" class="tooltip">
-            <span v-for="(tag, index) in hiddenTags" :key="`hidden-${index}`" class="tag-label">{{
-              tag
-            }}</span>
+            <span v-for="(tag, index) in hiddenTags" :key="index" class="tag-label">{{ tag }}</span>
           </div>
         </span>
       </div>
@@ -35,12 +31,7 @@
 <script>
 export default {
   props: {
-    title: String,
-    description: String,
-    tags: {
-      type: Array,
-      default: () => [],
-    },
+    card: Object,
   },
   data() {
     return {
@@ -50,16 +41,16 @@ export default {
   computed: {
     visibleTags() {
       const maxVisibleTags = 3 // 보이는 해시태그의 최대 개수
-      return this.tags.slice(0, maxVisibleTags)
+      return this.card.tags.slice(0, maxVisibleTags)
     },
     hiddenTags() {
       const maxVisibleTags = 3 // 보이는 해시태그의 최대 개수
-      return this.tags.length > maxVisibleTags ? this.tags.slice(maxVisibleTags) : []
+      return this.card.tags.length > maxVisibleTags ? this.card.tags.slice(maxVisibleTags) : []
     },
   },
   methods: {
-    goToHouseDetail() {
-      this.$router.push({ name: 'house', params: { id: '2' } })
+    handleCardClick() {
+      this.$emit('card-click', this.$props) // 클릭된 카드의 데이터를 부모로 전달
     },
   },
 }
@@ -105,10 +96,14 @@ export default {
 
 .card-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  justify-content: center;
-  padding: 0 16px; /* 페이지 좌우 여백 */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* 카드의 최소 크기를 설정하고 자동으로 맞춤 */
+  gap: 16px; /* 카드들 사이의 간격 */
+  width: 100%; /* 컨테이너가 전체 너비를 차지하도록 설정 */
+  justify-content: space-between; /* 카드들 사이의 간격을 균등하게 */
+  padding: 0 16px; /* 좌우 여백 */
 }
 
 .card-title,

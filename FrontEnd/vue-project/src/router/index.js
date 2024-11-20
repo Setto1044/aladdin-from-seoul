@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: '/share/user/:id',
       name: 'share-user',
-      component: () => import('@/views/ArchiveMyBoardView.vue'),
+      component: () => import('@/views/RoomShareMyView.vue'),
       meta: { showSearchBar: true, showFooterBar: true },
     },
     {
@@ -55,22 +55,11 @@ const router = createRouter({
       component: () => import('@/views/MapView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
+
     {
-      path: '/house',
-      name: 'house',
-      component: () => import('@/views/HouseDetailPage.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
-    },
-    {
-      path: '/house/:id',
-      name: 'house',
-      component: () => import('@/views/HouseDetailPage.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
-    },
-    {
-      path: '/house/write',
-      name: 'houseWrite',
-      component: () => import('@/views/HouseWritePage.vue'),
+      path: '/share/write',
+      name: 'share-write',
+      component: () => import('@/views/RoomShareWriteView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {

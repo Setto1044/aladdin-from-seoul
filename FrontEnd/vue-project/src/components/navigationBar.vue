@@ -7,7 +7,6 @@
 
     <nav class="main-navigation">
       <form v-if="$route.meta.showSearchBar" class="header-search-form nav-link">
-        <label for="search-input" class="visually-hidden">Search in site</label>
         <input
           type="text"
           id="search-input"
@@ -26,7 +25,7 @@
       </form>
 
       <a href="/map" class="nav-link">지도</a>
-      <a href="/share" class="nav-link">매물 게시판</a>
+      <a href="/share" class="nav-link">방 나누기 게시판</a>
       <a href="/favorites" class="nav-link">내 관심목록</a>
       <a href="/mypage" class="nav-link">마이페이지</a>
     </nav>

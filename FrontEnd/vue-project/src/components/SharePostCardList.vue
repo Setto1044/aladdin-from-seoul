@@ -3,9 +3,8 @@
     <SharePostCardWithAuthor
       v-for="(card, index) in cards"
       :key="index"
-      :title="card.title"
-      :description="card.description"
-      :tags="card.tags"
+      :card="card"
+      @card-click="handleCardClick"
     />
   </div>
 </template>
@@ -23,6 +22,11 @@ export default {
       required: true,
     },
   },
+  methods: {
+    handleCardClick(card) {
+      this.$emit('card-click', card) // 부모 컴포넌트로 이벤트 전달
+    },
+  },
 }
 </script>
 
@@ -31,8 +35,9 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 한 줄에 최대 3개의 열 */
   gap: 16px; /* 카드 간의 간격 */
-  max-width: 1200px; /* 카드 컨테이너의 최대 너비 */
-  margin: 0 auto; /* 좌우 여백을 균등하게 */
+  width: 100%; /* 카드 컨테이너가 화면 너비에 꽉 차도록 설정 */
+  justify-content: center; /* 카드들이 중앙 정렬되도록 설정 */
+  align-items: start; /* 카드들의 세로 정렬 */
   padding: 0 16px; /* 페이지 좌우 여백 */
 }
 

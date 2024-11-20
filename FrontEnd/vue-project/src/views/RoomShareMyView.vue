@@ -1,21 +1,7 @@
 <template>
   <div class="room-share-page">
     <div class="page-header">
-      <h2 class="main-title">모든 글보기</h2>
-      <div class="button-group">
-        <button class="action-button" @click="goToMyPosts">내 글 보기</button>
-        <button class="action-button create-button" @click="createNewPost">작성하기</button>
-      </div>
-      <form class="search-form" @submit.prevent="handleSearch">
-        <input
-          type="text"
-          id="propertySearch"
-          class="search-input"
-          placeholder="Search for properties..."
-          aria-label="Search for properties"
-        />
-        <button type="submit" class="search-button">Search</button>
-      </form>
+      <h2 class="main-title">ㅇㅇ님의 글보기</h2>
     </div>
     <main class="main-content">
       <div class="post-list">
@@ -24,7 +10,6 @@
           <CardRow :cards="cardData" @card-click="handleCardClick" />
         </div>
       </div>
-
       <PropertyDetailModal
         v-if="selectedCard"
         :show="showModal"
@@ -211,7 +196,6 @@ export default {
     handleCardClick(card) {
       this.selectedCard = card
       this.showModal = true
-      console.log(this.selectedCard)
     },
     closeModal() {
       this.showModal = false
