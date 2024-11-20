@@ -1,5 +1,7 @@
 <template>
   <div class="property-map">
+    <FilterBar></FilterBar>
+
     <aside>
       <button @click="toggleSidebar1"></button>
       <Sidebar1
@@ -21,6 +23,7 @@
 import MapComponent from '@/components/MapComponent.vue'
 import Sidebar1 from '@/components/MapSidebar1.vue'
 import Sidebar2 from '@/components/MapSidebar2.vue'
+import FilterBar from '@/components/FilterBar.vue'
 
 export default {
   name: 'MapView',
@@ -28,6 +31,7 @@ export default {
     Sidebar1,
     Sidebar2,
     MapComponent,
+    FilterBar,
   },
   data() {
     return {
