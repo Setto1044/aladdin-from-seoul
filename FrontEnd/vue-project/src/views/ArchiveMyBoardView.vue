@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/HouseUserCardComponent2.vue'
+import CardComponent from '@/components/SharePostCardWithAuthor.vue'
 export default {
   components: {
     CardComponent,

@@ -26,7 +26,7 @@
       </form>
 
       <a href="/map" class="nav-link">지도</a>
-      <a href="/listings" class="nav-link">매물 게시판</a>
+      <a href="/share" class="nav-link">매물 게시판</a>
       <a href="/favorites" class="nav-link">내 관심목록</a>
       <a href="/mypage" class="nav-link">마이페이지</a>
     </nav>
