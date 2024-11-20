@@ -1,10 +1,13 @@
 package com.aladin.house.mapper;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
-import com.aladin.house.vo.HouseCardVo;
+
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
+import com.aladin.house.vo.HouseCardVo;
+import com.aladin.house.vo.HouseDealVo;
 
 @Mapper
 public interface HouseMapper {
@@ -13,4 +16,6 @@ public interface HouseMapper {
 
 	// DTO를 사용하여 특정 좌표 기준 데이터 가져오기
 	List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto);
+
+	List<HouseDealVo> findAllHouseDealsByAptSeq(String aptSeq);
 }

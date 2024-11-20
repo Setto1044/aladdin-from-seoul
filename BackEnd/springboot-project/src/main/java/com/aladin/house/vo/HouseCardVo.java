@@ -19,4 +19,5 @@ public class HouseCardVo {
 	private String latitude;            // 위도
 	private String longitude;           // 경도
 	private Integer views;              // 조회 수
+	private String aptPhotoLink;		// 아파트 사진 링크
 }
