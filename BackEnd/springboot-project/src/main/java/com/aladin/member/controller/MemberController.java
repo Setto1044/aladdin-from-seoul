@@ -2,8 +2,10 @@ package com.aladin.member.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aladin.common.ApiResponseDto;
 import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
+import com.aladin.member.dto.MemberInfoResponseDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
+import com.aladin.member.dto.MemberUpdateRequestDto;
 import com.aladin.member.service.MemberService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +65,17 @@ public class MemberController {
 			return ResponseEntity.ok(ApiResponseDto.of(true, "로그인에 성공하였습니다.", member));
 		}
 		return ResponseEntity.badRequest().body(ApiResponseDto.of(false, "로그인에 실패했습니다."));
-
 	}
 
+	// 회원 정보 수정
+	@PutMapping("/{username}")
+	public ResponseEntity<ApiResponseDto<MemberInfoResponseDto>> updateMember(@PathVariable String username, @ModelAttribute MemberUpdateRequestDto updateRequestDto) {
+		try {
+			MemberInfoResponseDto updatedMember = memberService.updateMember(username, updateRequestDto);
+			return ResponseEntity.ok(ApiResponseDto.of(true, "회원 정보가 성공적으로 수정되었습니다.", updatedMember));
+		} catch (Exception e) {
+			log.error("회원 정보 수정 실패: {}", e.getMessage(), e);
+			return ResponseEntity.badRequest().body(ApiResponseDto.of(false, "회원 정보 수정에 실패했습니다."));
+		}
+	}
 }
