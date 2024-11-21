@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aladin.common.ApiResponseDto;
 import com.aladin.exceptions.BoardCreationException;
 import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.BoardDetailDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 import com.aladin.roomBoard.service.BoardService;
 
@@ -37,6 +39,15 @@ public class BoardController {
 	public ResponseEntity<ApiResponseDto<List<BoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
 		List<BoardCardDto> boardCards = boardService.findBoardsByCursor(cursorId, pageSize);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardCards));
+	}
+
+	@GetMapping("/{roomboardsId}")
+	public ResponseEntity<ApiResponseDto<BoardDetailDto>> getBoardDetail(@PathVariable Long roomboardsId) {
+		BoardDetailDto boardDetail = boardService.getBoardDetail(roomboardsId);
+		if (boardDetail.getRoomCardInfo() != null) {
+			return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardDetail));
+		}
+		return ResponseEntity.ok(ApiResponseDto.of(false, "조회 실패"));
 	}
 
 	@ExceptionHandler(BoardCreationException.class)

@@ -27,7 +27,7 @@
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
 
-	<!-- 게시글 등록 -->
+	<!-- 게시글 등록 ok -->
 	<insert id="insertBoard" useGeneratedKeys="true" keyProperty="id" parameterType="map">
 		INSERT INTO roomboards (
 		members_username, title, detail, address, postcode, price, house_size,
@@ -39,7 +39,7 @@
 		)
 	</insert>
 
-	<!-- 커서 기반 페이징 -->
+	<!-- 커서 기반 페이징 ok -->
 	<select id="findBoardsByCursor" resultMap="boardCardDtoResultMap">
 		SELECT
 		rb.id AS id,
@@ -70,15 +70,37 @@
 		LIMIT #{pageSize};
 	</select>
 
+	<!-- 게시물 보드 id 에 해당하는 게시물 vo 반환 -->
+	<!-- 게시물 id에 해당하는 게시물 VO 반환 -->
+	<select id="findOneByRoomBoardId" parameterType="long" resultMap="roomBoardResultMap">
+		SELECT
+		id,
+		members_username,
+		title,
+		detail,
+		address,
+		postcode,
+		price,
+		house_size,
+		price_per,
+		rent_start,
+		rent_until,
+		hashtags,
+		views,
+		created_at,
+		updated_at
+		FROM roomboards
+		WHERE id = #{roomboardsId};
+	</select>
 
-	<!-- 사진 1장 저장 -->
+	<!-- 사진 1장 저장 ok -->
 	<insert id="insertBoardImage" parameterType="map">
 		INSERT INTO roomboards_images (roomboards_id, url, image_order)
 		VALUES (#{boardId}, #{imageUrl}, #{imageOrder});
 	</insert>
 
-	<!-- 게시물 id에 해당하는 사진 전부 조회 -->
-	<select id="findImagesByRoomBoardId" parameterType="int" resultType="com.aladin.roomBoard.vo.RoomBoardImageVo">
+	<!-- 게시물 id에 해당하는 사진 전부 조회 ok -->
+	<select id="findImagesByRoomBoardId" parameterType="long" resultType="com.aladin.roomBoard.vo.RoomBoardImageVo">
 		SELECT id, url, image_order, roomboards_id
 		FROM roomboards_images
 		WHERE roomboards_id = #{roomboardsId}
@@ -86,7 +108,7 @@
 	</select>
 
 	<!-- 게시물 id에 해당하는 사진 삭제 -->
-	<delete id="deleteImagesByRoomBoardId" parameterType="int">
+	<delete id="deleteImagesByRoomBoardId" parameterType="long">
 		DELETE FROM roomboards_images
 		WHERE roomboards_id = #{roomboardsId};
 	</delete>
