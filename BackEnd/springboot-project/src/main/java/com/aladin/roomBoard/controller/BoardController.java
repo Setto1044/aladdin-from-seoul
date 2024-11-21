@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import com.aladin.exceptions.BoardCreationException;
 import com.aladin.roomBoard.dto.BoardCardDto;
 import com.aladin.roomBoard.dto.BoardDetailDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
+import com.aladin.roomBoard.dto.BoardUpdateRequestDto;
 import com.aladin.roomBoard.service.BoardService;
 
 @RestController
@@ -48,6 +50,12 @@ public class BoardController {
 			return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardDetail));
 		}
 		return ResponseEntity.ok(ApiResponseDto.of(false, "조회 실패"));
+	}
+
+	@PutMapping
+	public ResponseEntity<ApiResponseDto> updateBoard(@ModelAttribute BoardUpdateRequestDto requestDto) {
+		Long id = boardService.updateBoard(requestDto);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "등록이 완료되었습니다.", id));
 	}
 
 	@ExceptionHandler(BoardCreationException.class)

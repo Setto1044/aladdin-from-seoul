@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.aladin.roomBoard.dto.BoardCardDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
+import com.aladin.roomBoard.dto.BoardUpdateRequestDto;
 import com.aladin.roomBoard.vo.RoomBoardImageVo;
 import com.aladin.roomBoard.vo.RoomBoardVo;
 
@@ -21,4 +22,9 @@ public interface BoardMapper {
 	List<RoomBoardImageVo> findImagesByRoomBoardId(Long roomboardsId);
 
 	RoomBoardVo findOneByRoomBoardId(Long roomboardsId);
+
+	void updateBoard(@Param("dto") BoardUpdateRequestDto requestDto);
+
+	void deleteImagesByRoomBoardId(Long boardId);
+
 }
