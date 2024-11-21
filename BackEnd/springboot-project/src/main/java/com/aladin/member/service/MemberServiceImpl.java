@@ -78,4 +78,9 @@ public class MemberServiceImpl implements MemberService {
 		return memberMapper.findByUsername(username);
 	}
 
+	@Override
+	public MemberInfoResponseDto getMemberInfo(String username) {
+		return memberMapper.findByUsername(username);
+	}
+
 }

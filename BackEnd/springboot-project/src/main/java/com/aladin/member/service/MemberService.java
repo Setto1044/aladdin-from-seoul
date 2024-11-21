@@ -17,4 +17,5 @@ public interface MemberService {
 
 	MemberInfoResponseDto updateMember(String username, MemberUpdateRequestDto updateRequestDto);
 
+	MemberInfoResponseDto getMemberInfo(String username);
 }

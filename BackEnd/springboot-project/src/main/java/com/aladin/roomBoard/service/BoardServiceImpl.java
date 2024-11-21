@@ -1,5 +1,7 @@
 package com.aladin.roomBoard.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.exceptions.BoardCreationException;
+import com.aladin.roomBoard.dto.BoardCardDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 import com.aladin.roomBoard.mapper.BoardMapper;
 
@@ -55,6 +58,11 @@ public class BoardServiceImpl implements BoardService {
 			throw new BoardCreationException("게시글 등록 중 오류가 발생했습니다.", e);
 		}
 
+	}
+
+	@Override
+	public List<BoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize) {
+		return boardMapper.findBoardsByCursor(cursorId, pageSize);
 	}
 
 }

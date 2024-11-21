@@ -1,6 +1,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aladin.roomBoard.mapper.BoardMapper">
 
+
 	<!-- 게시글 테이블과 VO 매핑 -->
 	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
 		<id property="id" column="id" />
@@ -12,12 +13,18 @@
 		<result property="price" column="price" />
 		<result property="houseSize" column="house_size" />
 		<result property="pricePer" column="price_per" />
-		<result property="rentStart" column="rent_start" />
-		<result property="rentUntil" column="rent_until" />
+		<result property="rentStart" column="rent_start" javaType="java.sql.Date" />
+		<result property="rentUntil" column="rent_until" javaType="java.sql.Date" />
 		<result property="hashtags" column="hashtags" />
 		<result property="views" column="views" />
 		<result property="createdAt" column="created_at" />
 		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+
+	<!-- BoardCardDto 매핑 -->
+	<resultMap id="boardCardDtoResultMap" type="com.aladin.roomBoard.dto.BoardCardDto">
+		<result property="thumbnailUrl" column="thumbnail_url" />
+		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
 
 	<!-- 게시글 등록 -->
@@ -32,56 +39,36 @@
 		)
 	</insert>
 
-	<!-- 게시글 전체 조회 -->
-	<select id="findAllRoomBoards" resultMap="roomBoardResultMap">
+	<!-- 커서 기반 페이징 -->
+	<select id="findBoardsByCursor" resultMap="boardCardDtoResultMap">
 		SELECT
-		id,
-		members_username,
-		title,
-		detail,
-		address,
-		postcode,
-		price,
-		house_size,
-		price_per,
-		rent_start,
-		rent_until,
-		hashtags,
-		views,
-		created_at,
-		updated_at
-		FROM roomboards
-		ORDER BY created_at DESC
+		rb.id AS id,
+		rb.members_username AS members_username,
+		rb.title AS title,
+		rb.detail AS detail,
+		rb.address AS address,
+		rb.postcode AS postcode,
+		rb.price AS price,
+		rb.house_size AS house_size,
+		rb.price_per AS price_per,
+		rb.rent_start AS rent_start,
+		rb.rent_until AS rent_until,
+		rb.hashtags AS hashtags,
+		rb.views AS views,
+		rb.created_at AS created_at,
+		rb.updated_at AS updated_at,
+		rbi.url AS thumbnail_url
+		FROM roomboards rb
+		LEFT JOIN roomboards_images rbi
+		ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		<where>
+			<if test="cursorId != null">
+				rb.id &lt; #{cursorId}
+			</if>
+		</where>
+		ORDER BY rb.id DESC
+		LIMIT #{pageSize};
 	</select>
-
-	<select id="findRoomBoardById" resultType="com.aladin.roomBoard.vo.RoomBoardVo">
-		SELECT
-		id,
-		members_username,
-		title,
-		detail,
-		address,
-		postcode,
-		price,
-		house_size,
-		price_per,
-		rent_start,
-		rent_until,
-		hashtags,
-		views,
-		created_at,
-		updated_at
-		FROM roomboards
-		WHERE id = #{id}
-	</select>
-
-	<select id="findThumbnailPathByBoardId" resultType="String">
-		SELECT url
-		FROM roomboards_images
-		WHERE roomboards_id = #{boardId}
-		AND image_order = 0
-	</select>
-
 
 
 	<!-- 사진 1장 저장 -->
@@ -89,4 +76,19 @@
 		INSERT INTO roomboards_images (roomboards_id, url, image_order)
 		VALUES (#{boardId}, #{imageUrl}, #{imageOrder});
 	</insert>
+
+	<!-- 게시물 id에 해당하는 사진 전부 조회 -->
+	<select id="findImagesByRoomBoardId" parameterType="int" resultType="com.aladin.roomBoard.vo.RoomBoardImageVo">
+		SELECT id, url, image_order, roomboards_id
+		FROM roomboards_images
+		WHERE roomboards_id = #{roomboardsId}
+		ORDER BY image_order ASC;
+	</select>
+
+	<!-- 게시물 id에 해당하는 사진 삭제 -->
+	<delete id="deleteImagesByRoomBoardId" parameterType="int">
+		DELETE FROM roomboards_images
+		WHERE roomboards_id = #{roomboardsId};
+	</delete>
+
 </mapper>
