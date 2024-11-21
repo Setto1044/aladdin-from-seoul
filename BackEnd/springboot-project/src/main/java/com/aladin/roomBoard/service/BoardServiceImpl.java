@@ -112,4 +112,20 @@ public class BoardServiceImpl implements BoardService {
 			}
 		}
 	}
+
+	@Override
+	public int deleteBoard(Long boardId) {
+		try {
+			int deletedCount = boardMapper.deleteBoardById(boardId);
+
+			if (deletedCount == 0) {
+				log.warn("삭제 대상 게시글이 존재하지 않습니다. 게시글 ID: {}", boardId);
+				throw new BoardCreationException("게시글 삭제 중 오류가 발생했습니다.");
+			}
+			return deletedCount;
+		} catch (Exception e) {
+			log.error("게시글 삭제 중 오류 발생: {}", e.getMessage(), e);
+			throw new BoardCreationException("게시글 삭제 중 오류가 발생했습니다.", e);
+		}
+	}
 }

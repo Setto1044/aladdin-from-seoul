@@ -3,6 +3,7 @@ package com.aladin.roomBoard.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,5 +58,11 @@ public class BoardController {
 	public ResponseEntity<ApiResponseDto> updateBoard(@ModelAttribute BoardUpdateRequestDto requestDto) {
 		Long id = boardService.updateBoard(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "수정이 완료되었습니다.", id));
+	}
+
+	@DeleteMapping("/{boardId}")
+	public ResponseEntity<ApiResponseDto> deleteBoard(@PathVariable Long boardId) {
+		boardService.deleteBoard(boardId);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "삭제가 완료되었습니다.", boardId));
 	}
 }
