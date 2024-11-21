@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class ImageStorageMamager {
 	@Value("${file.upload.dir}")
 	private String baseUploadDir; // 기본 저장 경로
@@ -23,8 +26,8 @@ public class ImageStorageMamager {
 			throw new IllegalArgumentException("파일이 비어 있습니다.");
 		}
 		String fileName = generateUniqueFileName(file.getOriginalFilename());
-
 		String folderPath = baseUploadDir + "/" + imageType.getFolder();
+
 		File folder = new File(folderPath);
 		if (!folder.exists()) {
 			folder.mkdirs();
@@ -33,7 +36,7 @@ public class ImageStorageMamager {
 		File destinationFile = new File(folder, fileName);
 		file.transferTo(destinationFile);
 
-		// 접근 가능한 URL 경로 반환
+		log.info("파일 저장됨: {}", folderPath);
 		return serverDomain + "/aladin/" + imageType.getFolder() + "/" + fileName;
 	}
 

@@ -3,10 +3,12 @@ package com.aladin.member.service;
 import java.io.IOException;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
+import com.aladin.exceptions.BoardCreationException;
+import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
 import com.aladin.member.dto.MemberDeleteRequestDto;
@@ -16,20 +18,25 @@ import com.aladin.member.dto.MemberUpdateRequestDto;
 import com.aladin.member.mapper.MemberMapper;
 
 @Service
+@Transactional
 public class MemberServiceImpl implements MemberService {
 
 	private final MemberMapper memberMapper;
-	private final ImageStorageMamager imageStorageManager;
+	private final ImageStorageMamager imageStorageMamager;
 
-	public MemberServiceImpl(MemberMapper memberMapper, ImageStorageMamager imageStorageManager) {
+	public MemberServiceImpl(MemberMapper memberMapper, ImageStorageMamager imageStorageMamager) {
+		super();
 		this.memberMapper = memberMapper;
-		this.imageStorageManager = imageStorageManager;
+		this.imageStorageMamager = imageStorageMamager;
 	}
 
 	@Override
 	public boolean registMember(MemberRegistRequestDto memberDto) {
-		if (isDuplicatedEmail(memberDto.getEmail()) || isDuplicatedUsername(memberDto.getUsername())) {
-			return false;
+		if (memberMapper.isDuplicatedUsername(memberDto.getUsername())) {
+			throw new BoardCreationException("이미 사용 중인 아이디입니다.");
+		}
+		if (memberMapper.isDuplicatedEmail(memberDto.getEmail())) {
+			throw new BoardCreationException("이미 사용 중인 이메일입니다.");
 		}
 		return memberMapper.registerMember(memberDto) > 0;
 	}
@@ -46,48 +53,65 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public LogInResponseDto loginMember(LogInRequestDto loginRequestDto) {
-		return memberMapper.findMemberByUsernameAndPassword(loginRequestDto.getUsername(), loginRequestDto.getPassword());
-	}
-
-	@Override
-	public MemberInfoResponseDto updateMember(MemberUpdateRequestDto updateRequestDto) {
-		MultipartFile profileImage = updateRequestDto.getProfileImage();
-		String profileImagePath = null;
-
-		if (profileImage != null && !profileImage.isEmpty()) {
-			try {
-				// 이미지 저장
-				profileImagePath = imageStorageManager.saveImage(profileImage, ImageType.PROFILE);
-			} catch (IOException e) {
-				throw new RuntimeException("프로필 이미지 저장 실패", e);
-			}
-		} else {
-			// 기본 프로필 이미지 경로 설정
-			profileImagePath = imageStorageManager.defaultProfileImagePath;
+		LogInResponseDto member = memberMapper.findMemberByUsernameAndPassword(loginRequestDto.getUsername(), loginRequestDto.getPassword());
+		if (member == null) {
+			throw new ResourceNotFoundException("로그인 실패: 사용자 정보를 찾을 수 없습니다.");
 		}
-
-		// 업데이트 DTO에 이미지 경로 추가
-		updateRequestDto.setProfileImagePath(profileImagePath);
-
-		// DB 업데이트
-		int updatedRows = memberMapper.updateMember(updateRequestDto);
-		if (updatedRows == 0) {
-			throw new IllegalArgumentException("회원 정보 업데이트 실패");
-		}
-
-		// 수정된 회원 정보 반환
-		return memberMapper.findByUsername(updateRequestDto.getUsername());
+		return member;
 	}
 
 	@Override
 	public MemberInfoResponseDto getMemberInfo(String username) {
-		return memberMapper.findByUsername(username);
+		MemberInfoResponseDto memberInfo = memberMapper.findByUsername(username);
+		if (memberInfo == null) {
+			throw new ResourceNotFoundException("사용자 정보를 찾을 수 없습니다.");
+		}
+		return memberInfo;
+	}
+
+	@Override
+	public MemberInfoResponseDto updateMember(MemberUpdateRequestDto updateRequestDto) {
+		try {
+			// 기존 회원 정보 확인
+			MemberInfoResponseDto existingMember = memberMapper.findByUsername(updateRequestDto.getUsername());
+			if (existingMember == null) {
+				throw new ResourceNotFoundException("사용자를 찾을 수 없습니다.");
+			}
+
+			// 프로필 이미지 저장 또는 기본 이미지 설정
+			String profileImagePath;
+			if (updateRequestDto.getProfileImage() != null && !updateRequestDto.getProfileImage().isEmpty()) {
+				profileImagePath = imageStorageMamager.saveImage(updateRequestDto.getProfileImage(), ImageType.PROFILE);
+			} else {
+				profileImagePath = existingMember.getProfileImagePath() != null ? existingMember.getProfileImagePath() : defaultProfileImageUrl();
+			}
+			updateRequestDto.setProfileImagePath(profileImagePath);
+
+			// DB 업데이트
+			int rowsAffected = memberMapper.updateMember(updateRequestDto);
+			if (rowsAffected == 0) {
+				throw new ResourceNotFoundException("회원 정보를 업데이트할 수 없습니다.");
+			}
+
+			return getMemberInfo(updateRequestDto.getUsername());
+		} catch (IOException e) {
+			throw new BoardCreationException("프로필 이미지 저장 중 오류가 발생했습니다.", e);
+		}
+	}
+
+	/**
+	 * 기본 프로필 이미지 URL 반환 수정 필요!!
+	 */
+	private String defaultProfileImageUrl() {
+		return "http://localhost:8080/aladin/profile/defaultProfileImage.png";
 	}
 
 	@Override
 	public boolean deleteMember(MemberDeleteRequestDto requestDto) {
-		int deleteResult = memberMapper.deleteMember(requestDto);
-		return deleteResult > 0;
+		int rowsAffected = memberMapper.deleteMember(requestDto);
+		if (rowsAffected == 0) {
+			throw new ResourceNotFoundException("삭제할 회원 정보를 찾을 수 없습니다.");
+		}
+		return true;
 	}
-
 }

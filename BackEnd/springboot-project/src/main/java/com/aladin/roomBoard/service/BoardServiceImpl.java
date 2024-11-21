@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.exceptions.BoardCreationException;
+import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.roomBoard.dto.BoardCardDto;
 import com.aladin.roomBoard.dto.BoardDetailDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
@@ -35,71 +36,80 @@ public class BoardServiceImpl implements BoardService {
 		try {
 			boardMapper.insertBoard(requestDto);
 
-			// 생성된 ID 반환
-			Long boardId = requestDto.getId(); // DTO에서 자동 생성된 ID 반환
+			Long boardId = requestDto.getId();
 
-			// 사진 추가
-			int imageOrder = 0;
-			if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
-				try {
-					for (MultipartFile image : requestDto.getImages()) {
-						// 이미지 저장 후 URL 생성
-						String imageUrl = imageStorageMamager.saveImage(image, ImageType.POST);
-						// DB에 이미지 경로 저장
-						boardMapper.insertBoardImage(boardId, imageUrl, imageOrder++);
-					}
-				} catch (Exception e) {
-					throw new RuntimeException("이미지 저장 실패", e);
-				}
-
-			}
+			saveImages(requestDto.getImages(), boardId);
 
 			return boardId;
 		} catch (Exception e) {
-			log.error(e.toString());
+			log.error("게시글 생성 중 오류: {}", e.getMessage(), e);
 			throw new BoardCreationException("게시글 등록 중 오류가 발생했습니다.", e);
 		}
-
 	}
 
 	@Override
 	public List<BoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize) {
-		return boardMapper.findBoardsByCursor(cursorId, pageSize);
+		List<BoardCardDto> boards = boardMapper.findBoardsByCursor(cursorId, pageSize);
+		if (boards == null || boards.isEmpty()) {
+			throw new ResourceNotFoundException("게시물을 찾을 수 없습니다.");
+		}
+		return boards;
 	}
 
 	@Override
 	public BoardDetailDto getBoardDetail(Long roomboardsId) {
-		BoardDetailDto boardDetailDto = new BoardDetailDto();
-		boardDetailDto.setRoomCardInfo(boardMapper.findOneByRoomBoardId(roomboardsId));
-		boardDetailDto.setRoomImageInfos(boardMapper.findImagesByRoomBoardId(roomboardsId));
-		return boardDetailDto;
+		try {
+			BoardDetailDto boardDetailDto = new BoardDetailDto();
+			boardDetailDto.setRoomCardInfo(boardMapper.findOneByRoomBoardId(roomboardsId));
+			boardDetailDto.setRoomImageInfos(boardMapper.findImagesByRoomBoardId(roomboardsId));
+
+			if (boardDetailDto.getRoomCardInfo() == null) {
+				throw new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다.");
+			}
+
+			return boardDetailDto;
+		} catch (Exception e) {
+			log.error("게시물 상세 조회 중 오류: {}", e.getMessage(), e);
+			throw new ResourceNotFoundException("게시물 조회 중 오류가 발생했습니다.", e);
+		}
 	}
 
 	@Override
-	@Transactional
 	public Long updateBoard(BoardUpdateRequestDto requestDto) {
 		try {
-			// 게시물 기본 정보 수정
 			boardMapper.updateBoard(requestDto);
 
 			Long boardId = requestDto.getId();
 
-			// 기존 이미지 삭제
 			boardMapper.deleteImagesByRoomBoardId(boardId);
 
-			// 새 이미지 저장
-			int imageOrder = 0;
-			if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
-				for (MultipartFile image : requestDto.getImages()) {
-					String imageUrl = imageStorageMamager.saveImage(image, ImageType.POST);
-					boardMapper.insertBoardImage(boardId, imageUrl, imageOrder++);
-				}
-			}
+			saveImages(requestDto.getImages(), boardId);
+
 			return boardId;
 		} catch (Exception e) {
-			log.error(e.toString());
+			log.error("게시글 수정 중 오류: {}", e.getMessage(), e);
 			throw new BoardCreationException("게시글 수정 중 오류가 발생했습니다.", e);
 		}
 	}
 
+	/**
+	 * 이미지 저장 로직 공통화
+	 * 
+	 * @param images  저장할 이미지 목록
+	 * @param boardId 게시글 ID
+	 */
+	private void saveImages(List<MultipartFile> images, Long boardId) {
+		if (images != null && !images.isEmpty()) {
+			int imageOrder = 0;
+			for (MultipartFile image : images) {
+				try {
+					String imageUrl = imageStorageMamager.saveImage(image, ImageType.POST);
+					boardMapper.insertBoardImage(boardId, imageUrl, imageOrder++);
+				} catch (Exception e) {
+					log.error("이미지 저장 실패: {}", e.getMessage(), e);
+					throw new BoardCreationException("이미지 저장 중 오류가 발생했습니다.", e);
+				}
+			}
+		}
+	}
 }
