@@ -40,6 +40,7 @@ export default {
   padding-top: 80px;
   overflow-y: auto; /* Enable vertical scrolling */
   max-height: 100%; /* Ensure the sidebar uses full viewport height */
+  z-index: 2; /* Ensures it overlaps the PropertyDetailsPage */
 }
 .sidebar1 {
   transform: translateX(0);
@@ -63,6 +64,6 @@ export default {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  z-index: 2; /* Ensures it overlaps the PropertyDetailsPage */
+  z-index: 5; /* Ensures it overlaps the PropertyDetailsPage */
 }
 </style>

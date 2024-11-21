@@ -46,7 +46,21 @@ export default {
       isSidebar2Open: false,
     }
   },
+  mounted() {
+    this.updateNavHeight()
+    window.addEventListener('resize', this.updateNavHeight) // Recalculate on window resize
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateNavHeight)
+  },
   methods: {
+    updateNavHeight() {
+      const navBar = document.querySelector('.top-bar') // Replace with your nav bar selector
+      if (navBar) {
+        const navHeight = navBar.offsetHeight
+        document.documentElement.style.setProperty('--nav-height', `${navHeight}px`)
+      }
+    },
     toggleSidebar1() {
       console.log('오픈')
       this.isSidebar1Open = !this.isSidebar1Open
@@ -76,5 +90,22 @@ export default {
 </script>
 
 <style scoped>
-/* Add necessary styles */
+/* Main container */
+.property-map {
+  display: flex;
+  flex-direction: column; /* FilterBar on top, Map Section below */
+  height: calc(98vh - var(--nav-height)); /* Subtract nav bar height */
+}
+.map-section {
+  flex: 1; /* Occupy all the remaining height below FilterBar */
+  position: relative; /* For absolutely positioned content if needed */
+  overflow: hidden; /* Prevent content overflow if necessary */
+}
+
+.FilterBar {
+  height: 50px; /* Adjust the height of FilterBar as needed */
+  z-index: 1000; /* Ensure it appears above other elements */
+  background: #f9f9f9; /* Optional styling for clarity */
+  border-bottom: 1px solid #ddd; /* Optional bottom border */
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="map-container">
     <div class="map-overlay">
-      <div id="map-background" style="width: 100%; height: 70vh" />
+      <div id="map-background" style="width: 100%; height: 100vh" />
       <div class="map-info"></div>
     </div>
   </div>
@@ -62,6 +62,7 @@ export default {
           console.log('API 호출 성공:', response.data)
           // 필요 시 데이터를 Vue 상태에 저장
           this.handleApiResponse(response.data)
+          this.displayMarkers(response.data.data.houseCards)
         })
         .catch((error) => {
           console.error('API 호출 오류:', error)
@@ -69,8 +70,36 @@ export default {
     },
     handleApiResponse(data) {
       // API 응답 데이터를 처리합니다.
-      console.log('처리된 데이터:', data)
+      // console.log('처리된 데이터:', data)
       // 예: 상태에 저장하거나 화면에 렌더링
+    },
+    displayMarkers(houseData) {
+      console.log(houseData)
+      for (let i = 0; i < houseData.length; i++) {
+        const house = houseData[i]
+
+        // 마커 생성
+        let marker = new kakao.maps.Marker({
+          map: this.map,
+          position: new kakao.maps.LatLng(house.latitude, house.longitude),
+        })
+
+        // // 인포윈도우 생성
+        // let infowindow = new kakao.maps.InfoWindow({
+        //   content: `
+        //         <div style="padding:5px; font-size:14px;">
+        //             <strong>${house.aptName}</strong><br/>
+        //             ${house.sidoName} ${house.gugunName} ${house.dongName}<br/>
+        //             ${house.excluUseAr}㎡, ${house.latestDealAmount}만원<br/>
+        //             <img src="${house.aptPhotoLink}" alt="아파트 사진" style="width:100px;height:80px;"/>
+        //         </div>
+        //     `,
+        // })
+
+        // // 마커에 이벤트 등록
+        // kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow))
+        // kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow))
+      }
     },
     getInfo() {
       // 지도 정보 얻기

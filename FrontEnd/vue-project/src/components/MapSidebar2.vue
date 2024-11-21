@@ -34,6 +34,7 @@ export default {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   padding-top: 80px;
+  z-index: 2; /* Ensures it overlaps the PropertyDetailsPage */
 }
 .sidebar2 {
   transform: translateX(0);
@@ -57,6 +58,6 @@ export default {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  z-index: 2; /* Ensures it overlaps the PropertyDetailsPage */
+  z-index: 5; /* Ensures it overlaps the PropertyDetailsPage */
 }
 </style>
