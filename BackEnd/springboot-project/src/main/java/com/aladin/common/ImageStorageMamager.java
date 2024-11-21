@@ -11,8 +11,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageStorageMamager {
 	@Value("${file.upload.dir}")
 	private String baseUploadDir; // 기본 저장 경로
+
 	@Value("${file.default.profile-image}")
 	public String defaultProfileImagePath; // 기본 프로필 이미지 경로
+
+	@Value("${server.domain}")
+	private String serverDomain; // 서버 도메인 (http://localhost:8080)
 
 	public String saveImage(MultipartFile file, ImageType imageType) throws IOException {
 		if (file == null || file.isEmpty()) {
@@ -29,7 +33,8 @@ public class ImageStorageMamager {
 		File destinationFile = new File(folder, fileName);
 		file.transferTo(destinationFile);
 
-		return "/" + imageType.getFolder() + "/" + fileName;
+		// 접근 가능한 URL 경로 반환
+		return serverDomain + "/aladin/" + imageType.getFolder() + "/" + fileName;
 	}
 
 	private String generateUniqueFileName(String originalFilename) {

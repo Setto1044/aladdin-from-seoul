@@ -31,6 +31,12 @@ public class MemberController {
 		this.memberService = memberService;
 	}
 
+	@GetMapping("/{username}")
+	public ResponseEntity<ApiResponseDto<MemberInfoResponseDto>> getMemberInfo(@PathVariable String username) {
+		MemberInfoResponseDto memberInfo = memberService.getMemberInfo(username);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "회원 정보를 찾았습니다", memberInfo));
+	}
+
 	@PostMapping
 	public ResponseEntity<ApiResponseDto<Void>> registerMember(@RequestBody MemberRegistRequestDto memberDto) {
 

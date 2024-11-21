@@ -1,15 +1,20 @@
 package com.aladin.roomBoard.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aladin.common.ApiResponseDto;
 import com.aladin.exceptions.BoardCreationException;
+import com.aladin.roomBoard.dto.BoardCardDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 import com.aladin.roomBoard.service.BoardService;
 
@@ -26,6 +31,12 @@ public class BoardController {
 	public ResponseEntity<ApiResponseDto> insertBoard(@ModelAttribute BoardInsertRequestDto requestDto) {
 		Long id = boardService.createBoard(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "등록이 완료되었습니다.", id));
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponseDto<List<BoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
+		List<BoardCardDto> boardCards = boardService.findBoardsByCursor(cursorId, pageSize);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardCards));
 	}
 
 	@ExceptionHandler(BoardCreationException.class)
