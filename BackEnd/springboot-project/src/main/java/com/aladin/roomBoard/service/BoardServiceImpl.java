@@ -128,4 +128,5 @@ public class BoardServiceImpl implements BoardService {
 			throw new BoardCreationException("게시글 삭제 중 오류가 발생했습니다.", e);
 		}
 	}
+
 }
