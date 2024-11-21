@@ -9,6 +9,7 @@ import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
+import com.aladin.member.dto.MemberDeleteRequestDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
@@ -49,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public MemberInfoResponseDto updateMember(String username, MemberUpdateRequestDto updateRequestDto) {
+	public MemberInfoResponseDto updateMember(MemberUpdateRequestDto updateRequestDto) {
 		MultipartFile profileImage = updateRequestDto.getProfileImage();
 		String profileImagePath = null;
 
@@ -75,12 +76,18 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		// 수정된 회원 정보 반환
-		return memberMapper.findByUsername(username);
+		return memberMapper.findByUsername(updateRequestDto.getUsername());
 	}
 
 	@Override
 	public MemberInfoResponseDto getMemberInfo(String username) {
 		return memberMapper.findByUsername(username);
+	}
+
+	@Override
+	public boolean deleteMember(MemberDeleteRequestDto requestDto) {
+		int deleteResult = memberMapper.deleteMember(requestDto);
+		return deleteResult > 0;
 	}
 
 }

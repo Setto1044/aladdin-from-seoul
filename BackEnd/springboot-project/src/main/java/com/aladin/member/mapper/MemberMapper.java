@@ -3,6 +3,7 @@ package com.aladin.member.mapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.aladin.member.dto.LogInResponseDto;
+import com.aladin.member.dto.MemberDeleteRequestDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
@@ -20,4 +21,6 @@ public interface MemberMapper {
 	MemberInfoResponseDto findByUsername(String username);
 
 	int updateMember(MemberUpdateRequestDto requestDto);
+
+	int deleteMember(MemberDeleteRequestDto requestDto);
 }
