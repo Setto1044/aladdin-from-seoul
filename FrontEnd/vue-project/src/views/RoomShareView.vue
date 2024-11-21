@@ -1,21 +1,23 @@
 <template>
   <div class="room-share-page">
     <div class="page-header">
-      <h2 class="main-title">모든 글보기</h2>
-      <div class="button-group">
-        <button class="action-button" @click="goToMyPosts">내 글 보기</button>
-        <button class="action-button create-button" @click="createNewPost">작성하기</button>
+      <h2 class="main-title">{{ pageHeaderTitle }}</h2>
+      <div v-if="showComponents">
+        <div class="button-group">
+          <button class="action-button" @click="goToMyPosts">내 글 보기</button>
+          <button class="action-button create-button" @click="createNewPost">작성하기</button>
+        </div>
+        <form class="search-form" @submit.prevent="handleSearch">
+          <input
+            type="text"
+            id="propertySearch"
+            class="search-input"
+            placeholder="Search for properties..."
+            aria-label="Search for properties"
+          />
+          <button type="submit" class="search-button">Search</button>
+        </form>
       </div>
-      <form class="search-form" @submit.prevent="handleSearch">
-        <input
-          type="text"
-          id="propertySearch"
-          class="search-input"
-          placeholder="Search for properties..."
-          aria-label="Search for properties"
-        />
-        <button type="submit" class="search-button">Search</button>
-      </form>
     </div>
     <main class="main-content">
       <div class="post-list">
@@ -44,6 +46,22 @@ export default {
     CardRow,
     PropertyDetailModal,
   },
+  computed: {
+    currentRouteName() {
+      return this.$route.name // 현재 라우트 이름
+    },
+    pageHeaderTitle() {
+      // 라우트 이름에 따라 헤더 제목 설정
+      if (this.currentRouteName === 'share-user' && this.$route.params.id) {
+        return `${this.$route.params.id} 님의 글보기`
+      }
+      return '모든 글 보기'
+    },
+    showComponents() {
+      // 특정 라우트에서만 컴포넌트 표시
+      return this.currentRouteName === 'share'
+    },
+  },
   data() {
     return {
       cardData: [
@@ -60,6 +78,7 @@ export default {
           longitude: '-122.4194',
           rentFrom: '2024-01-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-21T10:00:00Z',
           tags: ['#Balcony', '#Elevator', '#Balcony', '#Elevator', '#Balcony', '#Elevator'],
           views: 100,
           hostId: 123,
@@ -79,6 +98,7 @@ export default {
           longitude: '-122.4294',
           rentFrom: '2024-02-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-21T01:00:00Z',
           tags: ['#Balcony', '#Elevator', '#Balcony', '#Elevator', '#Balcony', '#Elevator'],
           views: 250,
           hostId: 124,
@@ -101,6 +121,7 @@ export default {
           longitude: '-122.4094',
           rentFrom: '2024-03-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-20T03:00:00Z',
           tags: ['#Balcony', '#Elevator', '#Balcony', '#Elevator', '#Balcony', '#Elevator'],
           views: 150,
           hostId: 125,
@@ -120,6 +141,7 @@ export default {
           longitude: '-122.4594',
           rentFrom: '2024-05-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-10T10:00:00Z',
           tags: ['#Garden', '#Pool'],
           views: 300,
           hostId: 126,
@@ -139,6 +161,7 @@ export default {
           longitude: '-122.4194',
           rentFrom: '2024-06-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-10-21T10:00:00Z',
           tags: ['#Balcony', '#Gym'],
           views: 200,
           hostId: 127,
@@ -158,6 +181,7 @@ export default {
           longitude: '-122.3894',
           rentFrom: '2024-04-01',
           rentTo: '2024-12-31',
+          createdAt: '2023-11-21T10:00:00Z',
           tags: ['#Shared Kitchen', '#Near Public Transport'],
           views: 180,
           hostId: 128,
@@ -177,6 +201,7 @@ export default {
           longitude: '-122.4894',
           rentFrom: '2024-07-01',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-21T10:00:00Z',
           tags: ['#Terrace', '#Private Elevator'],
           views: 500,
           hostId: 129,
@@ -196,6 +221,7 @@ export default {
           longitude: '-122.3694',
           rentFrom: '2024-02-15',
           rentTo: '2024-12-31',
+          createdAt: '2024-11-21T10:00:00Z',
           tags: ['#Garage', '#Backyard'],
           views: 220,
           hostId: 130,
@@ -211,11 +237,24 @@ export default {
     handleCardClick(card) {
       this.selectedCard = card
       this.showModal = true
+
+      // 현재 스크롤 위치 저장
+      this.scrollY = window.scrollY
+
+      // 스크롤 고정 및 위치 고정
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${this.scrollY}px`
+
       console.log(this.selectedCard)
     },
     closeModal() {
       this.showModal = false
       this.selectedCard = null
+
+      // 스크롤 복원
+      document.body.style.position = ''
+      document.body.style.top = ''
+      window.scrollTo(0, this.scrollY) // 원래 위치로 복원
     },
     goToMyPosts() {
       // 내 글 보기 기능 로직

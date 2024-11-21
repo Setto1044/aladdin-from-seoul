@@ -31,6 +31,12 @@
         </Carousel>
       </div>
 
+      <!-- 수정 및 삭제 버튼 -->
+      <div class="action-buttons">
+        <button class="edit-button" @click.stop="goToEditPage">수정</button>
+        <button class="delete-button" @click.stop="goToDeletePage">삭제</button>
+      </div>
+
       <h2 class="property-title">{{ title }}</h2>
       <p class="property-description">{{ description }}</p>
       <p class="property-detail-text"><strong>Details:</strong> {{ detail }}</p>
@@ -47,6 +53,7 @@
       </p>
       <p class="property-views"><strong>Views:</strong> {{ views }}</p>
       <p class="property-host-id"><strong>Host ID:</strong> {{ hostId }}</p>
+
       <div class="property-comments">
         <h3 class="comments-title">Comments:</h3>
         <ul class="comments-list">
@@ -103,6 +110,15 @@ export default {
       slideTo,
     }
   },
+  methods: {
+    goToEditPage() {
+      // card.id를 기반으로 이동
+      this.$router.push(`/share/edit/${this.id}`)
+    },
+    goToDeletePage() {
+      // 삭제
+    },
+  },
 }
 </script>
 
@@ -147,17 +163,51 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: transparent;
+  top: 10px; /* 모달 상단 여백 */
+  right: 10px; /* 모달 내부 오른쪽 여백 */
+  background: red;
+  color: white;
   border: none;
-  font-size: 24px;
+  border-radius: 50%;
+  font-size: 20px;
   cursor: pointer;
-  color: #333;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001; /* 모달 위에 표시 */
 }
 
 .close-button:hover {
-  color: #f44336;
+  background: darkred;
+}
+
+.edit-button,
+.delete-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
 }
 
 .property-slider {
