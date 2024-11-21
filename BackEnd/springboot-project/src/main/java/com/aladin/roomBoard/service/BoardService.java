@@ -15,4 +15,7 @@ public interface BoardService {
 	BoardDetailDto getBoardDetail(Long roomboardsId);
 
 	Long updateBoard(BoardUpdateRequestDto requestDto);
+
+	int deleteBoard(Long boardId);
+
 }

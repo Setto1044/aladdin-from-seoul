@@ -27,4 +27,6 @@ public interface BoardMapper {
 
 	void deleteImagesByRoomBoardId(Long boardId);
 
+	int deleteBoardById(Long boardId);
+
 }

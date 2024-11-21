@@ -1,0 +1,67 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aladin.bookmark.mapper.BookmarkMapper">
+<!-- 게시글 테이블과 VO 매핑 -->
+	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
+		<id property="id" column="id" />
+		<result property="membersUsername" column="members_username" />
+		<result property="title" column="title" />
+		<result property="detail" column="detail" />
+		<result property="address" column="address" />
+		<result property="postcode" column="postcode" />
+		<result property="price" column="price" />
+		<result property="houseSize" column="house_size" />
+		<result property="pricePer" column="price_per" />
+		<result property="rentStart" column="rent_start" javaType="java.sql.Date" />
+		<result property="rentUntil" column="rent_until" javaType="java.sql.Date" />
+		<result property="hashtags" column="hashtags" />
+		<result property="views" column="views" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+
+	<!-- BoardCardDto 매핑 -->
+	<resultMap id="boardCardDtoResultMap" type="com.aladin.roomBoard.dto.BoardCardDto">
+		<result property="thumbnailUrl" column="thumbnail_url" />
+		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
+	</resultMap>
+	
+	<insert id="insertBoardBookmark" parameterType="map">
+		INSERT INTO roomboards_bookmarks (members_username, roomboards_id)
+		VALUES (#{username}, #{roomboardsId});
+	</insert>
+
+	<delete id="deleteBoardBookmark" parameterType="map">
+		DELETE FROM roomboards_bookmarks
+		WHERE members_username = #{username} AND roomboards_id = #{roomboardsId};
+	</delete>
+
+	<select id="findBookmarkedBoardsByCursor" resultMap="boardCardDtoResultMap">
+		SELECT
+		rb.id AS id,
+		rb.members_username AS members_username,
+		rb.title AS title,
+		rb.detail AS detail,
+		rb.address AS address,
+		rb.postcode AS postcode,
+		rb.price AS price,
+		rb.house_size AS house_size,
+		rb.price_per AS price_per,
+		rb.rent_start AS rent_start,
+		rb.rent_until AS rent_until,
+		rb.hashtags AS hashtags,
+		rb.views AS views,
+		rb.created_at AS created_at,
+		rb.updated_at AS updated_at,
+		rbi.url AS thumbnail_url
+		FROM roomboards_bookmarks b
+		JOIN roomboards rb ON b.roomboards_id = rb.id
+		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		WHERE b.members_username = #{username}
+		<if test="cursorId != null">
+			AND rb.id &lt; #{cursorId}
+		</if>
+		ORDER BY rb.id DESC
+		LIMIT #{pageSize};
+	</select>
+
+</mapper>

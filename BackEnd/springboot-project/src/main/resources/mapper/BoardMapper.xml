@@ -129,4 +129,9 @@
 		updated_at = NOW()
 		WHERE id = #{dto.id};
 	</update>
+
+	<delete id="deleteBoardById" parameterType="long">
+		DELETE FROM roomboards WHERE id = #{boardId};
+	</delete>
+
 </mapper>
