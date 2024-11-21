@@ -113,4 +113,20 @@
 		WHERE roomboards_id = #{roomboardsId};
 	</delete>
 
+	<update id="updateBoard" parameterType="com.aladin.roomBoard.dto.BoardUpdateRequestDto">
+		UPDATE roomboards
+		SET
+		title = #{dto.title},
+		detail = #{dto.detail},
+		address = #{dto.address},
+		postcode = #{dto.postcode},
+		price = #{dto.price},
+		house_size = #{dto.houseSize},
+		price_per = #{dto.pricePer},
+		rent_start = #{dto.rentStart},
+		rent_until = #{dto.rentUntil},
+		hashtags = #{dto.hashtags, typeHandler=com.aladin.common.JsonTypeHandler},
+		updated_at = NOW()
+		WHERE id = #{dto.id};
+	</update>
 </mapper>
