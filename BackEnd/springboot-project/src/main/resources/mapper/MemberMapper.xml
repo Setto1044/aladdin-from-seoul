@@ -65,4 +65,9 @@
             bio = #{bio}
         WHERE username = #{username};
     </update>
+    
+    <delete id="deleteMember" parameterType="com.aladin.member.dto.MemberDeleteRequestDto">
+    	DELETE from members
+    	where username = #{username}
+    </delete>
 </mapper>

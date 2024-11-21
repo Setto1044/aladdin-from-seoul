@@ -1,6 +1,7 @@
 package com.aladin.member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aladin.common.ApiResponseDto;
 import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
+import com.aladin.member.dto.MemberDeleteRequestDto;
+import com.aladin.member.dto.MemberDeleteResponseDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
@@ -74,14 +77,23 @@ public class MemberController {
 	}
 
 	// 회원 정보 수정
-	@PutMapping("/{username}")
-	public ResponseEntity<ApiResponseDto<MemberInfoResponseDto>> updateMember(@PathVariable String username, @ModelAttribute MemberUpdateRequestDto updateRequestDto) {
+	@PutMapping
+	public ResponseEntity<ApiResponseDto<MemberInfoResponseDto>> updateMember(@ModelAttribute MemberUpdateRequestDto updateRequestDto) {
 		try {
-			MemberInfoResponseDto updatedMember = memberService.updateMember(username, updateRequestDto);
+			MemberInfoResponseDto updatedMember = memberService.updateMember(updateRequestDto);
 			return ResponseEntity.ok(ApiResponseDto.of(true, "회원 정보가 성공적으로 수정되었습니다.", updatedMember));
 		} catch (Exception e) {
 			log.error("회원 정보 수정 실패: {}", e.getMessage(), e);
 			return ResponseEntity.badRequest().body(ApiResponseDto.of(false, "회원 정보 수정에 실패했습니다."));
 		}
+	}
+
+	@DeleteMapping
+	public ResponseEntity<ApiResponseDto<MemberDeleteResponseDto>> deleteMember(@RequestBody MemberDeleteRequestDto requestDto) {
+		boolean deleteResult = memberService.deleteMember(requestDto);
+		if (deleteResult) {
+			return ResponseEntity.ok(ApiResponseDto.of(deleteResult, "회원이 삭제되었습니다."));
+		}
+		return ResponseEntity.badRequest().body(ApiResponseDto.of(deleteResult, "회원 삭제에 실패했습니다."));
 	}
 }
