@@ -3,6 +3,7 @@ package com.aladin.roomBoard.service;
 import java.util.List;
 
 import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.BoardDetailDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 
 public interface BoardService {
@@ -10,4 +11,5 @@ public interface BoardService {
 
 	List<BoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize);
 
+	BoardDetailDto getBoardDetail(Long roomboardsId);
 }

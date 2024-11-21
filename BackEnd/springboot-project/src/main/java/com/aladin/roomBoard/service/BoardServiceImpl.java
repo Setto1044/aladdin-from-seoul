@@ -10,6 +10,7 @@ import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.exceptions.BoardCreationException;
 import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.BoardDetailDto;
 import com.aladin.roomBoard.dto.BoardInsertRequestDto;
 import com.aladin.roomBoard.mapper.BoardMapper;
 
@@ -63,6 +64,14 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public List<BoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize) {
 		return boardMapper.findBoardsByCursor(cursorId, pageSize);
+	}
+
+	@Override
+	public BoardDetailDto getBoardDetail(Long roomboardsId) {
+		BoardDetailDto boardDetailDto = new BoardDetailDto();
+		boardDetailDto.setRoomCardInfo(boardMapper.findOneByRoomBoardId(roomboardsId));
+		boardDetailDto.setRoomImageInfos(boardMapper.findImagesByRoomBoardId(roomboardsId));
+		return boardDetailDto;
 	}
 
 }
