@@ -23,6 +23,8 @@
       <div class="card-author">
         <div class="author-avatar"></div>
         <span class="author-name">NatureEnthusiast</span>
+        <span class="created-time">{{ formattedCreatedAt }}</span>
+        <button class="edit-button" @click.stop="goToEditPage">수정</button>
       </div>
     </div>
   </article>
@@ -47,10 +49,44 @@ export default {
       const maxVisibleTags = 3 // 보이는 해시태그의 최대 개수
       return this.card.tags.length > maxVisibleTags ? this.card.tags.slice(maxVisibleTags) : []
     },
+    formattedCreatedAt() {
+      // 현재 시간 (UTC)
+      const now = new Date()
+      // 작성 시간 (UTC)
+      const createdAt = new Date(this.card.createdAt)
+
+      // 작성 시간과 현재 시간의 차이를 분 단위로 계산
+      const diffInMinutes = Math.floor((now - createdAt) / 60000)
+      console.log(createdAt, diffInMinutes, now)
+
+      if (diffInMinutes < 1) {
+        return '방금 전 작성'
+      } else if (diffInMinutes < 60) {
+        return `${diffInMinutes}분 전 작성`
+      } else if (diffInMinutes < 1440) {
+        const diffInHours = Math.floor(diffInMinutes / 60)
+        return `${diffInHours}시간 전 작성`
+      } else {
+        const diffInDays = Math.floor(diffInMinutes / 1440)
+        if (diffInDays <= 30) {
+          return `${diffInDays}일 전 작성`
+        } else {
+          // 30일이 넘으면 "YYYY-MM-DD" 형식으로 반환
+          const year = createdAt.getUTCFullYear()
+          const month = String(createdAt.getUTCMonth() + 1).padStart(2, '0') // 월은 0부터 시작하므로 +1
+          const day = String(createdAt.getUTCDate()).padStart(2, '0')
+          return `${year}-${month}-${day}`
+        }
+      }
+    },
   },
   methods: {
     handleCardClick() {
       this.$emit('card-click', this.$props) // 클릭된 카드의 데이터를 부모로 전달
+    },
+    goToEditPage() {
+      // card.id를 기반으로 이동
+      this.$router.push(`/share/edit/${this.card.id}`)
     },
   },
 }
@@ -192,5 +228,21 @@ export default {
   width: 32px;
   height: 32px;
   object-fit: cover;
+}
+
+.created-time {
+  margin-right: 8px;
+  color: #999;
+}
+.edit-button {
+  padding: 4px 8px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.edit-button:hover {
+  background-color: #0056b3;
 }
 </style>

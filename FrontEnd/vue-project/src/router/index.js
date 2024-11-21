@@ -46,20 +46,26 @@ const router = createRouter({
     {
       path: '/share/user/:id',
       name: 'share-user',
-      component: () => import('@/views/RoomShareMyView.vue'),
+      component: () => import('@/views/RoomShareView.vue'),
       meta: { showSearchBar: true, showFooterBar: true },
+    },
+    {
+      path: '/share/write',
+      name: 'share-write',
+      component: () => import('@/views/RoomShareWriteView.vue'),
+      meta: { showSearchBar: true, showFooterBar: false },
+    },
+    {
+      path: '/share/edit/:id',
+      name: 'share-edit',
+      component: () => import('@/views/RoomShareEditView.vue'),
+      meta: { showSearchBar: true, showFooterBar: false },
+      props: true,
     },
     {
       path: '/favorites',
       name: 'favorites',
       component: () => import('@/views/MapView.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
-    },
-
-    {
-      path: '/share/write',
-      name: 'share-write',
-      component: () => import('@/views/RoomShareWriteView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {
