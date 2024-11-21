@@ -54,19 +54,38 @@ export default {
         lngA,
         lngB,
       }
-
+      const houseCards = [
+        {
+          aptSeq: '11110-117',
+          dongCode: '1111011800',
+          sidoName: '서울특별시',
+          gugunName: '종로구',
+          dongName: '내수동',
+          aptName: '경희궁의아침4단지',
+          jibun: '73',
+          latestDealAmount: '190,000',
+          excluUseAr: 124.17,
+          buildYear: '2004',
+          latitude: '37.5726308227784',
+          longitude: '126.972440824541',
+          views: 0,
+          aptPhotoLink:
+            'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
+        },
+      ]
+      this.displayMarkers(houseCards)
       // Axios 호출
-      axios
-        .get(apiUrl, { params })
-        .then((response) => {
-          console.log('API 호출 성공:', response.data)
-          // 필요 시 데이터를 Vue 상태에 저장
-          this.handleApiResponse(response.data)
-          this.displayMarkers(response.data.data.houseCards)
-        })
-        .catch((error) => {
-          console.error('API 호출 오류:', error)
-        })
+      // axios
+      //   .get(apiUrl, { params })
+      //   .then((response) => {
+      //     console.log('API 호출 성공:', response.data)
+      //     // 필요 시 데이터를 Vue 상태에 저장
+      //     this.handleApiResponse(response.data)
+      //     this.displayMarkers(response.data.data.houseCards)
+      //   })
+      //   .catch((error) => {
+      //     console.error('API 호출 오류:', error)
+      //   })
     },
     handleApiResponse(data) {
       // API 응답 데이터를 처리합니다.
@@ -75,32 +94,51 @@ export default {
     },
     displayMarkers(houseData) {
       console.log(houseData)
+
       for (let i = 0; i < houseData.length; i++) {
         const house = houseData[i]
 
         // 마커 생성
-        let marker = new kakao.maps.Marker({
+        const marker = new kakao.maps.Marker({
           map: this.map,
           position: new kakao.maps.LatLng(house.latitude, house.longitude),
         })
 
-        // // 인포윈도우 생성
-        // let infowindow = new kakao.maps.InfoWindow({
-        //   content: `
-        //         <div style="padding:5px; font-size:14px;">
-        //             <strong>${house.aptName}</strong><br/>
-        //             ${house.sidoName} ${house.gugunName} ${house.dongName}<br/>
-        //             ${house.excluUseAr}㎡, ${house.latestDealAmount}만원<br/>
-        //             <img src="${house.aptPhotoLink}" alt="아파트 사진" style="width:100px;height:80px;"/>
-        //         </div>
-        //     `,
-        // })
+        // 인포윈도우 생성
+        const infoWindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:5px; font-size:12px;">${house.aptName}</div>`,
+        })
 
-        // // 마커에 이벤트 등록
-        // kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow))
-        // kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow))
+        // 상태 변수: InfoWindow가 열려 있는지 여부를 추적
+        let isInfoWindowOpen = false
+
+        // Add click event to marker
+        kakao.maps.event.addListener(marker, 'click', () => {
+          console.log('Marker clicked:', house)
+          // Emit event with marker data
+          this.$emit('marker-clicked', house)
+        })
+
+        // 마커에 mouseover 이벤트 추가
+        kakao.maps.event.addListener(marker, 'mouseover', () => {
+          if (!isInfoWindowOpen) {
+            infoWindow.open(this.map, marker) // 인포윈도우 열기
+            isInfoWindowOpen = true
+          }
+          console.log('over', isInfoWindowOpen)
+        })
+
+        // 마커에 mouseout 이벤트 추가
+        kakao.maps.event.addListener(marker, 'mouseout', () => {
+          if (isInfoWindowOpen) {
+            infoWindow.close() // 인포윈도우 닫기
+            isInfoWindowOpen = false
+          }
+          console.log('out', isInfoWindowOpen)
+        })
       }
     },
+
     getInfo() {
       // 지도 정보 얻기
       const center = this.map.getCenter()

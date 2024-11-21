@@ -12,7 +12,6 @@
         </div>
         <div class="expected-prices">
           <p>매매가: {{ complex.expectedSalePrice }}</p>
-          <p>전세가: {{ complex.expectedRentPrice }}</p>
         </div>
       </div>
       <!-- <div class="tab-buttons">

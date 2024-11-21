@@ -25,39 +25,43 @@ export default {
 
 <style scoped>
 .sidebar {
-  position: fixed;
-  left: 300px; /* Positioned after Sidebar 1 */
-  top: 0;
-  width: 300px;
-  height: 100%;
-  background-color: #e0e0e0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out;
-  padding-top: 80px;
-  z-index: 2; /* Ensures it overlaps the PropertyDetailsPage */
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 300px; /* 사이드바 너비 */
+  height: 100%; /* 사이드바 높이 */
+  overflow-y: auto;
+  z-index: 1000;
 }
-.sidebar2 {
-  transform: translateX(0);
-  display: flex; /* Aligns children horizontally */
-  flex-direction: column; /* Ensure content stacks vertically */
-  align-items: flex-start; /* Aligns items at the start */
-  overflow-y: auto; /* Enables vertical scrolling */
-  max-height: 100%; /* Ensures the height constraint */
-}
+
 .property-details-wrapper {
   position: relative; /* Provides a positioning context for the button */
   width: 100%; /* Full width of the sidebar */
   height: 100%; /* Full height of the sidebar */
 }
+
+/* Close 버튼 스타일 */
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgb(0, 0, 0);
-  color: white;
+  top: 16px; /* 상단 여백 */
+  right: 16px; /* 오른쪽 여백 */
+  background-color: #ff4d4f;
+  color: #ffffff;
   border: none;
-  font-size: 18px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  z-index: 5; /* Ensures it overlaps the PropertyDetailsPage */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: #d9363e;
 }
 </style>
