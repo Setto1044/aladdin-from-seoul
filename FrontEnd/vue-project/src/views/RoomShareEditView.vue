@@ -132,6 +132,7 @@ import draggable from 'vuedraggable'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import getPropertyById from '@/api/property'
+import axios from 'axios'
 
 export default {
   components: {
@@ -156,20 +157,46 @@ export default {
   async created() {
     // 라우트 파라미터에서 ID 가져오기
     const id = this.$route.params.id
-    console.log(id)
+    console.log(`Fetching details for ID: ${id}`)
     try {
-      // getPropertyById로 데이터 로드
-      const data = await getPropertyById(id)
-      this.formData = {
-        ...data, // 기존 데이터를 formData에 복사
-        imageFiles: data.imageUrls || [],
-        imagePreviews: data.imageUrls || [],
+      // API 호출
+      const response = await axios.get(`http://localhost:8080/aladin/boards/${id}`)
+      if (response.data.success) {
+        const { roomCardInfo, roomImageInfos, nickname, profileImagePath } = response.data.data
+
+        // formData에 데이터 매핑
+        this.formData = {
+          id: roomCardInfo.id,
+          title: roomCardInfo.title,
+          detail: roomCardInfo.detail,
+          address: roomCardInfo.address,
+          postcode: roomCardInfo.postcode,
+          price: roomCardInfo.price,
+          houseSize: roomCardInfo.houseSize,
+          pricePer: roomCardInfo.pricePer,
+          views: roomCardInfo.views,
+          rentStart: new Date(roomCardInfo.rentStart),
+          rentUntil: new Date(roomCardInfo.rentUntil),
+          hashtags: JSON.parse(roomCardInfo.hashtags || '[]'),
+          createdAt: roomCardInfo.createdAt,
+          updatedAt: roomCardInfo.updatedAt,
+          images: roomImageInfos.map((img) => ({
+            url: img.url,
+            order: img.imageOrder,
+          })),
+          imageFiles: this.images || [],
+          imagePreviews: this.images || [],
+        }
+
+        console.log('Loaded data:', this.formData)
+      } else {
+        console.error('Failed to fetch property details:', response.data.message)
       }
-      console.log(this.formData)
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Error during data fetch:', error)
     }
   },
+
   methods: {
     execDaumPostcode() {
       new daum.Postcode({
@@ -258,8 +285,46 @@ export default {
       console.log(this.formData.imagePreviews)
     },
     updateForm() {
-      console.log('Updated form data:', this.formData)
-      // 서버로 업데이트 API 호출
+      // Validation (Example)
+      if (!this.formData.title.trim()) {
+        alert('Title is required!')
+        return
+      }
+
+      if (this.formData.rentStart > this.formData.rentUntil) {
+        alert('Rent start date cannot be later than the end date.')
+        return
+      }
+
+      // Prepare data for PUT request
+      const payload = {
+        title: this.formData.title,
+        detail: this.formData.detail,
+        address: this.formData.address,
+        postcode: this.formData.postcode,
+        price: this.formData.price,
+        houseSize: this.formData.houseSize,
+        pricePer: this.formData.pricePer.toUpperCase(),
+        rentStart: this.formData.rentStart,
+        rentUntil: this.formData.rentUntil,
+        hashtags: JSON.stringify(this.formData.hashtags),
+        // Assuming image files will be handled separately if necessary
+      }
+
+      axios
+        .put(`http://localhost:8080/aladin/boards/${this.formData.id}`, payload)
+        .then((response) => {
+          if (response.data.success) {
+            alert(response.data.message)
+            this.$router.push('/share') // Navigate back to property list
+          } else {
+            alert('Failed to update the property.')
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating the property:', error)
+          alert('An error occurred. Please try again later.')
+        })
     },
     updateOptions() {
       this.formData.options = this.formData.optionsString.split(',').map((option) => option.trim())

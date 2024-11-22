@@ -1,6 +1,8 @@
 <template>
   <div class="property-form">
     <h1>매물글 쓰기</h1>
+    <div v-if="isLoading" class="loading-overlay">Submitting...</div>
+
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="imageFiles">Upload Images</label>
@@ -80,8 +82,8 @@
       <div class="form-group">
         <label for="pricePer">Price Per</label>
         <select id="pricePer" v-model="formData.pricePer">
-          <option value="week">Week</option>
-          <option value="month">Month</option>
+          <option value="WEEK">Week</option>
+          <option value="MONTH">Month</option>
         </select>
       </div>
 
@@ -126,6 +128,7 @@
 import draggable from 'vuedraggable'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
+import axios from 'axios'
 
 export default {
   components: {
@@ -241,10 +244,69 @@ export default {
       console.log(this.formData.imageFiles)
       console.log(this.formData.imagePreviews)
     },
-    submitForm() {
-      console.log('Form data submitted:', this.formData)
-      // Add logic to submit form data
+    validateFormData() {
+      if (!this.formData.title.trim()) return false
+      if (!this.formData.detail.trim()) return false
+      if (!this.formData.address.trim() || !this.formData.postcode.trim()) return false
+      if (!this.formData.price || !this.formData.houseSize) return false
+      if (new Date(this.formData.rentStart) > new Date(this.formData.rentUntil)) return false
+      return true
     },
+    async handleImageFileUpload(event) {
+      const files = Array.from(event.target.files)
+
+      for (const file of files) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const base64String = e.target.result // Base64 문자열
+          this.formData.imageFiles.push(base64String) // Base64를 배열에 추가
+          this.formData.imagePreviews.push(base64String) // 미리보기용
+        }
+        reader.readAsDataURL(file) // Base64로 변환
+      }
+    },
+    submitForm() {
+      const formData = new FormData()
+
+      // 텍스트 데이터 추가
+      formData.append('membersUsername', 'led156')
+      formData.append('title', this.formData.title)
+      formData.append('detail', this.formData.detail)
+      formData.append('address', this.formData.address)
+      formData.append('postcode', this.formData.postcode)
+      formData.append('price', this.formData.price)
+      formData.append('houseSize', this.formData.houseSize)
+      formData.append('pricePer', this.formData.pricePer)
+      formData.append('rentStart', this.formData.rentStart)
+      formData.append('rentUntil', this.formData.rentUntil)
+      formData.append('hashtags', this.formData.hashtags.join(', ')) // 쉼표로 구분된 문자열로 변환
+
+      // 이미지 파일 추가
+      this.formData.imageFiles.forEach((file) => {
+        formData.append('images[]', file)
+      })
+
+      // Axios POST 요청
+      axios
+        .post('http://localhost:8080/aladin/boards', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data', // multipart 형식으로 전송
+          },
+        })
+        .then((response) => {
+          if (response.data.success) {
+            alert(response.data.message)
+            this.$router.push('/share') // 성공 시 페이지 이동
+          } else {
+            alert('등록 실패: ' + response.data.message)
+          }
+        })
+        .catch((error) => {
+          console.error('Error during registration:', error)
+          alert('등록 중 오류가 발생했습니다.')
+        })
+    },
+
     updateOptions() {
       this.formData.options = this.formData.optionsString.split(',').map((option) => option.trim())
     },
@@ -464,5 +526,20 @@ button:hover {
 
 .cancel-button:hover {
   background-color: #c82333;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 </style>

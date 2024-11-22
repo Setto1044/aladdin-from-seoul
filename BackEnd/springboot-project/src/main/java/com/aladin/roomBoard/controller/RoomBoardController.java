@@ -32,6 +32,7 @@ public class RoomBoardController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponseDto> insertBoard(@ModelAttribute RoomBoardInsertRequestDto requestDto) {
+		System.out.println(requestDto);
 		Long id = boardService.createBoard(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "등록이 완료되었습니다.", id));
 	}

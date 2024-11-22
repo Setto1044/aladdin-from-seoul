@@ -1,6 +1,6 @@
 .carousel__next {
   cursor: pointer; /* 커서가 명확히 보이도록 */
-  background-color: rgba(70, 70, 70, 0.7); /* 반투명 배경 */
+  background-color: rgba(70, 70, 70, 0.5); /* 반투명 배경 */
   border: none;
   border-radius: 50%; /* 둥근 버튼 */
   width: 40px; /* 버튼 크기 */
@@ -15,6 +15,27 @@
 }
 
 .carousel__next:hover {
+  background-color: rgba(0, 0, 0, 0.9); /* 호버 시 더 어두운 배경 */
+  transform: scale(1.1); /* 호버 시 살짝 확대 */
+}
+
+.carousel__prev {
+  cursor: pointer; /* 커서가 명확히 보이도록 */
+  background-color: rgba(70, 70, 70, 0.5); /* 반투명 배경 */
+  border: none;
+  border-radius: 50%; /* 둥근 버튼 */
+  width: 40px; /* 버튼 크기 */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease; /* 부드러운 전환 효과 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+}
+
+.carousel__prev:hover {
   background-color: rgba(0, 0, 0, 0.9); /* 호버 시 더 어두운 배경 */
   transform: scale(1.1); /* 호버 시 살짝 확대 */
 }

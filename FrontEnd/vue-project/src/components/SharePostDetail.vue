@@ -2,11 +2,14 @@
   <div class="modal-overlay" v-if="show" @click="$emit('close')">
     <div class="modal-content property-detail" @click.stop>
       <button @click="$emit('close')" class="close-button">X</button>
-      <!-- 메인 이미지 슬라이더 -->
+
+      <!-- Main Image Slider -->
       <div class="carousel-wrapper">
         <Carousel :items-to-show="1" :wrap-around="true" v-model="currentSlide">
           <Slide v-for="(url, index) in imageUrls" :key="index">
-            <img :src="url" alt="Property Image" class="slider-image" />
+            <div class="slider-image-container">
+              <img :src="url" alt="Property Image" class="slider-image" />
+            </div>
           </Slide>
 
           <template #addons>
@@ -16,7 +19,7 @@
         </Carousel>
       </div>
 
-      <!-- 썸네일 슬라이더 -->
+      <!-- Thumbnail Slider -->
       <div class="thumbnails-wrapper">
         <Carousel
           :items-to-show="5"
@@ -26,33 +29,55 @@
           :touch-drag="false"
         >
           <Slide v-for="(url, index) in imageUrls" :key="index">
-            <img :src="url" alt="Thumbnail Image" class="thumbnail-image" />
+            <div class="thumbnail-container">
+              <img :src="url" alt="Thumbnail Image" class="thumbnail-image" />
+            </div>
           </Slide>
         </Carousel>
       </div>
 
-      <!-- 수정 및 삭제 버튼 -->
-      <div class="action-buttons">
-        <button class="edit-button" @click.stop="goToEditPage">수정</button>
-        <button class="delete-button" @click.stop="goToDeletePage">삭제</button>
+      <div class="card-author">
+        <div class="author-avatar-container">
+          <div
+            class="author-avatar"
+            :style="{
+              backgroundImage: `url(${authorImageUrl || 'https://via.placeholder.com/150'})`,
+            }"
+          ></div>
+        </div>
+        <span class="author-name">{{ hostNickname }}</span>
+        <div class="action-buttons">
+          <button v-if="isAuthor" class="edit-button" @click.stop="goToEditPage">Edit</button>
+          <button v-if="isAuthor" class="delete-button" @click.stop="goToDeletePage">Delete</button>
+        </div>
       </div>
 
       <h2 class="property-title">{{ title }}</h2>
-      <p class="property-description">{{ description }}</p>
+      <p class="property-address">{{ address }}</p>
       <p class="property-detail-text"><strong>Details:</strong> {{ detail }}</p>
-      <p class="property-address"><strong>Address:</strong> {{ address }}</p>
       <p class="property-size"><strong>House Size:</strong> {{ houseSize }} m²</p>
       <p class="property-price"><strong>Price:</strong> ${{ price }} / {{ pricePer }}</p>
-      <p class="property-rent-dates">
-        <strong>Rent From:</strong> {{ rentFrom }} <br />
-        <strong>Rent To:</strong> {{ rentTo }}
-      </p>
+      <!-- Rent Dates with Calendar -->
+      <div class="calendar-section">
+        <p class="property-rent-dates">
+          <strong>Rent From:</strong> {{ formattedRentFrom }} <br />
+          <strong>Rent To:</strong> {{ formattedRentTo }}
+        </p>
+        <VCalendar
+          v-if="initialPage"
+          :attributes="calendarAttrs"
+          :initial-page="initialPage"
+          :min-page="minPage"
+          :max-page="maxPage"
+          :color="calendarColor"
+        />
+      </div>
+
       <p class="property-tags">
         <strong>Tags:</strong>
-        <span v-for="tag in tags" :key="tag" class="property-tag">{{ tag }} </span>
+        <span v-for="tag in tags" :key="tag" class="property-tag">{{ tag }}</span>
       </p>
       <p class="property-views"><strong>Views:</strong> {{ views }}</p>
-      <p class="property-host-id"><strong>Host ID:</strong> {{ hostId }}</p>
 
       <div class="property-comments">
         <h3 class="comments-title">Comments:</h3>
@@ -69,7 +94,8 @@
 <script>
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css'
-import { ref } from 'vue'
+import useUserStore from '@/stores/user-store' // Example: your Pinia store for user info
+import axios from 'axios'
 
 export default {
   components: {
@@ -81,42 +107,125 @@ export default {
   props: {
     show: Boolean,
     id: Number,
-    title: String,
-    description: String,
-    detail: String,
-    address: String,
-    price: Number,
-    houseSize: Number,
-    pricePer: String,
-    latitude: String,
-    longitude: String,
-    rentFrom: String,
-    rentTo: String,
-    tags: Array,
-    views: Number,
-    hostId: Number,
-    imageUrls: Array,
-    comments: Array,
   },
-  setup() {
-    const currentSlide = ref(0)
-
-    const slideTo = (nextSlide) => {
-      currentSlide.value = nextSlide
-    }
-
+  data() {
     return {
-      currentSlide,
-      slideTo,
+      calendarColor: 'blue',
+      calendarAttrs: [],
+      initialPage: null, // Initial page for the calendar
+      minPage: null,
+      maxPage: null,
+      currentSlide: 0,
+      title: '',
+      detail: '',
+      address: '',
+      price: 0,
+      houseSize: 0,
+      pricePer: '',
+      rentFrom: '',
+      rentTo: '',
+      tags: [],
+      views: 0,
+      imageUrls: [],
+      comments: [],
+      hostUsername: '',
+      hostNickname: '',
+      hostImageUrls: '',
     }
+  },
+  watch: {
+    id: {
+      immediate: true,
+      handler(newId) {
+        if (newId) {
+          this.fetchPropertyDetails(newId)
+        }
+      },
+    },
+  },
+  computed: {
+    formattedRentFrom() {
+      return this.formatDate(this.rentFrom)
+    },
+    formattedRentTo() {
+      return this.formatDate(this.rentTo)
+    },
+    isAuthor() {
+      const userStore = useUserStore()
+      return userStore.memberInfo.username === this.hostUsername // Compare with the author's username
+    },
   },
   methods: {
+    async fetchPropertyDetails(propertyId) {
+      try {
+        const response = await axios.get(`http://localhost:8080/aladin/boards/${propertyId}`)
+        if (response.data.success) {
+          const { roomCardInfo, roomImageInfos, nickname, profileImagePath } = response.data.data
+          this.title = roomCardInfo.title
+          this.detail = roomCardInfo.detail
+          this.address = roomCardInfo.address
+          this.price = roomCardInfo.price
+          this.houseSize = roomCardInfo.houseSize
+          this.pricePer = roomCardInfo.pricePer
+          this.tags = JSON.parse(roomCardInfo.hashtags || '[]')
+          this.views = roomCardInfo.views
+          this.imageUrls = roomImageInfos.map((img) => img.url)
+          this.hostUsername = roomCardInfo.membersUsername
+          this.hostNickname = nickname
+          this.hostImageUrls = profileImagePath
+          // Parse dates from API
+          this.rentFrom = new Date(roomCardInfo.rentStart) // Convert to Date object
+          this.rentTo = new Date(roomCardInfo.rentUntil) // Convert to Date object
+          this.setCalendarAttrs() // Call method to update calendar attributes
+        }
+      } catch (error) {
+        console.error('Error fetching property details:', error)
+      }
+    },
+    setCalendarAttrs() {
+      if (this.rentFrom && this.rentTo) {
+        this.initialPage = {
+          month: this.rentFrom.getMonth() + 1, // JavaScript months are 0-based
+          year: this.rentFrom.getFullYear(),
+        }
+        this.minPage = {
+          month: this.rentFrom.getMonth() + 1,
+          year: this.rentFrom.getFullYear(),
+        }
+        this.maxPage = {
+          month: this.rentTo.getMonth() + 1,
+          year: this.rentTo.getFullYear(),
+        }
+        console.log('Initial Page:', this.initialPage) // Debugging
+        console.log('Min Page:', this.minPage, 'Max Page:', this.maxPage) // Debugging
+
+        this.calendarAttrs = [
+          {
+            key: 'rent-period',
+            highlight: true,
+            dates: { start: this.rentFrom, end: this.rentTo }, // Use the dates from API
+          },
+        ]
+      } else {
+        console.error('Rent dates are not set!')
+      }
+    },
+    formatDate(date) {
+      if (!date) return '' // Handle cases where the date is null or undefined
+      const d = new Date(date) // Ensure it's a Date object
+      const year = d.getFullYear()
+      const month = String(d.getMonth() + 1).padStart(2, '0') // Months are 0-based
+      const day = String(d.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
     goToEditPage() {
-      // card.id를 기반으로 이동
-      this.$router.push(`/share/edit/${this.id}`)
+      this.$router.push({
+        name: 'share-edit', // Replace with the actual name of your route
+        params: { id: this.id },
+      })
     },
     goToDeletePage() {
-      // 삭제
+      // Implement delete logic
     },
   },
 }
@@ -142,30 +251,17 @@ export default {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   max-width: 800px;
   width: 90%;
-  animation: fadeIn 0.3s ease-out;
-  overflow-y: auto; /* 세로 스크롤바 추가 */
-  max-height: 80vh; /* 모달의 최대 높이 지정 */
+  overflow-y: auto;
+  max-height: 90vh;
   padding: 20px;
   position: relative;
-  z-index: 1001;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .close-button {
   position: absolute;
-  top: 10px; /* 모달 상단 여백 */
-  right: 10px; /* 모달 내부 오른쪽 여백 */
-  background: red;
+  top: 10px;
+  right: 10px;
+  background: #ff5f5f;
   color: white;
   border: none;
   border-radius: 50%;
@@ -173,21 +269,188 @@ export default {
   cursor: pointer;
   width: 30px;
   height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001; /* 모달 위에 표시 */
 }
 
-.close-button:hover {
-  background: darkred;
+.carousel-wrapper {
+  margin-bottom: 20px;
+}
+
+.slider-image-container {
+  width: 100%;
+  height: 300px; /* Fixed height for consistency */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #f0f0f0;
+}
+
+.slider-image {
+  width: auto;
+  height: 100%;
+  object-fit: cover; /* Ensure image covers the container without distortion */
+}
+
+.thumbnails-wrapper {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.thumbnail-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 8px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease-in-out;
+}
+
+.thumbnail-container:hover .thumbnail-image {
+  transform: scale(1.1);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
 }
 
 .edit-button,
 .delete-button {
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.property-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.property-tag {
+  background-color: #e0e0e0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.author-avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.author-avatar {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.created-time {
+  font-size: 14px;
+  color: #999;
+}
+
+.calendar-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+}
+
+.calendar-section p {
+  margin-bottom: 10px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd; /* Optional divider */
+}
+
+.author-avatar-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.author-avatar {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.author-name {
+  font-size: 16px;
+  font-weight: bold;
+  flex-grow: 1; /* Push buttons to the right */
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-button,
+.delete-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
 }
@@ -208,69 +471,5 @@ export default {
 
 .delete-button:hover {
   background-color: #c82333;
-}
-
-.property-slider {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.slider-image {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-}
-
-.property-detail h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 16px;
-}
-
-.property-detail p {
-  margin-bottom: 12px;
-  line-height: 1.5;
-  color: #444;
-}
-
-.property-tags .property-tag {
-  display: inline-block;
-  background-color: #f1f1f1;
-  padding: 4px 8px;
-  border-radius: 12px;
-  margin: 2px;
-  font-size: 12px;
-}
-
-.property-tags .property-tag:hover {
-  background-color: #e0e0e0;
-}
-
-.carousel-wrapper {
-  margin-bottom: 20px;
-}
-.thumbnails-wrapper {
-  margin-bottom: 20px;
-}
-
-.slider-image {
-  width: 100%;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.thumbnail-image {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  filter: brightness(70%); /* 기본 밝기 조정 (어둡게) */
-  transition: filter 0.3s ease; /* 부드러운 전환 효과 */
-}
-
-.thumbnail-image {
-  height: 80px;
-  object-fit: cover;
 }
 </style>

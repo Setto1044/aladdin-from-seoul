@@ -1,11 +1,16 @@
 <template>
   <article class="card" @click="$emit('card-click', card)">
     <div class="card-image-container">
-      <div class="card-image"></div>
+      <div
+        class="card-image"
+        :style="{
+          backgroundImage: `url(${card.imageUrls[0] || 'https://via.placeholder.com/150'})`,
+        }"
+      ></div>
     </div>
     <div class="card-content">
       <h3 class="card-title">{{ card.title }}</h3>
-      <p class="card-description">{{ card.description }}</p>
+      <p class="card-description">{{ card.address }}</p>
       <div class="card-tag">
         <span v-for="(tag, index) in visibleTags" :key="index" class="tag-label">{{ tag }}</span>
         <span
@@ -21,19 +26,37 @@
         </span>
       </div>
       <div class="card-author">
-        <div class="author-avatar"></div>
-        <span class="author-name">NatureEnthusiast</span>
+        <div class="author-avatar-container">
+          <div
+            class="author-avatar"
+            :style="{
+              backgroundImage: `url(${card.hostImageUrls || 'https://via.placeholder.com/150'})`,
+            }"
+          ></div>
+        </div>
+        <span class="author-name">{{ card.hostNickname }}</span>
         <span class="created-time">{{ formattedCreatedAt }}</span>
-        <button class="edit-button" @click.stop="goToEditPage">수정</button>
+        <!-- Show the Edit button only if the user is the author -->
+        <button v-if="isAuthor" class="edit-button" @click.stop="goToEditPage">수정</button>
       </div>
     </div>
   </article>
 </template>
 
 <script>
+import useUserStore from '@/stores/user-store'
+
 export default {
   props: {
     card: Object,
+  },
+  setup() {
+    const userStore = useUserStore() // Access Pinia store
+
+    return { userStore }
+  },
+  mounted() {
+    console.log(this.props.card)
   },
   data() {
     return {
@@ -78,6 +101,10 @@ export default {
           return `${year}-${month}-${day}`
         }
       }
+    },
+    isAuthor() {
+      // Compare the current user's ID with the card's hostId or membersUsername
+      return this.card.hostId === this.userStore.memberInfo.userid
     },
   },
   methods: {
@@ -127,7 +154,8 @@ export default {
 .card-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
 }
 
 .card-container {
@@ -222,12 +250,22 @@ export default {
   display: block; /* 블록 요소로 설정 */
 }
 
+.author-avatar-container {
+  border-radius: 50%; /* 둥글게 */
+  width: 25px; /* 크기 조정 */
+  height: 25px; /* 크기 조정 */
+  overflow: hidden; /* 컨테이너를 넘어가는 이미지 숨김 */
+  display: flex; /* 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  background-color: #bbb; /* 기본 배경색 */
+}
+
 .author-avatar {
-  border-radius: 50%;
-  background-color: #bbb;
-  width: 32px;
-  height: 32px;
-  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  background-size: cover; /* 이미지가 컨테이너를 채움 */
+  background-position: center; /* 중앙 정렬 */
 }
 
 .created-time {
