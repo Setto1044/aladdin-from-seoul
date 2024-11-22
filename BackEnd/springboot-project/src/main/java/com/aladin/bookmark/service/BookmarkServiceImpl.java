@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aladin.bookmark.dto.HouseBookmarkDto;
 import com.aladin.bookmark.mapper.BookmarkMapper;
 import com.aladin.roomBoard.dto.BoardCardDto;
 
@@ -59,6 +60,11 @@ public class BookmarkServiceImpl implements BookmarkService {
 		if (result == 0) {
 			throw new RuntimeException("북마크 삭제 실패: 대상이 존재하지 않거나 이미 삭제되었습니다.");
 		}
+	}
+
+	@Override
+	public List<HouseBookmarkDto> getBookmarkedHousesByCursor(String username, Long cursorId, Long pageSize) {
+		return bookmarkMapper.findBookmarkedDealsByCursor(username, cursorId, pageSize);
 	}
 
 }

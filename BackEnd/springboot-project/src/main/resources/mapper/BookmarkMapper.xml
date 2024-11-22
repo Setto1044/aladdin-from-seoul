@@ -98,4 +98,25 @@
 		AND housedeals_no = #{housedealsNo};
 	</delete>
 
+	<select id="findBookmarkedDealsByCursor" resultType="com.aladin.bookmark.dto.HouseBookmarkDto">
+		SELECT
+		b.id AS bookmarkId,
+		b.housedeals_no AS dealNo,
+		h.apt_seq AS aptSeq,
+		h.deal_amount AS dealAmount,
+		c.apt_name AS aptName,
+		c.latitude AS latitude,
+		c.longitude AS longitude,
+		b.created_at AS bookmarkedAt
+		FROM housedeals_bookmarks b
+		JOIN housedeals h ON b.housedeals_no = h.no
+		JOIN housecards c ON h.apt_seq = c.apt_seq
+		WHERE b.members_username = #{username}
+		<if test="cursorId != null">
+			AND b.id &lt; #{cursorId}
+		</if>
+		ORDER BY b.id DESC
+		LIMIT #{pageSize};
+	</select>
+
 </mapper>

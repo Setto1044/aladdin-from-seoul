@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aladin.bookmark.dto.BookmarkDealRequestDto;
 import com.aladin.bookmark.dto.BookmarkRoomRequestDto;
+import com.aladin.bookmark.dto.HouseBookmarkDto;
 import com.aladin.bookmark.service.BookmarkService;
 import com.aladin.common.ApiResponseDto;
 import com.aladin.roomBoard.dto.BoardCardDto;
@@ -56,4 +57,11 @@ public class BookmarkController {
 		bookmarkService.removeDealBookmark(request.getUsername(), request.getHousedealsNo());
 		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 내역 북마크가 삭제되었습니다."));
 	}
+
+	@GetMapping("/deal/{username}")
+	public ResponseEntity<ApiResponseDto<List<HouseBookmarkDto>>> getBookmarkedHousesByCursor(@PathVariable String username, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
+		List<HouseBookmarkDto> bookmarks = bookmarkService.getBookmarkedHousesByCursor(username, cursorId, pageSize);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "북마크 매물 조회 성공", bookmarks));
+	}
+
 }
