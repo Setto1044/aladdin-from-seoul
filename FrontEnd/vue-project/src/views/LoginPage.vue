@@ -40,6 +40,10 @@
 </template>
 
 <script>
+import axios from 'axios'
+import useUserStore from '@/stores/user-store'
+import { useRouter, useRoute } from 'vue-router'
+
 export default {
   data() {
     return {
@@ -48,16 +52,56 @@ export default {
       rememberMe: !!localStorage.getItem('savedUsername'),
     }
   },
+  setup() {
+    const userStore = useUserStore()
+    const router = useRouter()
+    const route = useRoute()
+    return { userStore, router, route }
+  },
   methods: {
-    handleLogin() {
+    async handleLogin() {
       // Add your login logic here (e.g., API call)
       console.log('Username:', this.username)
       console.log('Password:', this.password)
 
-      if (this.rememberMe) {
-        localStorage.setItem('savedUsername', this.username)
-      } else {
-        localStorage.removeItem('savedUsername')
+      try {
+        console.log('Username:=>', this.username)
+        console.log('Password:=>', this.password)
+        const response = await axios.post('http://localhost:8080/aladin/members/login', {
+          username: this.username,
+          password: this.password,
+        })
+        console.log('API Response:', response)
+        console.log('API Response:', response.data)
+
+        // Check success status
+        if (response.data.success) {
+          console.log('Login Response:', response.data)
+
+          // Store the user information in Pinia after successful login
+          this.userStore.setLoginStatus(true)
+          this.userStore.setMemberInfo({
+            userid: this.username,
+            username: response.data.data.username,
+            name: response.data.data.name,
+            nickname: response.data.data.nickname,
+            email: response.data.data.email,
+            grade: response.data.data.grade,
+            bio: response.data.data.bio,
+            profileImagePath: response.data.data.profileImagePath,
+          })
+          alert(response.data.message) // "로그인에 성공하였습니다."
+
+          // Redirect to the previous page or home if no redirect is specified
+          const redirectPath = this.route.query.redirect || '/'
+          console.log(redirectPath)
+          this.router.push(redirectPath)
+        } else {
+          alert('Login failed: ' + response.data.message)
+        }
+      } catch (error) {
+        console.error('Login failed:', error)
+        alert('An error occurred during login.')
       }
 
       // Clear password after login attempt for security

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import useUserStore from '@/stores/user-store'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,7 +30,7 @@ const router = createRouter({
       path: '/mypage/edit',
       name: 'mypageEdit',
       component: () => import('@/views/EditProfilePage.vue'),
-      meta: { showSearchBar: false, showFooterBar: false },
+      meta: { showSearchBar: false, showFooterBar: false, auth: true },
     },
     {
       path: '/map',
@@ -66,7 +67,7 @@ const router = createRouter({
       path: '/favorites',
       name: 'favorites',
       component: () => import('@/views/MapView.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
+      meta: { showSearchBar: true, showFooterBar: false, auth: true },
     },
     {
       path: '/login',
@@ -93,6 +94,17 @@ const router = createRouter({
       meta: { showSearchBar: true, showFooterBar: false },
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore() // Call the store function here
+  const userId = userStore.getUserId // Access the user ID safely
+  if (to.meta.auth && !userId) {
+    alert('로그인이 필요한 페이지입니다!')
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router

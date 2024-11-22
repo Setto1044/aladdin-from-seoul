@@ -1,11 +1,13 @@
 <template>
   <div class="profile-page">
     <section class="user-info-section">
-      <div class="avatar"></div>
+      <div class="avatar">
+        <img :src="profileImagePath || defaultAvatar" alt="User Avatar" class="avatar-image" />
+      </div>
       <div class="user-details">
-        <h2 class="user-name">John Doe</h2>
-        <span class="user-type">Pro User</span>
-        <p class="welcome-message">Welcome to your personalized page</p>
+        <h2 class="user-name">{{ nickname || 'default nickname' }}</h2>
+        <span class="user-type">{{ grade || 'default grade' }}</span>
+        <p class="welcome-message">{{ bio || 'default bio' }}</p>
       </div>
       <div class="user-actions">
         <button class="btn-secondary">Log Out</button>
@@ -69,6 +71,8 @@ import HouseCardComponent from '@/components/HouseCardComponent.vue'
 import HouseUserCardComponent from '@/components/HouseUserCardComponent.vue'
 import MyPageDetailComponent from '@/components/MyPageDetailSection.vue'
 import CardComponent from '@/components/PostPreviewCard.vue'
+import useUserStore from '@/stores/user-store'
+import { computed } from 'vue'
 
 export default {
   components: {
@@ -77,6 +81,21 @@ export default {
     MyPageDetailComponent,
     CardComponent,
   },
+  setup() {
+    const userStore = useUserStore()
+    const nickname = computed(() => userStore.memberInfo.nickname)
+    const bio = computed(() => userStore.memberInfo.bio)
+    const profileImagePath = computed(() => userStore.memberInfo.profileImagePath)
+    const grade = computed(() => userStore.memberInfo.grade)
+
+    const handleLogout = () => {
+      userStore.logout()
+      alert('Logged out successfully!')
+      window.location.href = '/login'
+    }
+
+    return { nickname, bio, profileImagePath, grade, handleLogout }
+  },
   methods: {
     goToEditPage() {
       this.$router.push({ path: '/mypage/edit' })
@@ -84,6 +103,8 @@ export default {
   },
   data() {
     return {
+      defaultAvatar:
+        'https://img1.daumcdn.net/thumb/R1280x0/?fname=http://t1.daumcdn.net/brunch/service/user/7r5X/image/9djEiPBPMLu_IvCYyvRPwmZkM1g.jpg',
       fakeCardData: {
         id: 4,
         title: 'Card 4',
@@ -151,6 +172,13 @@ export default {
   border-radius: 50%;
   background-color: #ddd;
   margin-bottom: 16px;
+}
+.avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
 }
 
 .user-details h2 {

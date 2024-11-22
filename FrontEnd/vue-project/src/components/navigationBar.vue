@@ -24,14 +24,46 @@
         </button>
       </form>
 
-      <a href="/map" class="nav-link">지도</a>
-      <a href="/share" class="nav-link">방 나누기 게시판</a>
-      <a href="/favorites" class="nav-link">내 관심목록</a>
-      <a href="/mypage" class="nav-link">마이페이지</a>
+      <button class="nav-button" @click="navigateTo('/map')">지도</button>
+      <button class="nav-button" @click="navigateTo('/share')">방 나누기 게시판</button>
+      <button class="nav-button" @click="navigateTo('/favorites')">내 관심목록</button>
+      <!-- 로그인 상태에 따라 다른 버튼 활성화 -->
+      <button v-if="isLoggedIn" class="nav-button" @click="navigateTo('/mypage')">
+        마이페이지
+      </button>
+      <button v-if="isLoggedIn" class="nav-button" @click="handleLogout">로그아웃</button>
+      <button v-else class="nav-button" @click="redirectToLogin">로그인</button>
     </nav>
   </header>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import useUserStore from '@/stores/user-store'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+// Pinia 상태를 반응형으로 사용
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+
+// 라우트 이동 함수
+const navigateTo = (path) => {
+  router.push(path)
+}
+
+// 로그아웃 처리
+const handleLogout = () => {
+  userStore.logout()
+  alert('로그아웃 되었습니다.')
+  router.push('/login') // 로그아웃 후 로그인 페이지로 이동
+}
+
+// 로그인 페이지로 이동
+const redirectToLogin = () => {
+  router.push('/login')
+}
+</script>
 
 <style scoped></style>

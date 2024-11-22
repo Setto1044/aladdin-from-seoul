@@ -17,6 +17,17 @@
           <input type="file" id="profileImage" ref="fileInput" @change="handleImageUpload" hidden />
         </div>
       </div>
+      <!-- Modal for cropping -->
+      <div v-if="showCropperModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>Crop Your Image</h3>
+          <img class="modal-image" ref="imageToCrop" alt="Crop Preview" />
+          <div class="modal-actions">
+            <button @click="cropImage">Save</button>
+            <button @click="closeCropperModal">Cancel</button>
+          </div>
+        </div>
+      </div>
 
       <div class="form-group">
         <label for="username">아이디</label>
@@ -26,26 +37,6 @@
           v-model="formData.username"
           placeholder="아이디"
           disabled
-        />
-      </div>
-
-      <!-- 비밀번호 변경 -->
-      <div class="form-group">
-        <label for="newPassword">새 비밀번호</label>
-        <input
-          type="password"
-          id="newPassword"
-          v-model="formData.newPassword"
-          placeholder="새 비밀번호"
-        />
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">새 비밀번호 확인</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          v-model="formData.confirmPassword"
-          placeholder="새 비밀번호 확인"
         />
       </div>
 
@@ -61,7 +52,7 @@
 
       <div class="form-group">
         <label for="name">실명</label>
-        <input type="text" id="name" v-model="formData.name" placeholder="실명" />
+        <input type="text" id="name" v-model="formData.name" placeholder="실명" disabled />
       </div>
 
       <div class="form-group">
@@ -71,15 +62,7 @@
 
       <div class="form-group">
         <label for="email">이메일</label>
-        <input type="email" id="email" v-model="formData.email" placeholder="이메일" />
-      </div>
-
-      <!-- Modal for cropping -->
-      <div v-if="showCropperModal" class="modal-overlay">
-        <div class="modal-content">
-          <img ref="imageToCrop" alt="Crop Preview" />
-          <button type="button" @click="cropImage">이미지 자르고 저장</button>
-        </div>
+        <input type="email" id="email" v-model="formData.email" placeholder="이메일" disabled />
       </div>
 
       <div class="form-group">
@@ -96,39 +79,112 @@
 <script>
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
+import axios from 'axios'
+import useUserStore from '@/stores/user-store'
+import { computed } from 'vue'
 
 export default {
   data() {
     return {
-      defaultImage: 'https://via.placeholder.com/150', // Initial blank/default image
+      defaultImage: 'https://via.placeholder.com/150', // Default profile image
       cropper: null,
       showCropperModal: false,
       formData: {
-        id: 1, // Assuming this is needed for updates
-        username: 'user123',
-        name: '홍길동',
-        nickname: '길동이',
-        email: 'user123@example.com',
-        profileImagePath: 'https://via.placeholder.com/150', // Existing profile image URL
-        newProfileImagePath: '',
+        id: null,
+        username: '',
+        name: '',
+        nickname: '',
+        email: '',
+        profileImagePath: '',
+        bio: '',
         grade: 'NORMAL',
-        bio: '안녕하세요, 저는 길동입니다.',
-        status: 'ACTIVE',
-        createdAt: '2023-01-01T00:00:00', // Placeholder example
-        lastJoinedAt: '2024-01-01T00:00:00', // Placeholder example
-        deletedAt: null, // Assuming this is null if the user is active
+        newProfileImagePath: '',
         newPassword: '',
         confirmPassword: '',
       },
     }
   },
+  setup() {
+    const userStore = useUserStore()
+    const userid = computed(() => userStore.memberInfo.userid)
+
+    return { userid }
+  },
+  mounted() {
+    this.fetchUserData()
+  },
   methods: {
+    async fetchUserData() {
+      try {
+        const response = await axios.get(`http://localhost:8080/aladin/members/${this.userid}`)
+        if (response.data.success) {
+          const userData = response.data.data
+          this.formData = {
+            ...this.formData,
+            username: userData.username,
+            name: userData.name,
+            nickname: userData.nickname,
+            email: userData.email,
+            profileImagePath: userData.profileImagePath || this.defaultImage,
+            bio: userData.bio || '',
+            grade: userData.grade,
+          }
+          this.formData.id = this.userid
+        } else {
+          alert('회원 정보를 불러오는 데 실패했습니다.')
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        alert('서버에 문제가 발생했습니다. 다시 시도해주세요.')
+      }
+    },
+    handleProfileUpdate() {
+      // if (this.formData.newPassword !== this.formData.confirmPassword) {
+      //   alert('새 비밀번호가 일치하지 않습니다.')
+      //   return
+      // }
+      console.log('Updated profile data:', this.formData)
+
+      // Send updated data to backend
+      // axios
+      //   .post('http://localhost:8080/aladin/members/update', this.formData)
+      //   .then((response) => {
+      //     if (response.data.success) {
+      //       alert('프로필이 성공적으로 수정되었습니다.')
+      //       this.fetchUserData() // Reload user data
+      //     } else {
+      //       alert('프로필 수정에 실패했습니다.')
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error('Error updating profile:', error)
+      //     alert('서버에 문제가 발생했습니다. 다시 시도해주세요.')
+      //   })
+    },
     handleAccountDeletion() {
       const confirmDeletion = confirm('정말로 회원 탈퇴를 진행하시겠습니까?')
+      console.log('http://localhost:8080/aladin/members/delete', {
+        username: this.formData.username,
+      })
       if (confirmDeletion) {
-        // 회원 탈퇴 로직
-        alert('회원 탈퇴가 완료되었습니다.')
-        this.$router.push({ path: '/' }) // 홈으로 이동
+        axios
+          .delete('http://localhost:8080/aladin/members', {
+            data: { username: this.formData.username },
+          })
+          .then((response) => {
+            if (response.data.success) {
+              alert('회원 탈퇴가 완료되었습니다.')
+              // Reset user store
+              this.userStore.clearMemberInfo()
+              this.$router.push({ path: '/' })
+            } else {
+              alert('회원 탈퇴에 실패했습니다.')
+            }
+          })
+          .catch((error) => {
+            console.error('Error deleting account:', error)
+            alert('서버에 문제가 발생했습니다. 다시 시도해주세요.')
+          })
       }
     },
     triggerFileInput() {
@@ -164,6 +220,9 @@ export default {
         aspectRatio: 1,
         viewMode: 2,
         autoCropArea: 1,
+        responsive: true, // Adjust the crop box on window resize
+        scalable: true,
+        zoomable: true,
       })
     },
     cropImage() {
@@ -179,14 +238,6 @@ export default {
     revertToDefaultImage() {
       this.formData.newProfileImagePath = ''
       this.formData.profileImagePath = this.defaultImage // Reset to initial blank image
-    },
-    handleProfileUpdate() {
-      if (this.formData.newPassword !== this.formData.confirmPassword) {
-        alert('새 비밀번호가 일치하지 않습니다.')
-        return
-      }
-      console.log('Updated profile data:', this.formData)
-      alert('프로필이 성공적으로 수정되었습니다.')
     },
   },
 }
@@ -355,18 +406,22 @@ textarea {
 }
 
 .modal-content {
+  width: 60%; /* Set modal width to 60% of the viewport width */
+  max-width: 500px; /* Set a maximum width */
   background-color: #fff;
-  padding: 24px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
+  position: relative;
 }
 
 .modal-content img {
-  max-width: 100%;
-  height: auto;
+  width: 100%; /* Make the image fill the modal content width */
+  height: auto; /* Maintain the aspect ratio */
+  max-height: 300px; /* Set a max height to prevent oversized images */
   border-radius: 8px;
-  margin-bottom: 16px;
+  object-fit: contain; /* Ensure the image fits without distortion */
 }
 
 .modal-content button {
@@ -379,7 +434,24 @@ textarea {
   cursor: pointer;
 }
 
-.modal-content button:hover {
+.modal-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-actions button {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-actions button:hover {
   background-color: #0056b3;
 }
 

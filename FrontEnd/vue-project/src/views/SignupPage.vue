@@ -11,6 +11,12 @@
           placeholder="Enter your username"
           required
         />
+        <span
+          v-if="validation.usernameMessage"
+          :class="{ error: !validation.username, success: validation.username }"
+        >
+          {{ validation.usernameMessage }}
+        </span>
       </div>
 
       <div class="form-group">
@@ -54,21 +60,12 @@
           placeholder="Enter your email"
           required
         />
-      </div>
-
-      <div class="form-group">
-        <label for="profileImage">Profile Image URL</label>
-        <input
-          type="url"
-          id="profileImage"
-          v-model="formData.profileImagePath"
-          placeholder="Enter profile image URL"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="bio">Bio</label>
-        <textarea id="bio" v-model="formData.bio" placeholder="Tell us about yourself"></textarea>
+        <span
+          v-if="validation.emailMessage"
+          :class="{ error: !validation.email, success: validation.email }"
+        >
+          {{ validation.emailMessage }}
+        </span>
       </div>
 
       <div class="form-group">
@@ -86,6 +83,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -95,16 +94,108 @@ export default {
         name: '',
         nickname: '',
         email: '',
-        profileImagePath: '',
         grade: 'NORMAL',
-        bio: '',
+      },
+      validation: {
+        username: null, // null means not checked, true/false for validity
+        email: null, // null means not checked, true/false for validity
+        usernameMessage: '',
+        emailMessage: '',
       },
     }
   },
+  watch: {
+    'formData.username': function (newUsername) {
+      if (newUsername) {
+        this.validateUsername(newUsername)
+      } else {
+        this.validation.username = null
+        this.validation.usernameMessage = ''
+      }
+    },
+    'formData.email': function (newEmail) {
+      if (newEmail) {
+        if (this.isValidEmailFormat(newEmail)) {
+          this.validateEmail(newEmail)
+        } else {
+          this.validation.email = false
+          this.validation.emailMessage = '올바른 이메일 형식을 입력해주세요.'
+        }
+      } else {
+        this.validation.email = null
+        this.validation.emailMessage = ''
+      }
+    },
+  },
   methods: {
-    handleSignup() {
-      console.log('Signup data:', this.formData)
-      // Add your logic to send the signup data to the server (e.g., API call)
+    async validateUsername(username) {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/aladin/members/validate/username/${username}`,
+        )
+        this.validation.username = response.data.success
+        this.validation.usernameMessage = response.data.success
+          ? '사용 가능한 아이디입니다.'
+          : '이미 사용 중인 아이디입니다.'
+      } catch (error) {
+        console.error('Error checking username:', error)
+        this.validation.usernameMessage = '아이디 확인 중 오류가 발생했습니다.'
+      }
+    },
+    async validateEmail(email) {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/aladin/members/validate/email/${email}`,
+        )
+        this.validation.email = response.data.success
+        this.validation.emailMessage = response.data.success
+          ? '사용 가능한 이메일입니다.'
+          : '이미 사용 중인 이메일입니다.'
+      } catch (error) {
+        console.error('Error checking email:', error)
+        this.validation.emailMessage = '이메일 확인 중 오류가 발생했습니다.'
+      }
+    },
+    isValidEmailFormat(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return emailRegex.test(email)
+    },
+    async handleSignup() {
+      // Ensure username and email are validated
+      if (this.validation.username === false) {
+        alert('이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.')
+        return
+      }
+      if (this.validation.email === false) {
+        alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.')
+        return
+      }
+
+      try {
+        console.log('Sending signup data:', this.formData)
+
+        const response = await axios.post('http://localhost:8080/aladin/members', {
+          username: this.formData.username,
+          password: this.formData.password,
+          name: this.formData.name,
+          nickname: this.formData.nickname,
+          email: this.formData.email,
+          grade: this.formData.grade,
+        })
+
+        if (response.data.success) {
+          alert(response.data.message) // Display success message
+          console.log('Signup success:', response.data)
+
+          // Optional: Redirect to login page after signup
+          this.$router.push('/login')
+        } else {
+          alert('회원가입에 실패했습니다: ' + response.data.message)
+        }
+      } catch (error) {
+        console.error('Error during signup:', error)
+        alert('회원가입 중 문제가 발생했습니다. 다시 시도해주세요.')
+      }
     },
   },
 }
@@ -141,5 +232,18 @@ button {
 }
 button:hover {
   background-color: #218838;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.success {
+  color: green;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
 }
 </style>
