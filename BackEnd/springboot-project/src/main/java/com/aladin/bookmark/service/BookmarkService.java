@@ -10,4 +10,8 @@ public interface BookmarkService {
 	void removeBoardBookmark(String username, Long roomboardsId);
 
 	public List<BoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize);
+
+	void addDealBookmark(String username, Long housedealsNo);
+
+	void removeDealBookmark(String username, Long housedealsNo);
 }

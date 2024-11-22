@@ -25,4 +25,10 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiResponseDto> handleGlobalException(Exception e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDto.of(false, "서버 오류가 발생했습니다.", e.getMessage()));
 	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<ApiResponseDto> handleRuntimeException(RuntimeException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDto.of(false, e.getMessage()));
+	}
+
 }
