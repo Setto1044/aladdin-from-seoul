@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.exceptions.BoardCreationException;
+import com.aladin.exceptions.MemberNotFoundException;
 import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
@@ -55,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
 	public LogInResponseDto loginMember(LogInRequestDto loginRequestDto) {
 		LogInResponseDto member = memberMapper.findMemberByUsernameAndPassword(loginRequestDto.getUsername(), loginRequestDto.getPassword());
 		if (member == null) {
-			throw new ResourceNotFoundException("로그인 실패: 사용자 정보를 찾을 수 없습니다.");
+			throw new MemberNotFoundException("로그인 실패: 사용자 정보를 찾을 수 없습니다.");
 		}
 		return member;
 	}
@@ -64,7 +65,7 @@ public class MemberServiceImpl implements MemberService {
 	public MemberInfoResponseDto getMemberInfo(String username) {
 		MemberInfoResponseDto memberInfo = memberMapper.findByUsername(username);
 		if (memberInfo == null) {
-			throw new ResourceNotFoundException("사용자 정보를 찾을 수 없습니다.");
+			throw new MemberNotFoundException("사용자를 찾을 수 없습니다.");
 		}
 		return memberInfo;
 	}
@@ -90,7 +91,7 @@ public class MemberServiceImpl implements MemberService {
 			// DB 업데이트
 			int rowsAffected = memberMapper.updateMember(updateRequestDto);
 			if (rowsAffected == 0) {
-				throw new ResourceNotFoundException("회원 정보를 업데이트할 수 없습니다.");
+				throw new ResourceNotFoundException("회원 수정에 실패했습니다.");
 			}
 
 			return getMemberInfo(updateRequestDto.getUsername());

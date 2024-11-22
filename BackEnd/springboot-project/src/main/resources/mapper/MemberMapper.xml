@@ -58,8 +58,7 @@
     <update id="updateMember" parameterType="com.aladin.member.dto.MemberUpdateRequestDto">
         UPDATE members
         SET
-            password = #{password},
-            name = #{name},
+        	grade = #{grade},
             nickname = #{nickname},
             profile_image_path = #{profileImagePath},
             bio = #{bio}
