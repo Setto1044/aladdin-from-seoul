@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.aladin.bookmark.dto.HouseBookmarkDto;
-import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 @Mapper
 public interface BookmarkMapper {
@@ -14,7 +14,7 @@ public interface BookmarkMapper {
 
 	void deleteBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
 
-	List<BoardCardDto> findBookmarkedBoardsByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
+	List<RoomBoardCardDto> findBookmarkedBoardsByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
 	int insertDealBookmark(@Param("username") String username, @Param("housedealsNo") Long housedealsNo);
 

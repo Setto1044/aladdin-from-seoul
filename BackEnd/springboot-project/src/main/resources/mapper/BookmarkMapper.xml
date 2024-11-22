@@ -20,7 +20,7 @@
 	</resultMap>
 
 	<!-- BoardCardDto 매핑 -->
-	<resultMap id="boardCardDtoResultMap" type="com.aladin.roomBoard.dto.BoardCardDto">
+	<resultMap id="roomBoardCardDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardCardDto">
 		<result property="thumbnailUrl" column="thumbnail_url" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
@@ -35,7 +35,7 @@
 		WHERE members_username = #{username} AND roomboards_id = #{roomboardsId};
 	</delete>
 
-	<select id="findBookmarkedBoardsByCursor" resultMap="boardCardDtoResultMap">
+	<select id="findBookmarkedBoardsByCursor" resultMap="roomBoardCardDtoResultMap">
 		SELECT
 		rb.id AS id,
 		rb.members_username AS members_username,

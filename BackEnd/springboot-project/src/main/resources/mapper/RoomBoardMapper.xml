@@ -1,5 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aladin.roomBoard.mapper.BoardMapper">
+<mapper namespace="com.aladin.roomBoard.mapper.RoomBoardMapper">
 
 
 	<!-- 게시글 테이블과 VO 매핑 -->
@@ -22,8 +22,10 @@
 	</resultMap>
 
 	<!-- BoardCardDto 매핑 -->
-	<resultMap id="boardCardDtoResultMap" type="com.aladin.roomBoard.dto.BoardCardDto">
+	<resultMap id="roomBoardCardDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardCardDto">
 		<result property="thumbnailUrl" column="thumbnail_url" />
+		<result property="profileImagePath" column="profileImagePath" /> 
+		<result property="nickname" column="nickname" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
 
@@ -40,7 +42,7 @@
 	</insert>
 
 	<!-- 커서 기반 페이징 ok -->
-	<select id="findBoardsByCursor" resultMap="boardCardDtoResultMap">
+	<select id="findBoardsByCursor" resultMap="roomBoardCardDtoResultMap">
 		SELECT
 		rb.id AS id,
 		rb.members_username AS members_username,
@@ -57,10 +59,14 @@
 		rb.views AS views,
 		rb.created_at AS created_at,
 		rb.updated_at AS updated_at,
-		rbi.url AS thumbnail_url
+		rbi.url AS thumbnail_url,
+		m.profile_image_path AS profileImagePath,
+		m.nickname AS nickname
 		FROM roomboards rb
 		LEFT JOIN roomboards_images rbi
 		ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		LEFT JOIN members m
+		ON rb.members_username = m.username
 		<where>
 			<if test="cursorId != null">
 				rb.id &lt; #{cursorId}
@@ -69,6 +75,7 @@
 		ORDER BY rb.id DESC
 		LIMIT #{pageSize};
 	</select>
+
 
 	<!-- 게시물 보드 id 에 해당하는 게시물 vo 반환 -->
 	<!-- 게시물 id에 해당하는 게시물 VO 반환 -->
@@ -113,7 +120,7 @@
 		WHERE roomboards_id = #{roomboardsId};
 	</delete>
 
-	<update id="updateBoard" parameterType="com.aladin.roomBoard.dto.BoardUpdateRequestDto">
+	<update id="updateBoard" parameterType="com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto">
 		UPDATE roomboards
 		SET
 		title = #{dto.title},
@@ -133,5 +140,5 @@
 	<delete id="deleteBoardById" parameterType="long">
 		DELETE FROM roomboards WHERE id = #{boardId};
 	</delete>
-	
+
 </mapper>

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aladin.bookmark.dto.HouseBookmarkDto;
 import com.aladin.bookmark.mapper.BookmarkMapper;
-import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +42,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public List<BoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize) {
+	public List<RoomBoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize) {
 		return bookmarkMapper.findBookmarkedBoardsByCursor(username, cursorId, pageSize);
 	}
 

@@ -10,29 +10,29 @@ import com.aladin.common.ImageStorageMamager;
 import com.aladin.common.ImageType;
 import com.aladin.exceptions.BoardCreationException;
 import com.aladin.exceptions.ResourceNotFoundException;
-import com.aladin.roomBoard.dto.BoardCardDto;
-import com.aladin.roomBoard.dto.BoardDetailDto;
-import com.aladin.roomBoard.dto.BoardInsertRequestDto;
-import com.aladin.roomBoard.dto.BoardUpdateRequestDto;
-import com.aladin.roomBoard.mapper.BoardMapper;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardDetailDto;
+import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
+import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
+import com.aladin.roomBoard.mapper.RoomBoardMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @Transactional
-public class BoardServiceImpl implements BoardService {
+public class RoomBoardServiceImpl implements RoomBoardService {
 
-	private final BoardMapper boardMapper;
+	private final RoomBoardMapper boardMapper;
 	private final ImageStorageMamager imageStorageMamager;
 
-	public BoardServiceImpl(BoardMapper boardMapper, ImageStorageMamager imageStorageMamager) {
+	public RoomBoardServiceImpl(RoomBoardMapper boardMapper, ImageStorageMamager imageStorageMamager) {
 		this.boardMapper = boardMapper;
 		this.imageStorageMamager = imageStorageMamager;
 	}
 
 	@Override
-	public Long createBoard(BoardInsertRequestDto requestDto) {
+	public Long createBoard(RoomBoardInsertRequestDto requestDto) {
 		try {
 			boardMapper.insertBoard(requestDto);
 
@@ -48,8 +48,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize) {
-		List<BoardCardDto> boards = boardMapper.findBoardsByCursor(cursorId, pageSize);
+	public List<RoomBoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize) {
+		List<RoomBoardCardDto> boards = boardMapper.findBoardsByCursor(cursorId, pageSize);
 		if (boards == null || boards.isEmpty()) {
 			throw new ResourceNotFoundException("게시물을 찾을 수 없습니다.");
 		}
@@ -57,9 +57,9 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public BoardDetailDto getBoardDetail(Long roomboardsId) {
+	public RoomBoardDetailDto getBoardDetail(Long roomboardsId) {
 		try {
-			BoardDetailDto boardDetailDto = new BoardDetailDto();
+			RoomBoardDetailDto boardDetailDto = new RoomBoardDetailDto();
 			boardDetailDto.setRoomCardInfo(boardMapper.findOneByRoomBoardId(roomboardsId));
 			boardDetailDto.setRoomImageInfos(boardMapper.findImagesByRoomBoardId(roomboardsId));
 
@@ -75,7 +75,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public Long updateBoard(BoardUpdateRequestDto requestDto) {
+	public Long updateBoard(RoomBoardUpdateRequestDto requestDto) {
 		try {
 			boardMapper.updateBoard(requestDto);
 

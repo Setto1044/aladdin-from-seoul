@@ -15,30 +15,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aladin.common.ApiResponseDto;
 import com.aladin.exceptions.ResourceNotFoundException;
-import com.aladin.roomBoard.dto.BoardCardDto;
-import com.aladin.roomBoard.dto.BoardDetailDto;
-import com.aladin.roomBoard.dto.BoardInsertRequestDto;
-import com.aladin.roomBoard.dto.BoardUpdateRequestDto;
-import com.aladin.roomBoard.service.BoardService;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardDetailDto;
+import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
+import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
+import com.aladin.roomBoard.service.RoomBoardService;
 
 @RestController
 @RequestMapping("/boards")
-public class BoardController {
-	private final BoardService boardService;
+public class RoomBoardController {
+	private final RoomBoardService boardService;
 
-	public BoardController(BoardService boardService) {
+	public RoomBoardController(RoomBoardService boardService) {
 		this.boardService = boardService;
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponseDto> insertBoard(@ModelAttribute BoardInsertRequestDto requestDto) {
+	public ResponseEntity<ApiResponseDto> insertBoard(@ModelAttribute RoomBoardInsertRequestDto requestDto) {
 		Long id = boardService.createBoard(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "등록이 완료되었습니다.", id));
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponseDto<List<BoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
-		List<BoardCardDto> boardCards = boardService.findBoardsByCursor(cursorId, pageSize);
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
+		List<RoomBoardCardDto> boardCards = boardService.findBoardsByCursor(cursorId, pageSize);
 		if (boardCards == null || boardCards.isEmpty()) {
 			throw new ResourceNotFoundException("게시물이 존재하지 않습니다.");
 		}
@@ -46,8 +46,8 @@ public class BoardController {
 	}
 
 	@GetMapping("/{roomboardsId}")
-	public ResponseEntity<ApiResponseDto<BoardDetailDto>> getBoardDetail(@PathVariable Long roomboardsId) {
-		BoardDetailDto boardDetail = boardService.getBoardDetail(roomboardsId);
+	public ResponseEntity<ApiResponseDto<RoomBoardDetailDto>> getBoardDetail(@PathVariable Long roomboardsId) {
+		RoomBoardDetailDto boardDetail = boardService.getBoardDetail(roomboardsId);
 		if (boardDetail == null || boardDetail.getRoomCardInfo() == null) {
 			throw new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다.");
 		}
@@ -55,7 +55,7 @@ public class BoardController {
 	}
 
 	@PutMapping
-	public ResponseEntity<ApiResponseDto> updateBoard(@ModelAttribute BoardUpdateRequestDto requestDto) {
+	public ResponseEntity<ApiResponseDto> updateBoard(@ModelAttribute RoomBoardUpdateRequestDto requestDto) {
 		Long id = boardService.updateBoard(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "수정이 완료되었습니다.", id));
 	}

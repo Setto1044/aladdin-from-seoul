@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BoardDetailDto {
+public class RoomBoardDetailDto {
 	private RoomBoardVo roomCardInfo;
 	private List<RoomBoardImageVo> roomImageInfos;
 }

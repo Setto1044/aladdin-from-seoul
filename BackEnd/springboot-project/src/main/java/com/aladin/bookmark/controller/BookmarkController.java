@@ -17,7 +17,7 @@ import com.aladin.bookmark.dto.BookmarkRoomRequestDto;
 import com.aladin.bookmark.dto.HouseBookmarkDto;
 import com.aladin.bookmark.service.BookmarkService;
 import com.aladin.common.ApiResponseDto;
-import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 @RestController
 @RequestMapping("/bookmark")
@@ -41,8 +41,8 @@ public class BookmarkController {
 	}
 
 	@GetMapping("/board/{username}")
-	public ResponseEntity<ApiResponseDto<List<BoardCardDto>>> getBookmarkedBoardsByCursor(@PathVariable String username, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
-		List<BoardCardDto> bookmarks = bookmarkService.getBookmarkedBoardsByCursor(username, cursorId, pageSize);
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getBookmarkedBoardsByCursor(@PathVariable String username, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
+		List<RoomBoardCardDto> bookmarks = bookmarkService.getBookmarkedBoardsByCursor(username, cursorId, pageSize);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "북마크 게시글 조회 성공", bookmarks));
 	}
 

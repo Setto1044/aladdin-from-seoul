@@ -3,14 +3,14 @@ package com.aladin.bookmark.service;
 import java.util.List;
 
 import com.aladin.bookmark.dto.HouseBookmarkDto;
-import com.aladin.roomBoard.dto.BoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 public interface BookmarkService {
 	void addBoardBookmark(String username, Long roomboardsId);
 
 	void removeBoardBookmark(String username, Long roomboardsId);
 
-	public List<BoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize);
+	public List<RoomBoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize);
 
 	void addDealBookmark(String username, Long housedealsNo);
 
