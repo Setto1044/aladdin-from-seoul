@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box; /* 패딩과 보더를 width와 height에 포함 */
+}
+
 .carousel__next {
   cursor: pointer; /* 커서가 명확히 보이도록 */
   background-color: rgba(70, 70, 70, 0.5); /* 반투명 배경 */

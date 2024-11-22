@@ -73,7 +73,23 @@
       />
     </div>
 
-    <button @click="resetFilters" class="reset-button">🔄</button>
+    <form v-if="$route.meta.showSearchBar" class="header-search-form">
+      <input
+        type="text"
+        id="search-input"
+        class="header-search-input"
+        placeholder="Search in site"
+        aria-label="Search in site"
+      />
+      <button type="submit" class="header-search-button" aria-label="Submit search">
+        <img
+          loading="lazy"
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/ff75430b99a5dc1ef509cf04ee77ca85091d2f5a3a9e255ba3ad5b4f13bcf5f9?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e"
+          class="header-search-icon"
+          alt="Search"
+        />
+      </button>
+    </form>
   </div>
 </template>
 
@@ -211,5 +227,41 @@ export default {
 /* 화살표 회전 */
 .arrow.rotated {
   transform: rotate(180deg); /* 위 방향 */
+}
+
+.header-search-form {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.header-search-input {
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  outline: none;
+  width: 200px;
+}
+
+.header-search-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.header-search-button:hover {
+  background-color: #f4f4f4;
+}
+
+.header-search-icon {
+  width: 20px; /* 검색 아이콘 크기 */
+  height: 20px;
 }
 </style>
