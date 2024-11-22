@@ -6,10 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
+import com.aladin.roomBoard.dto.RoomBoardDetailDto;
 import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.vo.RoomBoardImageVo;
-import com.aladin.roomBoard.vo.RoomBoardVo;
 
 @Mapper
 public interface RoomBoardMapper {
@@ -21,7 +21,7 @@ public interface RoomBoardMapper {
 
 	List<RoomBoardImageVo> findImagesByRoomBoardId(Long roomboardsId);
 
-	RoomBoardVo findOneByRoomBoardId(Long roomboardsId);
+	RoomBoardDetailDto findOneByRoomBoardId(Long roomboardsId);
 
 	void updateBoard(@Param("dto") RoomBoardUpdateRequestDto requestDto);
 

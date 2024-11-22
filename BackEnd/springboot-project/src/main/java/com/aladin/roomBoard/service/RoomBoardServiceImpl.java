@@ -15,6 +15,7 @@ import com.aladin.roomBoard.dto.RoomBoardDetailDto;
 import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.mapper.RoomBoardMapper;
+import com.aladin.roomBoard.vo.RoomBoardImageVo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,13 +60,15 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 	@Override
 	public RoomBoardDetailDto getBoardDetail(Long roomboardsId) {
 		try {
-			RoomBoardDetailDto boardDetailDto = new RoomBoardDetailDto();
-			boardDetailDto.setRoomCardInfo(boardMapper.findOneByRoomBoardId(roomboardsId));
-			boardDetailDto.setRoomImageInfos(boardMapper.findImagesByRoomBoardId(roomboardsId));
+			RoomBoardDetailDto boardDetailDto = boardMapper.findOneByRoomBoardId(roomboardsId);
 
-			if (boardDetailDto.getRoomCardInfo() == null) {
+			if (boardDetailDto == null || boardDetailDto.getRoomCardInfo() == null) {
 				throw new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다.");
 			}
+
+			// 이미지 링크
+			List<RoomBoardImageVo> roomImages = boardMapper.findImagesByRoomBoardId(roomboardsId);
+			boardDetailDto.setRoomImageInfos(roomImages);
 
 			return boardDetailDto;
 		} catch (Exception e) {

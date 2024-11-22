@@ -13,4 +13,6 @@ import lombok.NoArgsConstructor;
 public class RoomBoardDetailDto {
 	private RoomBoardVo roomCardInfo;
 	private List<RoomBoardImageVo> roomImageInfos;
+	private String nickname;
+	private String profileImagePath;
 }

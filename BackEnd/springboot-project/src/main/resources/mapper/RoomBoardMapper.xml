@@ -1,7 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aladin.roomBoard.mapper.RoomBoardMapper">
-
-
 	<!-- 게시글 테이블과 VO 매핑 -->
 	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
 		<id property="id" column="id" />
@@ -24,9 +22,23 @@
 	<!-- BoardCardDto 매핑 -->
 	<resultMap id="roomBoardCardDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardCardDto">
 		<result property="thumbnailUrl" column="thumbnail_url" />
-		<result property="profileImagePath" column="profileImagePath" /> 
+		<result property="profileImagePath" column="profileImagePath" />
 		<result property="nickname" column="nickname" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
+	</resultMap>
+	
+	<resultMap id="roomBoardImageResultMap" type="com.aladin.roomBoard.vo.RoomBoardImageVo">
+		<id property="id" column="id" />
+		<result property="url" column="url" />
+		<result property="imageOrder" column="image_order" />
+		<result property="roomboardsId" column="roomboards_id" />
+	</resultMap>
+
+	<resultMap id="roomBoardDetailDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardDetailDto">
+		<result property="nickname" column="nickname" />
+		<result property="profileImagePath" column="profile_image_path" />
+		<association property="roomCardInfo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
+		<collection property="roomImageInfos" ofType="com.aladin.roomBoard.vo.RoomBoardImageVo" resultMap="roomBoardImageResultMap" />
 	</resultMap>
 
 	<!-- 게시글 등록 ok -->
@@ -77,27 +89,28 @@
 	</select>
 
 
-	<!-- 게시물 보드 id 에 해당하는 게시물 vo 반환 -->
-	<!-- 게시물 id에 해당하는 게시물 VO 반환 -->
-	<select id="findOneByRoomBoardId" parameterType="long" resultMap="roomBoardResultMap">
+	<select id="findOneByRoomBoardId" resultMap="roomBoardDetailDtoResultMap">
 		SELECT
-		id,
-		members_username,
-		title,
-		detail,
-		address,
-		postcode,
-		price,
-		house_size,
-		price_per,
-		rent_start,
-		rent_until,
-		hashtags,
-		views,
-		created_at,
-		updated_at
-		FROM roomboards
-		WHERE id = #{roomboardsId};
+		rb.id,
+		rb.members_username,
+		rb.title,
+		rb.detail,
+		rb.address,
+		rb.postcode,
+		rb.price,
+		rb.house_size,
+		rb.price_per,
+		rb.rent_start,
+		rb.rent_until,
+		rb.hashtags,
+		rb.views,
+		rb.created_at,
+		rb.updated_at,
+		m.nickname,
+		m.profile_image_path
+		FROM roomboards rb
+		LEFT JOIN members m ON rb.members_username = m.username
+		WHERE rb.id = #{roomboardsId};
 	</select>
 
 	<!-- 사진 1장 저장 ok -->
