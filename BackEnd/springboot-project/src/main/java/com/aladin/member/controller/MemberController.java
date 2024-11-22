@@ -37,7 +37,7 @@ public class MemberController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponseDto<Void>> registerMember(@RequestBody MemberRegistRequestDto memberDto) {
+	public ResponseEntity<ApiResponseDto<Void>> registMember(@RequestBody MemberRegistRequestDto memberDto) {
 		memberService.registMember(memberDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "성공적으로 회원가입되었습니다."));
 	}

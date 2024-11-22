@@ -1,6 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aladin.bookmark.mapper.BookmarkMapper">
-<!-- 게시글 테이블과 VO 매핑 -->
+	<!-- 게시글 테이블과 VO 매핑 -->
 	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
 		<id property="id" column="id" />
 		<result property="membersUsername" column="members_username" />
@@ -24,7 +24,7 @@
 		<result property="thumbnailUrl" column="thumbnail_url" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
-	
+
 	<insert id="insertBoardBookmark" parameterType="map">
 		INSERT INTO roomboards_bookmarks (members_username, roomboards_id)
 		VALUES (#{username}, #{roomboardsId});
@@ -61,6 +61,61 @@
 			AND rb.id &lt; #{cursorId}
 		</if>
 		ORDER BY rb.id DESC
+		LIMIT #{pageSize};
+	</select>
+
+	<insert id="insertDealBookmark" parameterType="map">
+		INSERT INTO housedeals_bookmarks (
+		members_username,
+		housedeals_no,
+		apt_seq,
+		latitude,
+		longitude,
+		created_at
+		)
+		SELECT
+		#{username},
+		#{housedealsNo},
+		h.apt_seq,
+		c.latitude,
+		c.longitude,
+		NOW()
+		FROM housedeals h
+		JOIN housecards c ON h.apt_seq = c.apt_seq
+		WHERE h.no = #{housedealsNo}
+		AND NOT EXISTS (
+		SELECT 1
+		FROM housedeals_bookmarks b
+		WHERE b.members_username = #{username}
+		AND b.housedeals_no = #{housedealsNo}
+		);
+	</insert>
+	
+	<!-- 아파트 거래 북마크 삭제 -->
+	<delete id="deleteDealBookmark" parameterType="map">
+		DELETE FROM housedeals_bookmarks
+		WHERE members_username = #{username}
+		AND housedeals_no = #{housedealsNo};
+	</delete>
+
+	<select id="findBookmarkedDealsByCursor" resultType="com.aladin.bookmark.dto.HouseBookmarkDto">
+		SELECT
+		b.id AS bookmarkId,
+		b.housedeals_no AS dealNo,
+		h.apt_seq AS aptSeq,
+		h.deal_amount AS dealAmount,
+		c.apt_name AS aptName,
+		c.latitude AS latitude,
+		c.longitude AS longitude,
+		b.created_at AS bookmarkedAt
+		FROM housedeals_bookmarks b
+		JOIN housedeals h ON b.housedeals_no = h.no
+		JOIN housecards c ON h.apt_seq = c.apt_seq
+		WHERE b.members_username = #{username}
+		<if test="cursorId != null">
+			AND b.id &lt; #{cursorId}
+		</if>
+		ORDER BY b.id DESC
 		LIMIT #{pageSize};
 	</select>
 

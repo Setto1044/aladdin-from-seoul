@@ -133,5 +133,5 @@
 	<delete id="deleteBoardById" parameterType="long">
 		DELETE FROM roomboards WHERE id = #{boardId};
 	</delete>
-
+	
 </mapper>

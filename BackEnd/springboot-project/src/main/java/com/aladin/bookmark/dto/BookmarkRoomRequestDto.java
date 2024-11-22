@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookmarkRequestDto {
+public class BookmarkRoomRequestDto {
 	private String username;
 	private Long roomboardsId;
 }
