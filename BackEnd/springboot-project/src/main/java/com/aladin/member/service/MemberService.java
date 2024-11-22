@@ -4,6 +4,7 @@ import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
 import com.aladin.member.dto.MemberDeleteRequestDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
+import com.aladin.member.dto.MemberPasswordUpdateRequestDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
 
@@ -20,5 +21,7 @@ public interface MemberService {
 
 	MemberInfoResponseDto getMemberInfo(String username);
 
-	boolean deleteMember(MemberDeleteRequestDto requestDto);
+	void deleteMember(MemberDeleteRequestDto requestDto);
+
+	void updatePassword(MemberPasswordUpdateRequestDto memberPasswordUpdateRequestDto);
 }

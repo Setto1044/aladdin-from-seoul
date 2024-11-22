@@ -16,6 +16,7 @@ import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
 import com.aladin.member.dto.MemberDeleteRequestDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
+import com.aladin.member.dto.MemberPasswordUpdateRequestDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
 import com.aladin.member.service.MemberService;
@@ -71,4 +72,11 @@ public class MemberController {
 		memberService.deleteMember(requestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "회원이 삭제되었습니다."));
 	}
+
+	@PutMapping("/password")
+	public ResponseEntity<ApiResponseDto<Void>> updatePassword(@RequestBody MemberPasswordUpdateRequestDto memberPasswordUpdateRequestDto) {
+		memberService.updatePassword(memberPasswordUpdateRequestDto);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "비밀번호가 성공적으로 변경되었습니다."));
+	}
+
 }

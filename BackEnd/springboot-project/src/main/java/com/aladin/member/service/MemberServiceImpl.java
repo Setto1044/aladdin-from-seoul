@@ -14,6 +14,7 @@ import com.aladin.member.dto.LogInRequestDto;
 import com.aladin.member.dto.LogInResponseDto;
 import com.aladin.member.dto.MemberDeleteRequestDto;
 import com.aladin.member.dto.MemberInfoResponseDto;
+import com.aladin.member.dto.MemberPasswordUpdateRequestDto;
 import com.aladin.member.dto.MemberRegistRequestDto;
 import com.aladin.member.dto.MemberUpdateRequestDto;
 import com.aladin.member.mapper.MemberMapper;
@@ -108,11 +109,19 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean deleteMember(MemberDeleteRequestDto requestDto) {
+	public void deleteMember(MemberDeleteRequestDto requestDto) {
 		int rowsAffected = memberMapper.deleteMember(requestDto);
 		if (rowsAffected == 0) {
 			throw new ResourceNotFoundException("삭제할 회원 정보를 찾을 수 없습니다.");
 		}
-		return true;
 	}
+
+	@Override
+	public void updatePassword(MemberPasswordUpdateRequestDto memberPasswordUpdateRequestDto) {
+		int rowsAffected = memberMapper.updatePassword(memberPasswordUpdateRequestDto);
+		if (rowsAffected == 0) {
+			throw new ResourceNotFoundException("비밀번호를 변경할 사용자를 찾을 수 없습니다.");
+		}
+	}
+
 }
