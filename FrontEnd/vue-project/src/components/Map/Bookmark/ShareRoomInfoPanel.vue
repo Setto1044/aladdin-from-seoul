@@ -175,7 +175,7 @@ export default {
 
       this.isLoading = true
       try {
-        const url = `http://localhost:8080/aladin/bookmark/board/led156?pageSize=${pageSize}`
+        const url = `http://localhost:8080/aladin/bookmark/board/${this.username}?pageSize=${pageSize}`
 
         const response = await axios.get(url)
         const data = response.data

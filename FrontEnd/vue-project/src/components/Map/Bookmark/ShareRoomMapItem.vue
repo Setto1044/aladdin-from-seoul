@@ -15,7 +15,7 @@
         {{ item.roomBoardVo.address }}
       </p>
       <p class="property-price">
-        {{ item.roomBoardVo.pricePer }} {{ item.roomBoardVo.price }}만 원
+        {{ getPricePerText(item.roomBoardVo.pricePer) }} {{ item.roomBoardVo.price }}만 원
       </p>
       <p class="property-detail" title="{{ item.roomBoardVo.detail }}">
         {{ truncateDetail(item.roomBoardVo.detail) }}
@@ -63,8 +63,16 @@ export default {
     this.checkBookmarkStatus() // 컴포넌트가 생성될 때 북마크 상태 확인
   },
   methods: {
+    getPricePerText(pricePer) {
+    if (pricePer === 'MONTH') {
+      return '월당'
+    } else if (pricePer === 'WEEK') {
+      return '주당'
+    }
+    return '' // 기본값 처리
+  },
     truncateDetail(detail) {
-      const maxLength = 50 // 원하는 최대 길이
+      const maxLength = 20 // 원하는 최대 길이
       return detail.length > maxLength
         ? detail.substring(0, maxLength) + '...'
         : detail

@@ -3,7 +3,7 @@
     <div class="property-info" @click="selectItem">
       <p class="property-name">{{ item.aptName }} ({{ item.buildYear }})</p>
       <p class="property-address">
-        <!-- {{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }} {{ item.jibun }} -->
+        {{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }} {{ item.jibun }}
       </p>
       <p class="property-price">매매 {{ item.dealAmount }}만 원</p>
       <p class="property-detail">{{ item.excluUseAr }}㎡, {{ item.floor }}층 {{ item.aptDong }}</p>
