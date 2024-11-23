@@ -43,6 +43,8 @@ public class RoomBoardController {
 		if (boardCards == null || boardCards.isEmpty()) {
 			throw new ResourceNotFoundException("게시물이 존재하지 않습니다.");
 		}
+
+		System.out.println(">>>>>> find cursor size: " + boardCards.size());
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardCards));
 	}
 
@@ -65,5 +67,15 @@ public class RoomBoardController {
 	public ResponseEntity<ApiResponseDto> deleteBoard(@PathVariable Long boardId) {
 		boardService.deleteBoard(boardId);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "삭제가 완료되었습니다.", boardId));
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getAllBoards() {
+		List<RoomBoardCardDto> boardCards = boardService.findAllBoards();
+		if (boardCards == null || boardCards.isEmpty()) {
+			throw new ResourceNotFoundException("게시물이 존재하지 않습니다.");
+		}
+		System.out.println(">>>>>> findall size: " + boardCards.size());
+		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardCards));
 	}
 }

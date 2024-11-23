@@ -12,6 +12,8 @@ public interface RoomBoardService {
 
 	List<RoomBoardCardDto> findBoardsByCursor(Long cursorId, Long pageSize);
 
+	List<RoomBoardCardDto> findAllBoards();
+
 	RoomBoardDetailDto getBoardDetail(Long roomboardsId);
 
 	Long updateBoard(RoomBoardUpdateRequestDto requestDto);

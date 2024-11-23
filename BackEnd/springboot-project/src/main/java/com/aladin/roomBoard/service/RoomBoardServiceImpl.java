@@ -84,10 +84,8 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 
 			Long boardId = requestDto.getId();
 
-			boardMapper.deleteImagesByRoomBoardId(boardId);
-
+			// boardMapper.deleteImagesByRoomBoardId(boardId);
 			// saveImages(requestDto.getImages(), boardId);
-
 			return boardId;
 		} catch (Exception e) {
 			log.error("게시글 수정 중 오류: {}", e.getMessage(), e);
@@ -130,6 +128,16 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 			log.error("게시글 삭제 중 오류 발생: {}", e.getMessage(), e);
 			throw new BoardCreationException("게시글 삭제 중 오류가 발생했습니다.", e);
 		}
+	}
+
+	@Override
+	public List<RoomBoardCardDto> findAllBoards() {
+		System.out.println("Here!!");
+		List<RoomBoardCardDto> list = boardMapper.findAllBoards();
+		for (RoomBoardCardDto dto : list) {
+			System.out.println(">> id: " + dto.getRoomBoardVo().getId());
+		}
+		return list;
 	}
 
 }

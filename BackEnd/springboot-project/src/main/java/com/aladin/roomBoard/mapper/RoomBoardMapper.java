@@ -19,6 +19,8 @@ public interface RoomBoardMapper {
 
 	List<RoomBoardCardDto> findBoardsByCursor(@Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
+	List<RoomBoardCardDto> findAllBoards();
+
 	List<RoomBoardImageVo> findImagesByRoomBoardId(Long roomboardsId);
 
 	RoomBoardDetailDto findOneByRoomBoardId(Long roomboardsId);

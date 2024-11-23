@@ -23,6 +23,8 @@
 	<!-- BoardCardDto 매핑 -->
 	<resultMap id="roomBoardCardDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardCardDto">
 		<result property="thumbnailUrl" column="thumbnail_url" />
+		<result property="profileImagePath" column="profileImagePath" />
+		<result property="nickname" column="nickname" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
 
