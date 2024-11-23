@@ -118,7 +118,7 @@
 		management_digit,
 		area_sizes
 		FROM houseinfo_details
-		WHERE apt_seq = #{aptSeq}
+		WHERE apt_seq = #{aptSeq} 
 	</select>
 
 </mapper>
