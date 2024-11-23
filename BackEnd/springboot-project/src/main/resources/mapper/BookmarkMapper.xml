@@ -62,10 +62,13 @@
 		rb.views AS views,
 		rb.created_at AS created_at,
 		rb.updated_at AS updated_at,
-		rbi.url AS thumbnail_url
+		rbi.url AS thumbnail_url,
+		m.nickname AS nickname,
+		m.profile_image_path AS profileImagePath
 		FROM roomboards_bookmarks b
 		JOIN roomboards rb ON b.roomboards_id = rb.id
 		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		LEFT JOIN members m ON rb.members_username = m.username
 		WHERE b.members_username = #{username}
 		<if test="cursorId != null">
 			AND rb.id &lt; #{cursorId}
@@ -73,6 +76,7 @@
 		ORDER BY rb.id DESC
 		LIMIT #{pageSize};
 	</select>
+
 
 	<insert id="insertDealBookmark" parameterType="map">
 		INSERT INTO housedeals_bookmarks (
