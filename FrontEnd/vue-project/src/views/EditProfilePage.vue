@@ -138,29 +138,57 @@ export default {
         alert('서버에 문제가 발생했습니다. 다시 시도해주세요.')
       }
     },
-    handleProfileUpdate() {
-      // if (this.formData.newPassword !== this.formData.confirmPassword) {
-      //   alert('새 비밀번호가 일치하지 않습니다.')
-      //   return
-      // }
-      console.log('Updated profile data:', this.formData)
+    async handleProfileUpdate() {
+      try {
+        const formData = new FormData()
 
-      // Send updated data to backend
-      // axios
-      //   .post('http://localhost:8080/aladin/members/update', this.formData)
-      //   .then((response) => {
-      //     if (response.data.success) {
-      //       alert('프로필이 성공적으로 수정되었습니다.')
-      //       this.fetchUserData() // Reload user data
-      //     } else {
-      //       alert('프로필 수정에 실패했습니다.')
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error updating profile:', error)
-      //     alert('서버에 문제가 발생했습니다. 다시 시도해주세요.')
-      //   })
+        Object.keys(this.formData).forEach((key) => {
+          if (key === 'newProfileImagePath' && this.formData.newProfileImagePath) {
+            // base64 -> Blob 변환
+            const byteString = atob(this.formData.newProfileImagePath.split(',')[1])
+            const mimeString = this.formData.newProfileImagePath
+              .split(',')[0]
+              .split(':')[1]
+              .split(';')[0]
+
+            const arrayBuffer = new Uint8Array(byteString.length)
+            for (let i = 0; i < byteString.length; i++) {
+              arrayBuffer[i] = byteString.charCodeAt(i)
+            }
+
+            const imageFile = new Blob([arrayBuffer], { type: mimeString })
+            formData.append('profileImage', imageFile, 'profile.jpg') // 서버가 기대하는 key를 사용
+          } else if (key !== 'profileImagePath') {
+            // `profileImagePath`는 서버에서 처리하지 않을 수 있으므로 제외
+            formData.append(key, this.formData[key])
+          }
+        })
+
+        const response = await axios.put('http://localhost:8080/aladin/members', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+
+        if (response.data.success) {
+          alert('프로필이 성공적으로 업데이트되었습니다.')
+          // Pinia 상태 업데이트
+          const userStore = useUserStore()
+          console.log(formData)
+          userStore.setMemberEditInfo({
+            ...this.formData, // 현재 수정된 데이터로 상태 업데이트
+            profileImagePath: response.data.data.profileImagePath || this.formData.profileImagePath,
+          })
+
+          // 마이페이지로 이동
+          this.$router.push({ name: 'mypage' })
+        } else {
+          alert('프로필 업데이트에 실패했습니다.')
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error)
+        alert('서버 오류가 발생했습니다.')
+      }
     },
+
     handleAccountDeletion() {
       const confirmDeletion = confirm('정말로 회원 탈퇴를 진행하시겠습니까?')
       console.log('http://localhost:8080/aladin/members/delete', {
@@ -196,13 +224,10 @@ export default {
       if (file) {
         const reader = new FileReader()
         reader.onload = (e) => {
-          // Show the modal before accessing the image element
-          this.showCropperModal = true
-
-          // Ensure the DOM is updated before accessing the img element
+          this.showCropperModal = true // 크로퍼 모달 표시
           this.$nextTick(() => {
             if (this.$refs.imageToCrop) {
-              this.$refs.imageToCrop.src = e.target.result
+              this.$refs.imageToCrop.src = e.target.result // 크로퍼에 이미지 설정
               this.initializeCropper()
             } else {
               console.error('Image element not found')
@@ -212,6 +237,16 @@ export default {
         reader.readAsDataURL(file)
       }
     },
+    cropImage() {
+      if (this.cropper) {
+        const croppedImage = this.cropper.getCroppedCanvas().toDataURL('image/jpeg')
+        this.formData.newProfileImagePath = croppedImage // 크롭된 이미지를 저장
+        this.cropper.destroy()
+        this.cropper = null
+        this.showCropperModal = false // 크로퍼 모달 닫기
+      }
+    },
+
     initializeCropper() {
       if (this.cropper) {
         this.cropper.destroy()
@@ -225,16 +260,7 @@ export default {
         zoomable: true,
       })
     },
-    cropImage() {
-      if (this.cropper) {
-        const croppedImage = this.cropper.getCroppedCanvas().toDataURL('image/jpeg')
-        this.formData.profileImagePath = croppedImage // Confirm the cropped image
-        this.formData.newProfileImagePath = '' // Clear the temporary path
-        this.cropper.destroy()
-        this.cropper = null
-        this.showCropperModal = false // Hide the modal after cropping
-      }
-    },
+
     revertToDefaultImage() {
       this.formData.newProfileImagePath = ''
       this.formData.profileImagePath = this.defaultImage // Reset to initial blank image

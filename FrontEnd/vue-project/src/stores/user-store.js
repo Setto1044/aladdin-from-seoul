@@ -26,6 +26,20 @@ const useUserStore = defineStore('user', {
     setMemberInfo(info) {
       this.memberInfo = info || {} // Ensure it's defined
     },
+    setMemberEditInfo(info) {
+      // Pinia 상태 업데이트 시 기존 구조를 유지하면서 새로운 데이터를 병합
+      this.memberInfo = {
+        ...this.memberInfo,
+        userid: info.id, // 폼 데이터의 `id`를 Pinia의 `userid`에 매핑
+        username: info.username,
+        name: info.name,
+        nickname: info.nickname,
+        email: info.email,
+        grade: info.grade,
+        bio: info.bio,
+        profileImagePath: info.profileImagePath,
+      }
+    },
     clearMemberInfo() {
       this.isLoggedIn = false
       this.memberInfo = {
