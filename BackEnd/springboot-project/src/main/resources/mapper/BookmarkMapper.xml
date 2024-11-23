@@ -68,7 +68,7 @@
 		FROM roomboards_bookmarks b
 		JOIN roomboards rb ON b.roomboards_id = rb.id
 		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
-		LEFT JOIN members m ON rb.members_username = m.username
+		LEFT JOIN members m ON b.members_username = m.username
 		WHERE b.members_username = #{username}
 		<if test="cursorId != null">
 			AND rb.id &lt; #{cursorId}
@@ -100,7 +100,7 @@
 		FROM roomboards_bookmarks b
 		JOIN roomboards rb ON b.roomboards_id = rb.id
 		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
-		LEFT JOIN members m ON rb.members_username = m.username
+		LEFT JOIN members m ON b.members_username = m.username
 		WHERE rb.id = #{boardId} AND rb.members_username = #{username}
 	</select>
 

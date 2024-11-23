@@ -104,4 +104,21 @@
 		LIMIT #{size}
 	</select>
 
+	<select id="getHouseDetailByAptSeq" parameterType="String" resultType="com.aladin.house.vo.HouseDetailVo">
+		SELECT
+		apt_seq,
+		apt_name,
+		household_count,
+		floor_range,
+		parking_count,
+		floor_area_ratio,
+		building_coverage_ratio,
+		construction_company,
+		heating_type,
+		management_digit,
+		area_sizes
+		FROM houseinfo_details
+		WHERE apt_seq = #{aptSeq}
+	</select>
+
 </mapper>

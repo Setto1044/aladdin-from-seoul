@@ -6,6 +6,7 @@ import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealVo;
+import com.aladin.house.vo.HouseDetailVo;
 
 public interface HouseService {
 	// 특정 범위의 데이터 가져오기
@@ -17,4 +18,5 @@ public interface HouseService {
 	// 아파트 고유 번호 -> 아파트 거래 상세 정보 리스트 가져오기
 	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
+	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 }

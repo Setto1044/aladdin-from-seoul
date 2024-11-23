@@ -8,6 +8,7 @@ import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealVo;
+import com.aladin.house.vo.HouseDetailVo;
 
 @Mapper
 public interface HouseMapper {
@@ -19,4 +20,5 @@ public interface HouseMapper {
 
 	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
+	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 }
