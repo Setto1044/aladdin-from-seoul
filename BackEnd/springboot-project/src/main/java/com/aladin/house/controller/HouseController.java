@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aladin.common.ApiResponseDto;
@@ -41,10 +42,10 @@ public class HouseController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", responseDto));
 	}
 
-	// 특정 아파트 시퀀스의 거래 정보 요청
+	// 특정 아파트 시퀀스의 거래 정보 요청 커서 페이징
 	@GetMapping("/deals/{aptSeq}")
-	public ResponseEntity<ApiResponseDto<HouseDealResponseDto>> getAllHouseDealsByAptSeq(@PathVariable String aptSeq) {
-		List<HouseDealVo> houseDeals = houseService.findAllHouseDealsByAptSeq(aptSeq);
+	public ResponseEntity<ApiResponseDto<HouseDealResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
+		List<HouseDealVo> houseDeals = houseService.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", HouseDealResponseDto.of(houseDeals)));
 	}
 

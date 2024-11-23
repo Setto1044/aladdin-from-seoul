@@ -29,8 +29,8 @@ public class HouseServiceImpl implements HouseService {
 	}
 
 	@Override
-	public List<HouseDealVo> findAllHouseDealsByAptSeq(String aptSeq) {
-		return houseMapper.findAllHouseDealsByAptSeq(aptSeq);
+	public List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size) {
+		return houseMapper.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 	}
 
 }

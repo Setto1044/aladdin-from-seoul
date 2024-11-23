@@ -81,10 +81,10 @@
 		CAST(latitude AS DECIMAL(10,6)) BETWEEN #{lat} - 0.9 AND #{lat} + 0.9
 		AND CAST(longitude AS DECIMAL(10,6)) BETWEEN #{lng} - 1.14 AND #{lng} + 1.14
 		ORDER BY distance_approx
-		LIMIT 100
+		LIMIT 300
 	</select>
 
-	<select id="findAllHouseDealsByAptSeq" parameterType="String" resultMap="HouseDealResultMap">
+	<select id="findAllHouseDealsByAptSeqWithCursor" parameterType="map" resultMap="HouseDealResultMap">
 		SELECT
 		no,
 		apt_seq,
@@ -97,7 +97,11 @@
 		deal_amount
 		FROM housedeals
 		WHERE apt_seq = #{aptSeq}
-		ORDER BY deal_year DESC, deal_month DESC, deal_day DESC
+		<if test="cursorId != null">
+			AND no &lt; #{cursorId}
+		</if>
+		ORDER BY no DESC
+		LIMIT #{size}
 	</select>
 
 </mapper>
