@@ -135,6 +135,7 @@ export default {
     },
     selectItem() {
       // 부모 컴포넌트로 선택 이벤트 전달
+      console.log("부모컴포넌트로 전달",this.item)
       this.$emit('select-item', this.item)
     },
   },

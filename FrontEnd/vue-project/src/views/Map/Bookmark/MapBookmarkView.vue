@@ -14,7 +14,6 @@
             <span @click="aptClick" :class="{ active: apt }">매매</span>
             <span @click="shareClick" :class="{ active: share }">방 나누기</span>
           </div>
-
           <!-- Sidebar 1 내부 콘텐츠 -->
           <AptInfoPanel v-if="apt" @select-item="openSidebar2" :mapInstance="mapInstance" />
           <ShareRoomInfoPanel v-if="share" @select-item="openSidebar2" :mapInstance="mapInstance" />
@@ -24,7 +23,9 @@
         <Sidebar class="sidebar2" :isOpen="isSidebar2Open" @close="handleCloseSidebar2">
           <!-- Sidebar 2 내부 콘텐츠 -->
           <!-- Pass property details as props -->
-          <PropertyDetails :property="selectedItem" />
+          <!-- <PropertyDetails :property="selectedItem" /> -->
+          <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
+          <ContentDisplayPanel v-if="share" :tab="apt" :id="selectedItem.roomBoardVo.id" />
         </Sidebar>
       </div>
       <!-- Map -->
@@ -46,6 +47,8 @@ import Sidebar from '@/components/Map/Util/SidebarBookmark.vue'
 import AptInfoPanel from '@/components/Map/Bookmark/AptInfoPanel.vue'
 import ShareRoomInfoPanel from '@/components/Map/Bookmark/ShareRoomInfoPanel.vue'
 import PropertyDetails from '@/components/Map/PropertyDetails.vue'
+import ContentDisplayPanel from '@/components/Map/Bookmark/InfoWidgets/ContentDisplayPanel.vue'
+
 import { ref } from 'vue'
 
 export default {
@@ -57,6 +60,7 @@ export default {
     AptInfoPanel,
     PropertyDetails,
     ShareRoomInfoPanel,
+    ContentDisplayPanel,
   },
   data() {
     return {
@@ -86,12 +90,14 @@ export default {
       console.log('매매 클릭')
       this.apt = true
       this.share = false
+      this.handleCloseSidebar2()
       console.log('apt:', this.apt, 'share:', this.share)
     },
     shareClick() {
       console.log('방 나누기 클릭')
       this.share = true
       this.apt = false
+      this.handleCloseSidebar2()
       console.log('apt:', this.apt, 'share:', this.share)
     },
 

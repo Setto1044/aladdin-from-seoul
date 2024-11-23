@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-overlay" v-if="show" @click="$emit('close')">
+  <div class="modal-overlay" @click="$emit('close')">
     <div class="modal-content property-detail" @click.stop>
       <button @click="$emit('close')" class="close-button">X</button>
 
@@ -110,7 +110,6 @@ export default {
     Pagination,
   },
   props: {
-    show: Boolean,
     id: Number,
   },
   data() {
@@ -174,11 +173,12 @@ export default {
 
       try {
         const response = await axios.get(
-          `http://localhost:8080/aladin/bookmark/deal/status?username${this.userStore.memberInfo.username}&roomboardsId=${this.id}`,
+          `http://localhost:8080/aladin/bookmark/board/status?username=${this.userStore.memberInfo.username}&boardId=${this.id}`,
         )
         this.isBookmarked = response.data.success // 서버 응답에 따라 상태 업데이트
         console.log(
           '��마크 상태 확인 성공:',
+          `http://localhost:8080/aladin/bookmark/board/status?username=${this.userStore.memberInfo.username}&roomboardsId=${this.id}`,
           response.data.success,
           this.id,
           this.userStore.memberInfo.username,
