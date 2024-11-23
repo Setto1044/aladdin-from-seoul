@@ -54,13 +54,13 @@ const router = createRouter({
       path: '/share/write',
       name: 'share-write',
       component: () => import('@/views/RoomShareWriteView.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
+      meta: { showSearchBar: true, showFooterBar: false, auth: true },
     },
     {
       path: '/share/edit/:id',
       name: 'share-edit',
       component: () => import('@/views/RoomShareEditView.vue'),
-      meta: { showSearchBar: true, showFooterBar: false },
+      meta: { showSearchBar: true, showFooterBar: false, auth: true },
       props: true,
     },
     {

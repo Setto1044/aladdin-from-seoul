@@ -225,7 +225,23 @@ export default {
       })
     },
     goToDeletePage() {
-      // Implement delete logic
+      if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+        axios
+          .delete(`http://localhost:8080/aladin/boards/${this.id}`)
+          .then((response) => {
+            if (response.data.success) {
+              alert('게시물이 성공적으로 삭제되었습니다.')
+              this.$emit('close') // 모달 닫기
+              this.$router.push({ name: 'share' }) // 삭제 후 다른 페이지로 이동
+            } else {
+              alert(`삭제 실패: ${response.data.message}`)
+            }
+          })
+          .catch((error) => {
+            console.error('게시물 삭제 중 오류 발생:', error)
+            alert('삭제 중 문제가 발생했습니다. 다시 시도해주세요.')
+          })
+      }
     },
   },
 }

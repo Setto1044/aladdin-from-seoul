@@ -55,9 +55,6 @@ export default {
 
     return { userStore }
   },
-  mounted() {
-    console.log(this.props.card)
-  },
   data() {
     return {
       showTooltip: false,

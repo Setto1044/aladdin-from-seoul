@@ -15,7 +15,10 @@
             </div>
           </template>
         </draggable>
-        <input type="file" id="imageFiles" multiple @change="handleImageUpload" ref="fileInput" />
+        <div class="dropzone" @dragover.prevent @drop.prevent="handleImageDrop">
+          Drag and drop your images here
+          <input type="file" id="imageFiles" multiple @change="handleImageUpload" ref="fileInput" />
+        </div>
 
         <!-- Cropper 모달 -->
         <div v-if="showCropper" class="modal-overlay">
@@ -129,6 +132,7 @@ import draggable from 'vuedraggable'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import axios from 'axios'
+import useUserStore from '@/stores/user-store' // Example: your Pinia store for user info
 
 export default {
   components: {
@@ -158,6 +162,10 @@ export default {
     }
   },
   methods: {
+    handleImageDrop(event) {
+      const files = Array.from(event.dataTransfer.files)
+      this.handleImageUpload({ target: { files } })
+    },
     execDaumPostcode() {
       new daum.Postcode({
         oncomplete: (data) => {
@@ -192,6 +200,7 @@ export default {
       if (files.length > 0) {
         const file = files[0] // 첫 번째 파일만 처리 (여러 개 처리하려면 반복문으로 수정)
         const reader = new FileReader()
+
         reader.onload = (e) => {
           this.currentImageUrl = e.target.result // 모달에 표시할 이미지 URL 설정
           this.showCropper = true // 자르기 모달 표시
@@ -200,6 +209,7 @@ export default {
             this.initCropper() // Cropper 초기화
           })
         }
+
         reader.readAsDataURL(file)
         this.currentImageFile = file // 자르기 후 원본 파일 업데이트
       }
@@ -213,11 +223,25 @@ export default {
     cropImage() {
       const canvas = this.cropperInstance.getCroppedCanvas()
       canvas.toBlob((blob) => {
+        // 원본 파일 이름 가져오기
+        const originalName = this.currentImageFile.name
+
+        // 고유한 이름 생성 (원본 이름 + 타임스탬프)
+        const uniqueName = `${originalName.split('.')[0]}_${Date.now()}.${blob.type.split('/')[1]}`
+
+        // Blob을 File 객체로 변환하면서 원본 이름 유지
+        const croppedFile = new File([blob], uniqueName, { type: blob.type })
+
+        // 크롭된 파일의 미리보기 URL 생성
         const newImageUrl = URL.createObjectURL(blob)
-        this.formData.imageFiles.push(blob)
+
+        // 크롭된 파일과 미리보기를 배열에 추가
+        this.formData.imageFiles.push(croppedFile)
         this.formData.imagePreviews.push(newImageUrl)
+
+        // 크롭퍼 닫기
         this.closeCropper()
-      })
+      }, this.currentImageFile.type) // 원본 파일의 MIME 타입 사용
     },
     closeCropper() {
       if (this.cropperInstance) {
@@ -265,11 +289,12 @@ export default {
         reader.readAsDataURL(file) // Base64로 변환
       }
     },
+
     submitForm() {
       const formData = new FormData()
 
       // 텍스트 데이터 추가
-      formData.append('membersUsername', 'led156')
+      formData.append('membersUsername', useUserStore().memberInfo.username)
       formData.append('title', this.formData.title)
       formData.append('detail', this.formData.detail)
       formData.append('address', this.formData.address)
@@ -282,9 +307,14 @@ export default {
       formData.append('hashtags', this.formData.hashtags.join(', ')) // 쉼표로 구분된 문자열로 변환
 
       // 이미지 파일 추가
-      this.formData.imageFiles.forEach((file) => {
-        formData.append('images[]', file)
-      })
+      for (const file of this.formData.imageFiles) {
+        formData.append('images[]', file) // 배열 형태로 서버로 전송
+      }
+
+      // 디버깅: FormData의 내용을 확인
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value) // key와 value를 출력
+      }
 
       // Axios POST 요청
       axios

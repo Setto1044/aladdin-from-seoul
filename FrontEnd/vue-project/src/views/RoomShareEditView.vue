@@ -4,24 +4,15 @@
     <div v-if="formData">
       <form @submit.prevent="updateForm">
         <div class="form-group">
-          <label for="imageFiles">Upload Images</label>
-          <draggable v-model="formData.imagePreviews" class="image-preview" @end="onDragEnd">
-            <template #item="{ element, index }">
-              <div class="image-container">
-                <span class="image-order">{{ index + 1 }}</span>
-                <img :src="element" alt="Image preview" />
-                <button type="button" @click="removeImage(index)" class="delete-button">X</button>
-              </div>
-            </template>
-          </draggable>
-          <input type="file" id="imageFiles" multiple @change="handleImageUpload" ref="fileInput" />
-
-          <!-- Cropper 모달 -->
-          <div v-if="showCropper" class="modal-overlay">
-            <div class="modal-content">
-              <img ref="cropperImage" :src="currentImageUrl" alt="To crop" />
-              <button type="button" @click="cropImage" class="crop-button">Crop</button>
-              <button type="button" @click="closeCropper" class="cancel-button">Cancel</button>
+          <label>Images</label>
+          <div class="image-preview">
+            <div
+              v-for="(element, index) in formData.imagePreviews"
+              :key="index"
+              class="image-container"
+            >
+              <span class="image-order">{{ index + 1 }}</span>
+              <img :src="element" alt="Image preview" />
             </div>
           </div>
         </div>
@@ -81,8 +72,8 @@
         <div class="form-group">
           <label for="pricePer">Price Per</label>
           <select id="pricePer" v-model="formData.pricePer">
-            <option value="week">Week</option>
-            <option value="month">Month</option>
+            <option value="WEEK">Week</option>
+            <option value="MONTH">Month</option>
           </select>
         </div>
 
@@ -101,7 +92,7 @@
           <label for="hashtags">Hashtags</label>
           <div class="hashtag-input">
             <div class="input-container">
-              <div class="hashtag" v-for="(tag, index) in formData.tags" :key="index">
+              <div class="hashtag" v-for="(tag, index) in formData.hashtags" :key="index">
                 #{{ tag }}
                 <span class="remove-tag" @click="removeTag(index)">x</span>
               </div>
@@ -175,17 +166,17 @@ export default {
           houseSize: roomCardInfo.houseSize,
           pricePer: roomCardInfo.pricePer,
           views: roomCardInfo.views,
-          rentStart: new Date(roomCardInfo.rentStart),
-          rentUntil: new Date(roomCardInfo.rentUntil),
-          hashtags: JSON.parse(roomCardInfo.hashtags || '[]'),
+          rentStart: this.formatDate(new Date(roomCardInfo.rentStart)),
+          rentUntil: this.formatDate(new Date(roomCardInfo.rentUntil)), // Date -> YYYY-MM-DD
+          hashtags: JSON.parse(roomCardInfo.hashtags || '[]'), // `tags` 대신 `hashtags`
           createdAt: roomCardInfo.createdAt,
           updatedAt: roomCardInfo.updatedAt,
           images: roomImageInfos.map((img) => ({
             url: img.url,
             order: img.imageOrder,
           })),
-          imageFiles: this.images || [],
-          imagePreviews: this.images || [],
+          imagePreviews: roomImageInfos.map((img) => img.url), // 미리보기 URL
+          imageFiles: [], // 초기에는 빈 배열
         }
 
         console.log('Loaded data:', this.formData)
@@ -198,6 +189,12 @@ export default {
   },
 
   methods: {
+    formatDate(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0') // 0-based
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
     execDaumPostcode() {
       new daum.Postcode({
         oncomplete: (data) => {
@@ -296,27 +293,37 @@ export default {
         return
       }
 
-      // Prepare data for PUT request
-      const payload = {
-        title: this.formData.title,
-        detail: this.formData.detail,
-        address: this.formData.address,
-        postcode: this.formData.postcode,
-        price: this.formData.price,
-        houseSize: this.formData.houseSize,
-        pricePer: this.formData.pricePer.toUpperCase(),
-        rentStart: this.formData.rentStart,
-        rentUntil: this.formData.rentUntil,
-        hashtags: JSON.stringify(this.formData.hashtags),
-        // Assuming image files will be handled separately if necessary
+      // FormData 생성
+      const formData = new FormData()
+
+      // 텍스트 데이터 추가
+      formData.append('id', this.formData.id) // 수정할 글의 ID
+      formData.append('title', this.formData.title)
+      formData.append('detail', this.formData.detail)
+      formData.append('address', this.formData.address)
+      formData.append('postcode', this.formData.postcode)
+      formData.append('price', this.formData.price)
+      formData.append('houseSize', this.formData.houseSize)
+      formData.append('pricePer', this.formData.pricePer.toUpperCase())
+      formData.append('rentStart', this.formData.rentStart)
+      formData.append('rentUntil', this.formData.rentUntil)
+      formData.append('hashtags', this.formData.hashtags.join(','))
+
+      // FormData 확인 (디버깅)
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value)
       }
 
       axios
-        .put(`http://localhost:8080/aladin/boards/${this.formData.id}`, payload)
+        .put(`http://localhost:8080/aladin/boards`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
         .then((response) => {
           if (response.data.success) {
             alert(response.data.message)
-            this.$router.push('/share') // Navigate back to property list
+            this.$router.push({ name: 'share' }) // Navigate back to property list
           } else {
             alert('Failed to update the property.')
           }
@@ -344,6 +351,7 @@ export default {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 .form-group {
   margin-bottom: 15px;
