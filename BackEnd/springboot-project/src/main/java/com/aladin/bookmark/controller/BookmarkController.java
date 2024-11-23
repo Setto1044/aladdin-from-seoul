@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aladin.bookmark.dto.DealBookmarkOneRequestDto;
 import com.aladin.bookmark.dto.DealBookmarkPostRequestDto;
 import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.bookmark.dto.RoomBookmarkPostRequestDto;
@@ -66,8 +65,8 @@ public class BookmarkController {
 	}
 
 	@GetMapping("/deal/status")
-	public ResponseEntity<ApiResponseDto<DealBookmarkResponseDto>> getOneDealBookmarkById(@RequestBody DealBookmarkOneRequestDto requestDto) {
-		DealBookmarkResponseDto bookmark = bookmarkService.findOneDealBookmarkById(requestDto);
+	public ResponseEntity<ApiResponseDto<DealBookmarkResponseDto>> getOneDealBookmarkById(@RequestParam String username, @RequestParam Long housedealsNo) {
+		DealBookmarkResponseDto bookmark = bookmarkService.findOneDealBookmarkById(username, housedealsNo);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "북마크 매물 조회 성공", bookmark));
 	}
 }

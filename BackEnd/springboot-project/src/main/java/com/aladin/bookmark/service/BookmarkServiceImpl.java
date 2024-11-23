@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aladin.bookmark.dto.DealBookmarkOneRequestDto;
 import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.bookmark.mapper.BookmarkMapper;
 import com.aladin.exceptions.ResourceNotFoundException;
@@ -66,8 +65,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public DealBookmarkResponseDto findOneDealBookmarkById(DealBookmarkOneRequestDto requestDto) {
-		DealBookmarkResponseDto result = bookmarkMapper.findOneDealBookmarkById(requestDto);
+	public DealBookmarkResponseDto findOneDealBookmarkById(String username, Long housedealsNo) {
+		DealBookmarkResponseDto result = bookmarkMapper.findOneDealBookmarkById(username, housedealsNo);
 		if (result == null) {
 			throw new ResourceNotFoundException("존재하지 않는 거래내역입니다.");
 		}

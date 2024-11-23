@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.aladin.bookmark.dto.DealBookmarkOneRequestDto;
 import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
@@ -23,5 +22,5 @@ public interface BookmarkMapper {
 
 	List<DealBookmarkResponseDto> findDealBookmarksByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
-	DealBookmarkResponseDto findOneDealBookmarkById(DealBookmarkOneRequestDto requestDto);
+	DealBookmarkResponseDto findOneDealBookmarkById(String username, Long housedealsNo);
 }
