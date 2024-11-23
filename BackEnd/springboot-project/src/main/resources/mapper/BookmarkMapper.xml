@@ -1,5 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aladin.bookmark.mapper.BookmarkMapper">
+
 	<!-- 게시글 테이블과 VO 매핑 -->
 	<resultMap id="roomBoardResultMap" type="com.aladin.roomBoard.vo.RoomBoardVo">
 		<id property="id" column="id" />
@@ -27,8 +28,15 @@
 
 	<insert id="insertBoardBookmark" parameterType="map">
 		INSERT INTO roomboards_bookmarks (members_username, roomboards_id)
-		VALUES (#{username}, #{roomboardsId});
+		SELECT #{username}, #{roomboardsId}
+		WHERE NOT EXISTS (
+		SELECT 1
+		FROM roomboards_bookmarks b
+		WHERE b.members_username = #{username}
+		AND b.roomboards_id = #{roomboardsId}
+		);
 	</insert>
+
 
 	<delete id="deleteBoardBookmark" parameterType="map">
 		DELETE FROM roomboards_bookmarks
@@ -90,7 +98,7 @@
 		AND b.housedeals_no = #{housedealsNo}
 		);
 	</insert>
-	
+
 	<!-- 아파트 거래 북마크 삭제 -->
 	<delete id="deleteDealBookmark" parameterType="map">
 		DELETE FROM housedeals_bookmarks

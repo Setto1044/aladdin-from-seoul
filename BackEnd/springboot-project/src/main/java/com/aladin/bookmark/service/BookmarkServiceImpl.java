@@ -23,21 +23,17 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	@Override
 	public void addBoardBookmark(String username, Long roomboardsId) {
-		try {
-			bookmarkMapper.insertBoardBookmark(username, roomboardsId);
-		} catch (Exception e) {
-			log.error("게시글 북마크 추가 중 오류: {}", e.getMessage(), e);
-			throw new RuntimeException("게시글 북마크 추가 중 오류가 발생했습니다.");
+		int result = bookmarkMapper.insertBoardBookmark(username, roomboardsId);
+		if (result == 0) {
+			throw new RuntimeException("북마크 추가 실패: 중복되었거나 유효하지 않은 요청입니다.");
 		}
 	}
 
 	@Override
 	public void removeBoardBookmark(String username, Long roomboardsId) {
-		try {
-			bookmarkMapper.deleteBoardBookmark(username, roomboardsId);
-		} catch (Exception e) {
-			log.error("게시글 북마크 삭제 중 오류: {}", e.getMessage(), e);
-			throw new RuntimeException("게시글 북마크 삭제 중 오류가 발생했습니다.");
+		int result = bookmarkMapper.deleteBoardBookmark(username, roomboardsId);
+		if (result == 0) {
+			throw new RuntimeException("북마크 삭제 실패: 대상이 존재하지 않거나 이미 삭제되었습니다.");
 		}
 	}
 

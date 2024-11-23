@@ -10,9 +10,9 @@ import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 @Mapper
 public interface BookmarkMapper {
-	void insertBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
+	int insertBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
 
-	void deleteBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
+	int deleteBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
 
 	List<RoomBoardCardDto> findBookmarkedBoardsByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
