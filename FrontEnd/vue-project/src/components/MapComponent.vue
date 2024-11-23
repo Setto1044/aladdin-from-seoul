@@ -36,6 +36,10 @@ const loadKakaoMap = () => {
 const fetchHouseData = async () => {
   if (!mapInstance) return
 
+  const zoomLevel = mapInstance.getLevel()
+  console.log(zoomLevel)
+  if (zoomLevel > 5) return // 줌 레벨 6 초과 시 API 호출 중단
+
   const bounds = mapInstance.getBounds()
   const swLatLng = bounds.getSouthWest()
   const neLatLng = bounds.getNorthEast()
@@ -47,115 +51,178 @@ const fetchHouseData = async () => {
     lngB: neLatLng.getLng(),
   }
 
-  const houseCards = [
-    {
-      aptSeq: '11110-117',
-      dongCode: '1111011800',
-      sidoName: '서울특별시',
-      gugunName: '종로구',
-      dongName: '내수동',
-      aptName: '경희궁의아침4단지',
-      jibun: '73',
-      latestDealAmount: '190,000',
-      excluUseAr: 124.17,
-      buildYear: '2004',
-      latitude: '37.5726308227784',
-      longitude: '126.972440824541',
-      views: 0,
-      aptPhotoLink:
-        'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
-    },
-    {
-      aptSeq: '11110-117',
-      dongCode: '1111011800',
-      sidoName: '서울특별시',
-      gugunName: '종로구',
-      dongName: '내수동',
-      aptName: '경희궁의아침4단지',
-      jibun: '73',
-      latestDealAmount: '190,000',
-      excluUseAr: 124.17,
-      buildYear: '2004',
-      latitude: '37.5726908227784',
-      longitude: '126.972440824541',
-      views: 0,
-      aptPhotoLink:
-        'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
-    },
-    {
-      aptSeq: '11110-117',
-      dongCode: '1111011800',
-      sidoName: '서울특별시',
-      gugunName: '종로구',
-      dongName: '내수동',
-      aptName: '경희궁의아침4단지',
-      jibun: '73',
-      latestDealAmount: '190,000',
-      excluUseAr: 124.17,
-      buildYear: '2004',
-      latitude: '37.5726308227784',
-      longitude: '126.970440824541',
-      views: 0,
-      aptPhotoLink:
-        'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
-    },
-  ]
+  // const houseCards = [
+  //   {
+  //     aptSeq: '11110-117',
+  //     dongCode: '1111011800',
+  //     sidoName: '서울특별시',
+  //     gugunName: '종로구',
+  //     dongName: '내수동',
+  //     aptName: '경희궁의아침4단지',
+  //     jibun: '73',
+  //     latestDealAmount: '190,000',
+  //     excluUseAr: 124.17,
+  //     buildYear: '2004',
+  //     latitude: '37.5726308227784',
+  //     longitude: '126.972440824541',
+  //     views: 0,
+  //     aptPhotoLink:
+  //       'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
+  //   },
+  // ]
   console.log('지도 변경 : api 호출')
-  displayMarkers(houseCards)
-  // try {
-  //   // API 호출
-  //   const response = await axios.get('http://localhost:8080/aladin/house/cards/range', { params })
-  //   if (response.data?.data?.houseCards) {
-  //     displayMarkers(response.data.data.houseCards)
-  //   }
-  // } catch (error) {
-  //   console.error('Failed to fetch house data:', error)
-  // }
+  // displayMarkers(houseCards)
+
+  try {
+    // API 호출
+    const response = await axios.get('http://localhost:8080/aladin/house/cards/range', { params })
+    if (response.data?.data?.houseCards) {
+      displayMarkers(response.data.data.houseCards)
+    }
+  } catch (error) {
+    console.error('Failed to fetch house data:', error)
+  }
 }
 
-// 마커 표시 함수
+const loadGeoJson = async () => {
+  try {
+    const response = await fetch('/seoul_gson.geojson')
+    const geoJsonData = await response.json()
+    const features = geoJsonData.features
+
+    features.forEach((feature) => {
+      const coordinates = feature.geometry.coordinates
+      const name = feature.properties.SIG_KOR_NM
+      displayArea(coordinates, name) // 폴리곤 표시
+    })
+  } catch (error) {
+    console.error('Failed to load GeoJSON:', error)
+  }
+}
+let polygons = [] // 폴리곤 객체 저장
+let customOverlay // 커스텀 오버레이
+
+// 행정구역 폴리곤 표시 함수
+const displayArea = (coordinates, name) => {
+  const path = coordinates[0].map((coord) => new kakao.maps.LatLng(coord[1], coord[0]))
+
+  // 다각형 생성
+  const polygon = new kakao.maps.Polygon({
+    path: path,
+    strokeWeight: 2,
+    strokeColor: '#004c80',
+    strokeOpacity: 0.8,
+    fillColor: '#fff',
+    fillOpacity: 0.7,
+  })
+
+  // 지도에 폴리곤 추가
+  polygon.setMap(mapInstance)
+  polygons.push(polygon)
+
+  // 폴리곤에 이벤트 등록
+  registerPolygonEvents(polygon, name)
+}
+
+// 폴리곤 이벤트 등록
+const registerPolygonEvents = (polygon, name) => {
+  // 마우스 오버 이벤트
+  kakao.maps.event.addListener(polygon, 'mouseover', (mouseEvent) => {
+    polygon.setOptions({ fillColor: '#09f' })
+
+    // 커스텀 오버레이 생성
+    if (!customOverlay) {
+      customOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 })
+    }
+
+    customOverlay.setContent(
+      `<div style="padding:5px; background:#fff; border:1px solid #ccc;">${name}</div>`,
+    )
+    customOverlay.setPosition(mouseEvent.latLng)
+    customOverlay.setMap(mapInstance)
+  })
+
+  // 마우스 아웃 이벤트
+  kakao.maps.event.addListener(polygon, 'mouseout', () => {
+    polygon.setOptions({ fillColor: '#fff' })
+    if (customOverlay) {
+      customOverlay.setMap(null) // 오버레이 숨김
+    }
+  })
+
+  // 폴리곤 클릭 이벤트
+  kakao.maps.event.addListener(polygon, 'click', () => {
+    const bounds = new kakao.maps.LatLngBounds()
+    polygon.getPath().forEach((point) => bounds.extend(point))
+
+    // 지도 확대 및 폴리곤 제거
+    mapInstance.setBounds(bounds)
+    clearPolygons()
+  })
+}
+
+// 폴리곤 제거 함수
+const clearPolygons = () => {
+  polygons.forEach((polygon) => polygon.setMap(null))
+  polygons = []
+}
+
+const clearMarkersAndClusterer = () => {
+  clustererInstance.clear() // 클러스터러 초기화
+}
+
 const displayMarkers = (houseData) => {
   if (!clustererInstance) return
 
-  // 기존 마커 제거
+  console.log('Clearing existing markers...')
   clustererInstance.clear()
 
-  // 새 마커 생성
-  const newMarkers = houseData.map((house) => {
-    const marker = new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(house.latitude, house.longitude),
-    })
-
-    // 인포윈도우 설정
-    const infoWindow = new kakao.maps.InfoWindow({
-      content: `
-        <div style="padding:5px;font-size:12px;">
-          ${house.aptName}<br/>
-          ${house.latestDealAmount}만원
+  console.log('Adding new markers...')
+  const newOverlays = houseData.map((house) => {
+    const content = `<div class="custom-overlay">
+        <div class="overlay-content">
+          <div class="overlay-title">${house.aptName}</div>
+          <div class="overlay-price">${house.latestDealAmount}만원</div>
         </div>
-      `,
+        <div class="overlay-tail"></div>
+      </div>
+    `
+
+    const overlay = new kakao.maps.CustomOverlay({
+      position: new kakao.maps.LatLng(house.latitude, house.longitude),
+      content: content,
+      yAnchor: 1.3, // 오버레이 기준점을 꼬리에 맞춤
     })
 
-    // 마커 이벤트 설정
-    kakao.maps.event.addListener(marker, 'mouseover', () => {
-      infoWindow.open(mapInstance, marker)
+    // 이벤트를 content에 추가하려면 DOM 객체를 직접 접근해야 함
+    const overlayElement = document.createElement('div')
+    overlayElement.innerHTML = content
+
+    // 마우스 오버/아웃 이벤트 추가
+    overlayElement.addEventListener('mouseover', () => {
+      overlay.setZIndex(999) // 오버레이를 앞으로 가져오기
     })
 
-    kakao.maps.event.addListener(marker, 'mouseout', () => {
-      infoWindow.close()
+    overlayElement.addEventListener('mouseout', () => {
+      overlay.setZIndex(1) // 오버레이를 뒤로 보내기
     })
 
-    kakao.maps.event.addListener(marker, 'click', () => {
-      // 클릭 이벤트 처리
-      console.log('Marker clicked:', house)
-      emit('marker-clicked', house)
+    overlayElement.addEventListener('click', () => {
+      console.log('Overlay clicked:', house)
+      emit('marker-clicked', house) // 클릭 이벤트 발생
+      // 지도 중심을 마커 위치로 이동
+      mapInstance.setCenter(new kakao.maps.LatLng(house.latitude, house.longitude))
     })
 
-    return marker
+    // 커스텀 오버레이에 이벤트가 적용된 DOM 요소 설정
+    overlay.setContent(overlayElement)
+    overlay.setMap(mapInstance) // 지도에 오버레이 추가
+
+    return overlay
   })
 
-  // 클러스터러에 마커 추가
-  clustererInstance.addMarkers(newMarkers)
+  // 클러스터러에 오버레이 추가
+  clustererInstance.addMarkers(newOverlays)
 }
 
 // 디바운스 함수
@@ -181,15 +248,15 @@ onMounted(async () => {
 
     // 맵 인스턴스 생성
     mapInstance = new kakaoMaps.Map(mapContainer, {
-      center: new kakaoMaps.LatLng(36.2683, 127.6358),
-      level: 14,
+      center: new kakaoMaps.LatLng(37.571924, 126.975391),
+      level: 4,
     })
 
     // 클러스터러 인스턴스 생성
     clustererInstance = new kakaoMaps.MarkerClusterer({
       map: mapInstance,
       averageCenter: true,
-      minLevel: 6,
+      minLevel: 4,
       gridSize: 60,
       styles: [
         {
@@ -207,9 +274,23 @@ onMounted(async () => {
 
     // idle 이벤트 리스너 등록 (디바운스 적용)
     kakaoMaps.event.addListener(mapInstance, 'idle', debouncedFetchHouseData)
+    // 줌 변경 이벤트 등록
+    kakaoMaps.event.addListener(mapInstance, 'zoom_changed', async () => {
+      const zoomLevel = mapInstance.getLevel()
+
+      if (zoomLevel <= 5) {
+        // 줌 레벨 5 이하: 클러스터러와 마커 표시
+        clearPolygons() // 기존 폴리곤 제거
+        await fetchHouseData() // 마커 데이터 가져오기
+      } else {
+        // 줌 레벨 6 초과: 마커와 클러스터러 숨기고 폴리곤 표시
+        clearMarkersAndClusterer() // 클러스터러 초기화
+        loadGeoJson() // 폴리곤 표시
+      }
+    })
 
     // 초기 데이터 로드
-    fetchHouseData()
+    await fetchHouseData() // 초기 마커 표시
   } catch (error) {
     console.error('Error loading Kakao Map:', error)
   }
@@ -224,4 +305,61 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style>
+.custom-overlay {
+  position: relative;
+  width: 120px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 10px;
+}
+
+/* 말풍선 꼬리 */
+.custom-overlay .overlay-tail {
+  position: absolute;
+  bottom: -10px; /* 말풍선 꼬리가 아래쪽으로 살짝 나옴 */
+  left: 50%; /* 가로 중앙 정렬 */
+  transform: translateX(-50%); /* 정렬 보정 */
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #fff; /* 꼬리 색상 (배경색과 동일해야 함) */
+  z-index: 1; /* 부모와 겹치지 않도록 설정 */
+}
+
+/* 오버레이 그림자와 꼬리를 구분하기 위해 추가 */
+.custom-overlay {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  overflow: visible; /* 말풍선 꼬리가 잘리지 않게 설정 */
+}
+
+/* 오버레이 제목 */
+.custom-overlay .overlay-title {
+  font-weight: bold;
+  font-size: 14px; /* 기본 글자 크기 */
+  overflow: hidden; /* 넘칠 경우 숨김 */
+  white-space: nowrap; /* 한 줄로 제한 */
+  text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
+}
+
+/* 오버레이 가격 */
+.custom-overlay .overlay-price {
+  color: green;
+  font-size: 12px;
+  margin-top: 5px;
+  overflow: hidden; /* 넘칠 경우 숨김 */
+  white-space: nowrap; /* 한 줄로 제한 */
+  text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
+}
+</style>

@@ -8,6 +8,7 @@
         <Sidebar1
           class="sidebar sidebar1"
           :isOpen="isSidebar1Open"
+          :selectedMarker="selectedMarker"
           :openSidebar2="toggleSidebar2"
           @select-item="openSidebar2"
           @close1="handleCloseSidebar12"
@@ -45,6 +46,7 @@ export default {
     return {
       isSidebar1Open: false,
       isSidebar2Open: false,
+      selectedMarker: null,
     }
   },
   mounted() {
@@ -70,6 +72,9 @@ export default {
     toggleSidebar2() {
       this.isSidebar2Open = true
     },
+    openSidebar1() {
+      this.isSidebar1Open = true
+    },
     openSidebar2(params) {
       console.log(params)
       this.isSidebar2Open = true
@@ -87,9 +92,16 @@ export default {
       this.isSidebar2Open = false
     },
     handleMarkerClick(house) {
-      console.log('Marker clicked in parent:', house)
-      // Perform actions with the marker data (e.g., open a sidebar or display details)
-      this.toggleSidebar1()
+      console.log(this.selectedMarker, house)
+      if (this.selectedMarker?.aptSeq == house.aptSeq) {
+        // 이미 선택된 마커를 클릭했을 때: 열려 있으면 닫지 않음
+        console.log('이미 선택된 마커를 클릭했을 때: 열려 있으면 닫지 않음')
+      } else {
+        // 다른 마커를 클릭했을 때: 선택된 마커 갱신
+        console.log('다른 마커를 클릭했을 때: 선택된 마커 갱신')
+        this.selectedMarker = house
+        this.openSidebar1() // 사이드바 1 열기
+      }
     },
   },
 }
