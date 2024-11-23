@@ -3,8 +3,6 @@ package com.aladin.roomBoard.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.aladin.roomBoard.enums.PricePer;
 
 import lombok.Data;
@@ -23,5 +21,5 @@ public class RoomBoardUpdateRequestDto {
 	private LocalDate rentStart; // 임대 시작 날짜
 	private LocalDate rentUntil; // 임대 종료 날짜
 	private List<String> hashtags; // 해시태그
-	private List<MultipartFile> images; // 업로드할 이미지 리스트
+	// private List<MultipartFile> images; // 업로드할 이미지 리스트
 }
