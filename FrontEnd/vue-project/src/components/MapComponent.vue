@@ -17,6 +17,9 @@ const emit = defineEmits(['marker-clicked'])
 // 전역 변수로 관리
 let mapInstance = null
 let clustererInstance = null
+let currentZoomLevel = null
+let polygons = []
+let overlays = [] // 이름 오버레이를 저장할 배열
 
 const loadKakaoMap = () => {
   return new Promise((resolve, reject) => {
@@ -51,27 +54,7 @@ const fetchHouseData = async () => {
     lngB: neLatLng.getLng(),
   }
 
-  // const houseCards = [
-  //   {
-  //     aptSeq: '11110-117',
-  //     dongCode: '1111011800',
-  //     sidoName: '서울특별시',
-  //     gugunName: '종로구',
-  //     dongName: '내수동',
-  //     aptName: '경희궁의아침4단지',
-  //     jibun: '73',
-  //     latestDealAmount: '190,000',
-  //     excluUseAr: 124.17,
-  //     buildYear: '2004',
-  //     latitude: '37.5726308227784',
-  //     longitude: '126.972440824541',
-  //     views: 0,
-  //     aptPhotoLink:
-  //       'https://landthumb-phinf.pstatic.net/20220321_298/land_naver_1647823862977DhChY_JPEG/1614c087008ef740142cc8ef328db835.JPG?type=m400_350',
-  //   },
-  // ]
   console.log('지도 변경 : api 호출')
-  // displayMarkers(houseCards)
 
   try {
     // API 호출
@@ -84,96 +67,121 @@ const fetchHouseData = async () => {
   }
 }
 
-const loadGeoJson = async () => {
-  try {
-    const response = await fetch('/seoul_gson.geojson')
-    const geoJsonData = await response.json()
-    const features = geoJsonData.features
+// 폴리곤 제거
+const clearPolygons = () => {
+  polygons.forEach((polygon) => polygon.setMap(null))
+  overlays.forEach((overlay) => overlay.setMap(null))
+  polygons = []
+  overlays = []
+}
 
-    features.forEach((feature) => {
+// 클러스터러 초기화
+const clearMarkersAndClusterer = () => {
+  if (clustererInstance) {
+    clustererInstance.clear()
+  }
+}
+
+// 면적 중심 계산 함수
+const calculatePolygonCentroid = (path) => {
+  let area = 0 // 다각형 면적
+  let centroidX = 0 // 중심 x좌표
+  let centroidY = 0 // 중심 y좌표
+
+  const n = path.length
+
+  for (let i = 0; i < n; i++) {
+    const current = path[i]
+    const next = path[(i + 1) % n] // 마지막 점 이후 첫 점으로 이어짐
+
+    const x0 = current.getLng() // 현재 점의 x (Longitude)
+    const y0 = current.getLat() // 현재 점의 y (Latitude)
+    const x1 = next.getLng() // 다음 점의 x
+    const y1 = next.getLat() // 다음 점의 y
+
+    const crossProduct = x0 * y1 - x1 * y0 // 벡터 외적
+    area += crossProduct
+    centroidX += (x0 + x1) * crossProduct
+    centroidY += (y0 + y1) * crossProduct
+  }
+
+  area = area / 2 // 면적 계산
+  centroidX = centroidX / (6 * area) // 중심 x좌표
+  centroidY = centroidY / (6 * area) // 중심 y좌표
+
+  return new kakao.maps.LatLng(centroidY, centroidX)
+}
+
+// 폴리곤 클릭 이벤트 등록 함수
+const registerPolygonEvents = (polygon, name, center) => {
+  // 클릭 이벤트
+  kakao.maps.event.addListener(polygon, 'click', () => {
+    const currentLevel = mapInstance.getLevel()
+
+    if (currentLevel >= 6 && currentLevel <= 7) {
+      // 구 폴리곤 클릭 시: 중심으로 이동, 5레벨로 확대
+      console.log(`${name} 클릭됨, 중심으로 이동 및 5레벨로 확대`)
+      mapInstance.setCenter(center) // 지도 중심 설정
+      mapInstance.setLevel(5) // 지도 레벨 설정
+    } else if (currentLevel >= 8) {
+      // 시 폴리곤 클릭 시: 중심으로 이동, 7레벨로 확대
+      console.log(`${name} 클릭됨, 중심으로 이동 및 7레벨로 확대`)
+      mapInstance.setCenter(center) // 지도 중심 설정
+      mapInstance.setLevel(7) // 지도 레벨 설정
+    }
+  })
+}
+
+// 폴리곤 표시
+const displayArea = (coordinates, name) => {
+  const path = coordinates[0].map((coord) => new kakao.maps.LatLng(coord[1], coord[0]))
+
+  const polygon = new kakao.maps.Polygon({
+    path: path,
+    strokeWeight: 2,
+    strokeColor: '#3d4249',
+    strokeOpacity: 0.8,
+    strokeStyle: 'dashed',
+    fillColor: '#e9eae8',
+    fillOpacity: 0.5,
+  })
+
+  polygon.setMap(mapInstance)
+  polygons.push(polygon)
+
+  // 중심 위치 계산
+  const center = calculatePolygonCentroid(path)
+
+  const customOverlay = new kakao.maps.CustomOverlay({
+    map: mapInstance,
+    position: center,
+    content: `<div class="polygon-overlay" style="background: white; solid gray; padding: 5px;">${name}</div>`,
+  })
+
+  overlays.push(customOverlay)
+
+  // 폴리곤에 이벤트 등록 (클릭 시 레벨 변경 포함)
+  registerPolygonEvents(polygon, name, center)
+}
+
+// GeoJSON 로드 및 표시
+const loadGeoJson = async (url) => {
+  clearPolygons()
+  try {
+    const response = await axios.get(url)
+    const geoJsonData = response.data
+
+    geoJsonData.features.forEach((feature) => {
       const coordinates = feature.geometry.coordinates
       const name = feature.properties.SIG_KOR_NM
-      displayArea(coordinates, name) // 폴리곤 표시
+      displayArea(coordinates, name)
     })
   } catch (error) {
     console.error('Failed to load GeoJSON:', error)
   }
 }
-let polygons = [] // 폴리곤 객체 저장
-let customOverlay // 커스텀 오버레이
-
-// 행정구역 폴리곤 표시 함수
-const displayArea = (coordinates, name) => {
-  const path = coordinates[0].map((coord) => new kakao.maps.LatLng(coord[1], coord[0]))
-
-  // 다각형 생성
-  const polygon = new kakao.maps.Polygon({
-    path: path,
-    strokeWeight: 2,
-    strokeColor: '#004c80',
-    strokeOpacity: 0.8,
-    fillColor: '#fff',
-    fillOpacity: 0.7,
-  })
-
-  // 지도에 폴리곤 추가
-  polygon.setMap(mapInstance)
-  polygons.push(polygon)
-
-  // 폴리곤에 이벤트 등록
-  registerPolygonEvents(polygon, name)
-}
-
-// 폴리곤 이벤트 등록
-const registerPolygonEvents = (polygon, name) => {
-  // 마우스 오버 이벤트
-  kakao.maps.event.addListener(polygon, 'mouseover', (mouseEvent) => {
-    polygon.setOptions({ fillColor: '#09f' })
-
-    // 커스텀 오버레이 생성
-    if (!customOverlay) {
-      customOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 })
-    }
-
-    customOverlay.setContent(
-      `<div style="padding:5px; background:#fff; border:1px solid #ccc;">${name}</div>`,
-    )
-    customOverlay.setPosition(mouseEvent.latLng)
-    customOverlay.setMap(mapInstance)
-  })
-
-  // 마우스 아웃 이벤트
-  kakao.maps.event.addListener(polygon, 'mouseout', () => {
-    polygon.setOptions({ fillColor: '#fff' })
-    if (customOverlay) {
-      customOverlay.setMap(null) // 오버레이 숨김
-    }
-  })
-
-  // 폴리곤 클릭 이벤트
-  kakao.maps.event.addListener(polygon, 'click', () => {
-    const bounds = new kakao.maps.LatLngBounds()
-    polygon.getPath().forEach((point) => bounds.extend(point))
-
-    // 지도 확대 및 폴리곤 제거
-    mapInstance.setBounds(bounds)
-    clearPolygons()
-  })
-}
-
-// 폴리곤 제거 함수
-const clearPolygons = () => {
-  polygons.forEach((polygon) => polygon.setMap(null))
-  polygons = []
-}
-
-const clearMarkersAndClusterer = () => {
-  clustererInstance.clear() // 클러스터러 초기화
-}
 
 const displayMarkers = (houseData) => {
-  if (!clustererInstance) return
-
   console.log('Clearing existing markers...')
   clustererInstance.clear()
 
@@ -277,15 +285,18 @@ onMounted(async () => {
     // 줌 변경 이벤트 등록
     kakaoMaps.event.addListener(mapInstance, 'zoom_changed', async () => {
       const zoomLevel = mapInstance.getLevel()
+      if (zoomLevel === currentZoomLevel) return
+      currentZoomLevel = zoomLevel
 
-      if (zoomLevel <= 5) {
-        // 줌 레벨 5 이하: 클러스터러와 마커 표시
-        clearPolygons() // 기존 폴리곤 제거
-        await fetchHouseData() // 마커 데이터 가져오기
-      } else {
-        // 줌 레벨 6 초과: 마커와 클러스터러 숨기고 폴리곤 표시
-        clearMarkersAndClusterer() // 클러스터러 초기화
-        loadGeoJson() // 폴리곤 표시
+      if (zoomLevel >= 8) {
+        clearMarkersAndClusterer()
+        await loadGeoJson('sido.json')
+      } else if (zoomLevel >= 6 && zoomLevel < 8) {
+        clearMarkersAndClusterer()
+        await loadGeoJson('seoul_gson.json')
+      } else if (zoomLevel <= 5) {
+        clearPolygons()
+        await fetchHouseData()
       }
     })
 
