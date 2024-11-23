@@ -147,7 +147,22 @@
 		c.apt_name AS aptName,
 		c.latitude AS latitude,
 		c.longitude AS longitude,
-		b.created_at AS bookmarkedAt
+		b.created_at AS bookmarkedAt,
+		-- 추가 필드
+		c.sido_name AS sidoName,
+		c.gugun_name AS gugunName,
+		c.dong_name AS dongName,
+		c.jibun AS jibun,
+		c.build_year AS buildYear,
+		h.exclu_use_ar AS excluUseAr,
+		h.floor AS floor,
+		CASE
+		WHEN h.apt_dong = ' ' THEN NULL
+		ELSE h.apt_dong
+		END AS aptDong,
+		h.deal_year AS dealYear,
+		h.deal_month AS dealMonth,
+		h.deal_day AS dealDay
 		FROM housedeals_bookmarks b
 		JOIN housedeals h ON b.housedeals_no = h.no
 		JOIN housecards c ON h.apt_seq = c.apt_seq
@@ -168,11 +183,27 @@
 		c.apt_name AS aptName,
 		c.latitude AS latitude,
 		c.longitude AS longitude,
-		b.created_at AS bookmarkedAt
+		b.created_at AS bookmarkedAt,
+		-- 추가 필드
+		c.sido_name AS sidoName,
+		c.gugun_name AS gugunName,
+		c.dong_name AS dongName,
+		c.jibun AS jibun,
+		c.build_year AS buildYear,
+		h.exclu_use_ar AS excluUseAr,
+		h.floor AS floor,
+		CASE
+		WHEN h.apt_dong = ' ' THEN NULL
+		ELSE h.apt_dong
+		END AS aptDong,
+		h.deal_year AS dealYear,
+		h.deal_month AS dealMonth,
+		h.deal_day AS dealDay
 		FROM housedeals_bookmarks b
 		JOIN housedeals h ON b.housedeals_no = h.no
 		JOIN housecards c ON h.apt_seq = c.apt_seq
 		WHERE b.members_username = #{username}
 		AND b.housedeals_no = #{housedealsNo}
 	</select>
+
 </mapper>
