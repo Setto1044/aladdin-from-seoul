@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HouseBookmarkDto {
+public class DealBookmarkResponseDto {
 	private Long bookmarkId;
 	private Long dealNo;
 	private String aptSeq;
