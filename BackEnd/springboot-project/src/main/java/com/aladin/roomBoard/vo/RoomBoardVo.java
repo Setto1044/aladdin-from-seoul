@@ -1,7 +1,7 @@
 package com.aladin.roomBoard.vo;
 
 import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.aladin.roomBoard.enums.PricePer;
 
@@ -24,6 +24,6 @@ public class RoomBoardVo {
 	private Date rentStart; // 임대 시작 날짜
 	private Date rentUntil; // 임대 종료 날짜
 	private String hashtags; // 해시태그 (JSON 문자열)
-	private LocalDate createdAt; // 작성 시간
-	private LocalDate updatedAt; // 수정 시간
+	private LocalDateTime createdAt; // 작성 시간
+	private LocalDateTime updatedAt; // 수정 시간
 }
