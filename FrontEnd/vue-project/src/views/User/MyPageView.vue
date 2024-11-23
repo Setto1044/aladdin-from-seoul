@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import HouseCardComponent from '@/components/HouseCardComponent.vue'
-import HouseUserCardComponent from '@/components/HouseUserCardComponent.vue'
-import MyPageDetailComponent from '@/components/MyPageDetailSection.vue'
-import CardComponent from '@/components/PostPreviewCard.vue'
+import HouseCardComponent from '@/components/RoomShare/HouseCardComponent.vue'
+import HouseUserCardComponent from '@/components/RoomShare/HouseUserCardComponent.vue'
+import MyPageDetailComponent from '@/components/User/MyPageDetailSection.vue'
+import CardComponent from '@/components/RoomShare/PostPreviewCard.vue'
 import useUserStore from '@/stores/user-store'
 import { computed } from 'vue'
 

@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import CardRow from '@/components/SharePostCardList.vue'
-import PropertyDetailModal from '@/components/SharePostDetail.vue'
+import CardRow from '@/components/RoomShare/SharePostCardList.vue'
+import PropertyDetailModal from '@/components/RoomShare/SharePostDetail.vue'
 
 export default {
   components: {

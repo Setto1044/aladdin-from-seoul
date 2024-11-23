@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import MapItem from '@/components/MapItem.vue'
+import MapItem from '@/components/Map/Apt/MapItem.vue'
 
 export default {
   name: 'RealEstateDetail',

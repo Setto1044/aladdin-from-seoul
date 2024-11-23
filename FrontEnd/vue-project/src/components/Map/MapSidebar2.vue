@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import PropertyDetailsPage from '@/components/PropertyDetailsPage.vue'
+import PropertyDetailsPage from '@/components/Map/PropertyDetailsPage.vue'
 export default {
   components: {
     PropertyDetailsPage,

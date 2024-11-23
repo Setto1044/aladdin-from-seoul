@@ -9,13 +9,6 @@
           <!-- Sidebar 1 내부 콘텐츠 -->
           <AptInfoPanel :complex="selectedMarker" @select-item="openSidebar2" />
         </Sidebar>
-
-        <!-- Sidebar 2 -->
-        <Sidebar class="sidebar2" :isOpen="isSidebar2Open" @close="handleCloseSidebar2">
-          <!-- Sidebar 2 내부 콘텐츠 -->
-          <!-- Pass property details as props -->
-          <PropertyDetails :property="selectedItem" />
-        </Sidebar>
       </div>
       <!-- Map -->
       <MapComponent
@@ -29,11 +22,10 @@
 </template>
 
 <script>
-import MapComponent from '@/components/MapComponent.vue'
-import FilterBar from '@/components/Filter/FilterBar.vue'
-import Sidebar from '@/components/Sidebar.vue'
-import AptInfoPanel from '@/components/AptInfoPanel.vue'
-import PropertyDetails from '@/components/PropertyDetails.vue'
+import MapComponent from '@/components/Map/MapComponent.vue'
+import FilterBar from '@/components/Map/Filter/FilterBar.vue'
+import Sidebar from '@/components/Map/Sidebar.vue'
+import AptInfoPanel from '@/components/Map/Apt/AptInfoPanel.vue'
 
 export default {
   name: 'MapView',
@@ -42,14 +34,11 @@ export default {
     FilterBar,
     Sidebar,
     AptInfoPanel,
-    PropertyDetails,
   },
   data() {
     return {
       isSidebar1Open: false,
-      isSidebar2Open: false,
       selectedMarker: null,
-      selectedItem: null, // This must be initialized
     }
   },
   mounted() {
@@ -70,30 +59,16 @@ export default {
     toggleSidebar1() {
       console.log('오픈')
       this.isSidebar1Open = !this.isSidebar1Open
-      this.isSidebar2Open = false // Close Sidebar 2 when Sidebar 1 is toggled
-    },
-    toggleSidebar2() {
-      this.isSidebar2Open = true
     },
     openSidebar1() {
       this.isSidebar1Open = true
     },
-    openSidebar2(selectedItem) {
-      this.selectedItem = selectedItem // Set the selected item
-      this.isSidebar2Open = true // Open Sidebar2
-    },
     handleMapClick() {
       console.log('MapComponent clicked')
       // this.isSidebar1Open = false
-      // this.isSidebar2Open = false
-    },
-    handleCloseSidebar2() {
-      this.isSidebar2Open = false // Close Sidebar2
-      this.selectedItem = null // Reset the selected item
     },
     handleCloseSidebar12() {
       this.isSidebar1Open = false
-      this.isSidebar2Open = false
       this.selectedMarker = null
     },
     handleMarkerClick(house) {

@@ -27,7 +27,7 @@
 
 <script>
 import axios from 'axios'
-import RealEstateDetailItem from '@/components/RealEstateDetail.vue'
+import RealEstateDetailItem from '@/components/Map/RealEstateDetail.vue'
 // import TransactionDetails from '@/components/TransactionDetails.vue'
 
 export default {

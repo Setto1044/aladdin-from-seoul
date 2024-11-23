@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/LandingView.vue'
 import useUserStore from '@/stores/user-store'
 
 const router = createRouter({
@@ -12,85 +12,76 @@ const router = createRouter({
       meta: { showSearchBar: false, showFooterBar: true },
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('@/views/InitView.vue'),
-      meta: { showSearchBar: false, showFooterBar: false },
-    },
-    {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('@/views/MyPageView.vue'),
+      component: () => import('@/views/User/MyPageView.vue'),
       meta: { showSearchBar: false, showFooterBar: false },
     },
     {
       path: '/mypage/edit',
       name: 'mypageEdit',
-      component: () => import('@/views/EditProfilePage.vue'),
+      component: () => import('@/views/User/EditProfilePage.vue'),
       meta: { showSearchBar: false, showFooterBar: false, auth: true },
     },
     {
       path: '/map',
       name: 'map',
-      component: () => import('@/views/MapView.vue'),
+      component: () => import('@/views/Map/Apt/MapView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {
       path: '/share',
       name: 'share',
-      component: () => import('@/views/RoomShareView.vue'),
+      component: () => import('@/views/RoomShare/RoomShareView.vue'),
       meta: { showSearchBar: true, showFooterBar: true },
     },
     {
       path: '/share/user/:id',
       name: 'share-user',
-      component: () => import('@/views/RoomShareView.vue'),
+      component: () => import('@/views/RoomShare/RoomShareView.vue'),
       meta: { showSearchBar: true, showFooterBar: true },
     },
     {
       path: '/share/write',
       name: 'share-write',
-      component: () => import('@/views/RoomShareWriteView.vue'),
+      component: () => import('@/views/RoomShare/RoomShareWriteView.vue'),
       meta: { showSearchBar: true, showFooterBar: false, auth: true },
     },
     {
       path: '/share/edit/:id',
       name: 'share-edit',
-      component: () => import('@/views/RoomShareEditView.vue'),
+      component: () => import('@/views/RoomShare/RoomShareEditView.vue'),
       meta: { showSearchBar: true, showFooterBar: false, auth: true },
       props: true,
     },
     {
       path: '/favorites',
       name: 'favorites',
-      component: () => import('@/views/MapView.vue'),
+      component: () => import('@/views/Map/Bookmark/MapBookmarkView.vue'),
       meta: { showSearchBar: true, showFooterBar: false, auth: true },
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginPage.vue'),
+      component: () => import('@/views/User/LoginPage.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {
       path: '/sign-up',
       name: 'sign-up',
-      component: () => import('@/views/SignupPage.vue'),
+      component: () => import('@/views/User/SignupPage.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {
       path: '/forgot-password',
       name: 'forgot-password',
-      component: () => import('@/views/ForgotPasswordPage.vue'),
+      component: () => import('@/views/User/ForgotPasswordPage.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {
       path: '/RealEstateDetail',
       name: 'RealEstateDetail',
-      component: () => import('@/components/RealEstateDetail.vue'),
+      component: () => import('@/components/Map/RealEstateDetail.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
   ],

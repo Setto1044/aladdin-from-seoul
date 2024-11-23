@@ -94,10 +94,10 @@
 </template>
 
 <script>
-import TransactionModal from '@/components/Filter/PriceAndTransactionModal.vue'
-import RoomSizeModal from '@/components/Filter/RoomSizeModal.vue'
-import ApprovalDateModal from '@/components/Filter/ApprovalDateModal.vue'
-import AdditionalFiltersModal from '@/components/Filter/AdditionalFiltersModal.vue'
+import TransactionModal from '@/components/Map/Filter/PriceAndTransactionModal.vue'
+import RoomSizeModal from '@/components/Map/Filter/RoomSizeModal.vue'
+import ApprovalDateModal from '@/components/Map/Filter/ApprovalDateModal.vue'
+import AdditionalFiltersModal from '@/components/Map/Filter/AdditionalFiltersModal.vue'
 
 export default {
   components: {

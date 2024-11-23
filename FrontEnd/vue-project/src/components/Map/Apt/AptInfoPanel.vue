@@ -6,19 +6,22 @@
       <p class="complex-summary">
         {{ complex.buildYear }} / {{ complex.minSize }}㎡ ~ {{ complex.maxSize }}㎡
       </p>
+      <p class="complex-summary">
+        {{ complex.sidoName }} {{ complex.gugunName }} {{ complex.dongName }} {{ complex.jibun }}
+      </p>
       <div class="price-info">
         <div class="recent-transaction">
-          최근 매매 실거래가: <span class="price">{{ complex.recentPrice }}</span>
+          최근 매매 실거래가: <span class="price">{{ complex.latestDealAmount }}만 원</span>
         </div>
         <div class="expected-prices">
-          <p>매매가: {{ complex.expectedSalePrice }}</p>
+          <p>매매가: {{ complex.minDealAmount }}만 원 ~ {{ complex.maxDealAmount }}만 원</p>
         </div>
       </div>
     </section>
 
     <!-- 매물 리스트 섹션 -->
+    <h3 class="section-title">거래 정보</h3>
     <section class="transaction-details" ref="transactionSection">
-      <h2 class="section-title">거래 정보</h2>
       <div v-if="isLoading && houseDeals.length === 0" class="loading-message">
         데이터를 불러오는 중입니다...
       </div>
@@ -49,7 +52,7 @@
 
 <script>
 import axios from 'axios'
-import MapItem from '@/components/MapItem.vue'
+import MapItem from '@/components/Map/Apt/MapItem.vue'
 
 export default {
   name: 'AptInfoPanel',
@@ -180,8 +183,15 @@ export default {
 </script>
 
 <style scoped>
+.complex-title {
+  font-family: 'Score7';
+}
+.section-title {
+  font-family: 'Score5';
+}
+
 .real-estate-detail {
-  padding: 20px;
+  padding: 18px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -191,7 +201,7 @@ export default {
 }
 
 .transaction-details {
-  margin-top: 20px;
+  margin-top: 5px;
   flex-grow: 1;
   overflow-y: auto;
   position: relative;

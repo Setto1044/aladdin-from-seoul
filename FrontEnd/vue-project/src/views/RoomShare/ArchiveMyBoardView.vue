@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/SharePostCardWithAuthor.vue'
+import CardComponent from '@/components/RoomShare/SharePostCardWithAuthor.vue'
 export default {
   components: {
     CardComponent,
