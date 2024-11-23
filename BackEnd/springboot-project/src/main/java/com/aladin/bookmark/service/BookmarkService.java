@@ -12,6 +12,8 @@ public interface BookmarkService {
 
 	public List<RoomBoardCardDto> getBoardBookmarksByCursor(String username, Long cursorId, Long pageSize);
 
+	RoomBoardCardDto findOneBoardBookmarkById(String username, Long boardId);
+
 	void addDealBookmark(String username, Long housedealsNo);
 
 	void removeDealBookmark(String username, Long housedealsNo);
