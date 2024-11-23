@@ -44,6 +44,15 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
+	public RoomBoardCardDto findOneBoardBookmarkById(String username, Long boardId) {
+		RoomBoardCardDto result = bookmarkMapper.findOneBoardBookmarkById(username, boardId);
+		if (result == null) {
+			throw new ResourceNotFoundException("존재하지 않거나 삭제된 북마크입니다.");
+		}
+		return result;
+	}
+
+	@Override
 	public void addDealBookmark(String username, Long housedealsNo) {
 		int result = bookmarkMapper.insertDealBookmark(username, housedealsNo);
 		if (result == 0) {

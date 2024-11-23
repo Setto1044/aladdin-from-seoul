@@ -46,6 +46,12 @@ public class BookmarkController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "북마크 게시글 조회 성공", bookmarks));
 	}
 
+	@GetMapping("/board/status")
+	public ResponseEntity<ApiResponseDto<RoomBoardCardDto>> getOneBookmarkedBoardById(@RequestParam String username, @RequestParam Long boardId) {
+		RoomBoardCardDto boardCard = bookmarkService.findOneBoardBookmarkById(username, boardId);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "북마크 게시글 조회 성공", boardCard));
+	}
+
 	@PostMapping("/deal")
 	public ResponseEntity<ApiResponseDto> addDealBookmark(@RequestBody DealBookmarkPostRequestDto request) {
 		bookmarkService.addDealBookmark(request.getUsername(), request.getHousedealsNo());

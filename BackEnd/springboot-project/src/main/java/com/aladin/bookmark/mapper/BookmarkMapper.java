@@ -16,6 +16,8 @@ public interface BookmarkMapper {
 
 	List<RoomBoardCardDto> findBoardBookmarksByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
+	RoomBoardCardDto findOneBoardBookmarkById(@Param("username") String username, @Param("boardId") Long boardId);
+
 	int insertDealBookmark(@Param("username") String username, @Param("housedealsNo") Long housedealsNo);
 
 	int deleteDealBookmark(@Param("username") String username, @Param("housedealsNo") Long housedealsNo);
