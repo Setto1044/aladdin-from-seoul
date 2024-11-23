@@ -1,5 +1,5 @@
 <template>
-  <header class="top-bar">
+  <header :class="['top-bar', { hidden: isHidden }]">
     <!-- Logo and Site Title -->
     <a href="/" class="logo-container">
       <img src="@/assets/path-to-logo.svg" alt="Site Logo" class="logo" />
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import useUserStore from '@/stores/user-store'
 
@@ -44,20 +44,68 @@ const handleLogout = () => {
 const redirectToLogin = () => {
   router.push('/login')
 }
+
+// 상태 관리: 네비게이션 바 가시성
+const isHidden = ref(false)
+const throttleTimeout = ref(null) // 스크롤 이벤트를 조절하기 위한 타이머
+let lastScrollY = 0
+
+// 스크롤 핸들러
+const handleScroll = () => {
+  // Throttle 처리 (성능 최적화)
+  if (throttleTimeout.value) return
+  throttleTimeout.value = setTimeout(() => {
+    const currentScrollY = window.scrollY
+
+    // 스크롤 아래로: 숨기기
+    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      isHidden.value = true
+    }
+    // 스크롤 위로: 다시 보이기
+    else if (currentScrollY < lastScrollY) {
+      isHidden.value = false
+    }
+    lastScrollY = currentScrollY
+    throttleTimeout.value = null
+  }, 50) // 50ms 간격으로만 실행
+}
+
+// Vue lifecycle: 컴포넌트 마운트 시 스크롤 이벤트 추가
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+// Vue lifecycle: 컴포넌트 언마운트 시 스크롤 이벤트 제거
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style scoped>
 .top-bar {
-  width: 100%; /* 스크롤바로 인해 네비게이션 바가 조정되지 않도록 뷰포트 기준 너비 설정 */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff; /* 배경색 */
+  background-color: #ffffff;
   padding: 0 20px;
-  height: 40px; /* 고정 높이 */
+  height: 40px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition:
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s ease; /* 부드러운 전환 효과 추가 */
+}
+
+.top-bar.hidden {
+  transform: translateY(-100%); /* 위로 사라짐 */
+  opacity: 0; /* 완전히 투명해짐 */
+  pointer-events: none; /* 사라지는 동안 클릭 방지 */
+}
+
+.top-bar.visible {
+  transform: translateY(0); /* 원래 위치로 */
+  opacity: 1; /* 완전히 보이게 */
 }
 
 .logo-container {
@@ -67,20 +115,14 @@ const redirectToLogin = () => {
 }
 
 .logo {
-  height: 40px; /* 로고 크기 */
+  height: 40px;
   margin-right: 10px;
-}
-
-.site-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333333;
 }
 
 .main-navigation {
   display: flex;
   align-items: center;
-  gap: 20px; /* 네비게이션 링크 간 간격 */
+  gap: 20px;
 }
 
 .nav-link {
@@ -92,19 +134,19 @@ const redirectToLogin = () => {
   border: none;
   border-radius: 8px;
   background-color: #ffffff;
-  transition: all 0.3s ease; /* 모든 변화에 부드러운 전환 효과 */
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .nav-link:hover {
-  background-color: #007bff; /* hover 시 강조 색상 */
-  color: #ffffff; /* hover 시 텍스트 색상 변경 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* hover 시 그림자 강화 */
-  transform: translateY(-2px); /* 살짝 올라가는 효과 */
+  background-color: #007bff;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
 
 .nav-link:active {
-  transform: translateY(0); /* 클릭 시 원래 위치로 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 클릭 시 그림자 축소 */
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
