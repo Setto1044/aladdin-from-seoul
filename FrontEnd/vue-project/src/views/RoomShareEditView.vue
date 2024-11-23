@@ -315,7 +315,7 @@ export default {
       }
 
       axios
-        .put(`http://localhost:8080/aladin/boards`, formData, {
+        .patch(`http://localhost:8080/aladin/boards`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
