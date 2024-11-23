@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aladin.bookmark.dto.HouseBookmarkDto;
+import com.aladin.bookmark.dto.DealBookmarkOneRequestDto;
+import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.bookmark.mapper.BookmarkMapper;
+import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +40,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public List<RoomBoardCardDto> getBookmarkedBoardsByCursor(String username, Long cursorId, Long pageSize) {
-		return bookmarkMapper.findBookmarkedBoardsByCursor(username, cursorId, pageSize);
+	public List<RoomBoardCardDto> getBoardBookmarksByCursor(String username, Long cursorId, Long pageSize) {
+		return bookmarkMapper.findBoardBookmarksByCursor(username, cursorId, pageSize);
 	}
 
 	@Override
@@ -59,8 +61,17 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public List<HouseBookmarkDto> getBookmarkedHousesByCursor(String username, Long cursorId, Long pageSize) {
-		return bookmarkMapper.findBookmarkedDealsByCursor(username, cursorId, pageSize);
+	public List<DealBookmarkResponseDto> getDealBookmarksByCursor(String username, Long cursorId, Long pageSize) {
+		return bookmarkMapper.findDealBookmarksByCursor(username, cursorId, pageSize);
+	}
+
+	@Override
+	public DealBookmarkResponseDto findOneDealBookmarkById(DealBookmarkOneRequestDto requestDto) {
+		DealBookmarkResponseDto result = bookmarkMapper.findOneDealBookmarkById(requestDto);
+		if (result == null) {
+			throw new ResourceNotFoundException("존재하지 않는 거래내역입니다.");
+		}
+		return result;
 	}
 
 }

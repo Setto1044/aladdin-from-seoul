@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookmarkDealRequestDto {
+public class DealBookmarkPostRequestDto {
 	private String username; // 회원 username
 	private Long housedealsNo; // 거래 내역 ID
 }

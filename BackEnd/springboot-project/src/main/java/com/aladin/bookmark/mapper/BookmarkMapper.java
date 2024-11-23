@@ -5,7 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.aladin.bookmark.dto.HouseBookmarkDto;
+import com.aladin.bookmark.dto.DealBookmarkOneRequestDto;
+import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 
 @Mapper
@@ -14,12 +15,13 @@ public interface BookmarkMapper {
 
 	int deleteBoardBookmark(@Param("username") String username, @Param("roomboardsId") Long roomboardsId);
 
-	List<RoomBoardCardDto> findBookmarkedBoardsByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
+	List<RoomBoardCardDto> findBoardBookmarksByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
 	int insertDealBookmark(@Param("username") String username, @Param("housedealsNo") Long housedealsNo);
 
 	int deleteDealBookmark(@Param("username") String username, @Param("housedealsNo") Long housedealsNo);
 
-	List<HouseBookmarkDto> findBookmarkedDealsByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
+	List<DealBookmarkResponseDto> findDealBookmarksByCursor(@Param("username") String username, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
 
+	DealBookmarkResponseDto findOneDealBookmarkById(DealBookmarkOneRequestDto requestDto);
 }
