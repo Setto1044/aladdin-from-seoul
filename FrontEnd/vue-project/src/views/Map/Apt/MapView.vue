@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import MapComponent from '@/components/Map/MapComponent.vue'
+import MapComponent from '@/components/Map/Apt/MapComponent.vue'
 import FilterBar from '@/components/Map/Filter/FilterBar.vue'
-import Sidebar from '@/components/Map/Sidebar.vue'
+import Sidebar from '@/components/Map/Util/Sidebar.vue'
 import AptInfoPanel from '@/components/Map/Apt/AptInfoPanel.vue'
 
 export default {

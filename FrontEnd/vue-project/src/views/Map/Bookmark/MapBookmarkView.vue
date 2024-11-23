@@ -3,11 +3,21 @@
     <FilterBar></FilterBar>
 
     <div class="map-section">
+      <!-- 작은 탭 열기 버튼 -->
+      <button class="open-sidebar-button" @click="toggleSidebar1">☰</button>
+
       <div class="sidebar-container">
         <!-- Sidebar 1 -->
         <Sidebar class="sidebar1" :isOpen="isSidebar1Open" @close="handleCloseSidebar12">
+          <!-- 탭 -->
+          <div class="tab">
+            <span @click="aptClick" :class="{ active: apt }">매매</span>
+            <span @click="shareClick" :class="{ active: share }">방 나누기</span>
+          </div>
+
           <!-- Sidebar 1 내부 콘텐츠 -->
-          <AptInfoPanel :complex="selectedMarker" @select-item="openSidebar2" />
+          <AptInfoPanel v-if="apt" @select-item="openSidebar2" :mapInstance="mapInstance" />
+          <ShareRoomInfoPanel v-if="share" @select-item="openSidebar2" :mapInstance="mapInstance" />
         </Sidebar>
 
         <!-- Sidebar 2 -->
@@ -22,6 +32,7 @@
         ref="mapComponent"
         @click="handleMapClick"
         @marker-clicked="handleMarkerClick"
+        @map-created="handleMapCreated"
         class="map-component"
       />
     </div>
@@ -29,11 +40,13 @@
 </template>
 
 <script>
-import MapComponent from '@/components/Map/MapComponent.vue'
+import MapComponent from '@/components/Map/Bookmark/MapComponent.vue'
 import FilterBar from '@/components/Map/Filter/FilterBar.vue'
-import Sidebar from '@/components/Map/Sidebar.vue'
-import AptInfoPanel from '@/components/Map/Apt/AptInfoPanel.vue'
+import Sidebar from '@/components/Map/Util/SidebarBookmark.vue'
+import AptInfoPanel from '@/components/Map/Bookmark/AptInfoPanel.vue'
+import ShareRoomInfoPanel from '@/components/Map/Bookmark/ShareRoomInfoPanel.vue'
 import PropertyDetails from '@/components/Map/PropertyDetails.vue'
+import { ref } from 'vue'
 
 export default {
   name: 'MapView',
@@ -43,15 +56,20 @@ export default {
     Sidebar,
     AptInfoPanel,
     PropertyDetails,
+    ShareRoomInfoPanel,
   },
   data() {
     return {
-      isSidebar1Open: false,
+      isSidebar1Open: true,
       isSidebar2Open: false,
       selectedMarker: null,
       selectedItem: null, // This must be initialized
+      apt: true,
+      share: false,
+      mapInstance: null,
     }
   },
+  setup() {},
   mounted() {
     this.updateNavHeight()
     window.addEventListener('resize', this.updateNavHeight) // Recalculate on window resize
@@ -60,6 +78,23 @@ export default {
     window.removeEventListener('resize', this.updateNavHeight)
   },
   methods: {
+    handleMapCreated(map) {
+      this.mapInstance = map // MapInstance를 저장
+      console.log('맵 붙었다우 MapInstance received in parent:', this.mapInstance)
+    },
+    aptClick() {
+      console.log('매매 클릭')
+      this.apt = true
+      this.share = false
+      console.log('apt:', this.apt, 'share:', this.share)
+    },
+    shareClick() {
+      console.log('방 나누기 클릭')
+      this.share = true
+      this.apt = false
+      console.log('apt:', this.apt, 'share:', this.share)
+    },
+
     updateNavHeight() {
       const navBar = document.querySelector('.top-bar') // Replace with your nav bar selector
       if (navBar) {
@@ -151,5 +186,71 @@ export default {
 
 .sidebar {
   height: calc(93vh - var(--nav-height)); /* Subtract nav bar height */
+}
+
+.tab {
+  display: flex;
+  justify-content: space-around; /* 버튼을 균등 분배 */
+  padding: 10px;
+  background-color: #f9f9f9; /* 전체 배경색 */
+  border-bottom: 1px solid #ddd; /* 탭 하단 경계선 */
+  z-index: 100; /* 다른 요소보다 위에 표시 */
+}
+
+.tab span {
+  flex: 1; /* 버튼 크기를 균등하게 분배 */
+  text-align: center;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555; /* 기본 텍스트 색상 */
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease; /* 부드러운 전환 효과 */
+  border-radius: 5px; /* 버튼 모서리를 살짝 둥글게 */
+}
+
+.tab span:hover {
+  background-color: #f0f0f0; /* 마우스 오버 시 배경색 변경 */
+  color: #000; /* 마우스 오버 시 텍스트 색상 변경 */
+}
+
+.tab span.active {
+  background-color: #007bff; /* 활성화된 탭 배경색 */
+  color: #fff; /* 활성화된 탭 텍스트 색상 */
+  font-weight: bold; /* 활성화된 탭 강조 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+}
+
+.open-sidebar-button {
+  position: absolute;
+  top: 20px; /* 맵의 위쪽에 위치 */
+  left: 20px; /* 맵의 왼쪽에 위치 */
+  z-index: 100; /* 맵 위에 오버레이되도록 설정 */
+  background-color: #007bff; /* 파란색 배경 */
+  color: white; /* 흰색 텍스트 */
+  border: none;
+  border-radius: 50%; /* 동그랗게 만듦 */
+  width: 40px;
+  height: 40px;
+  font-size: 18px; /* 텍스트 크기 */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 버튼 내용 중앙 정렬 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.open-sidebar-button:hover {
+  background-color: #0056b3; /* 호버 시 더 짙은 파란색 */
+  transform: scale(1.1); /* 버튼 크기 살짝 확대 */
+}
+
+.open-sidebar-button:active {
+  transform: scale(0.95); /* 클릭 시 약간 축소 */
 }
 </style>

@@ -1,10 +1,14 @@
 <template>
   <div class="property-item">
     <div class="property-info" @click="selectItem">
+      <p class="property-name">{{ item.aptName }} ({{ item.buildYear }})</p>
+      <p class="property-address">
+        <!-- {{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }} {{ item.jibun }} -->
+      </p>
       <p class="property-price">매매 {{ item.dealAmount }}만 원</p>
       <p class="property-detail">{{ item.excluUseAr }}㎡, {{ item.floor }}층 {{ item.aptDong }}</p>
       <p class="property-confirmation">
-        확인일: {{ item.dealYear }}. {{ item.dealMonth }}. {{ item.dealDay }}
+        확인일: {{ item.dealYear }}-{{ item.dealMonth }}-{{ item.dealDay }}
       </p>
     </div>
     <!-- username이 있을 때만 즐겨찾기 버튼 표시 -->
@@ -26,6 +30,10 @@ import useUserStore from '@/stores/user-store'
 export default {
   name: 'MapItem',
   props: {
+    complex: {
+      type: Object,
+      required: true,
+    },
     item: {
       type: Object,
       required: true,
@@ -46,20 +54,24 @@ export default {
   methods: {
     async checkBookmarkStatus() {
       // API를 통해 북마크 상태 확인
-      console.log('북마크', this.userStore.memberInfo.username)
       if (!this.userStore.memberInfo.username) return
 
       try {
         const response = await axios.get(
-          `http://localhost:8080/aladin/bookmark/deal/status?username${this.userStore.memberInfo.username}&housedealsNo=${this.item.no}`,
+          `http://localhost:8080/aladin/bookmark/deal/status?username=${this.userStore.memberInfo.username}&housedealsNo=${this.item.no}`,
         )
-        this.isBookmarked = response.data.success // 서버 응답에 따라 상태 업데이트
-        console.log(
-          '��마크 상태 확인 성공:',
-          response.data.success,
-          this.item.no,
-          this.userStore.memberInfo.username,
-        )
+        console.log(response)
+        if (response.data.success) {
+          this.isBookmarked = response.data.success // 북마크 상태 업데이트
+          console.log(
+            '북마크 상태 확인 성공:',
+            response.data,
+            this.item.no,
+            this.userStore.memberInfo.username,
+          )
+        } else {
+          console.error('북마크 상태를 가져오지 못했습니다:', response.data.message)
+        }
       } catch (error) {
         console.error('북마크 상태 확인 실패:', error)
       }
@@ -120,6 +132,41 @@ export default {
   align-items: center; /* 수직 중앙 정렬 */
   padding: 10px;
   border-bottom: 1px solid #ddd;
+}
+
+.property-item:hover {
+  transform: scale(1.02); /* 살짝 확대 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 강조 */
+}
+
+.property-info {
+  flex: 1; /* 정보 섹션이 가능한 공간을 차지 */
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+  color: #333;
+}
+
+.property-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #222; /* 제목 강조 */
+}
+
+.property-price {
+  color: #ff4500; /* 가격 색상 */
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.property-detail {
+  font-size: 14px;
+  color: #666; /* 디테일 색상 */
+  margin-bottom: 5px;
+}
+
+.property-confirmation {
+  font-size: 12px;
+  color: #999; /* 확인 날짜 색상 */
 }
 
 .complex-info {

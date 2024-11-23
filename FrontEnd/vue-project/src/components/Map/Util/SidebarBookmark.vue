@@ -33,8 +33,11 @@ export default {
   background: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  overflow-y: auto;
   transition: transform 0.3s ease;
+}
+
+slot {
+  overflow-y: auto;
 }
 
 .sidebar.sidebar1 {
@@ -49,17 +52,27 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 16px;
+  background: none; /* 배경 없음 */
+  color: #555; /* 차분한 회색 */
+  border: none; /* 테두리 없음 */
+  border-radius: 20%; /* 동글네모 */
+  width: 25px; /* 작은 크기 */
+  height: 25px;
+  font-size: 16px; /* 작은 글씨 크기 */
+  font-weight: bold;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 텍스트 가운데 정렬 */
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .close-button:hover {
-  background: #d9363e;
+  transform: scale(1.2); /* 살짝 확대 */
+  background: #f5f5f5; /* 밝은 회색 배경 */
+  color: #000; /* 글씨 색상 변경 */
 }
 </style>

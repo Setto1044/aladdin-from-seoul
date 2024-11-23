@@ -49,6 +49,11 @@
         <div class="action-buttons">
           <button v-if="isAuthor" class="edit-button" @click.stop="goToEditPage">Edit</button>
           <button v-if="isAuthor" class="delete-button" @click.stop="goToDeletePage">Delete</button>
+          <!-- username이 있을, isAuthor 아닐 때만 즐겨찾기 버튼 표시 -->
+          <button v-else class="favorite-button" @click="toggleBookmark(id)">
+            <span v-if="isBookmarked">★</span>
+            <span v-else>☆</span>
+          </button>
         </div>
       </div>
 
@@ -131,7 +136,12 @@ export default {
       hostUsername: '',
       hostNickname: '',
       hostImageUrls: '',
+      isBookmarked: false, // 북마크 여부 상태
+      userStore: null,
     }
+  },
+  mounted() {
+    this.checkBookmarkStatus() // 컴포넌트가 생성될 때 북마크 상태 확인
   },
   watch: {
     id: {
@@ -152,10 +162,32 @@ export default {
     },
     isAuthor() {
       const userStore = useUserStore()
+      this.userStore = userStore // Example: Pinia store for user info
       return userStore.memberInfo.username === this.hostUsername // Compare with the author's username
     },
   },
   methods: {
+    async checkBookmarkStatus() {
+      // API를 통해 북마크 상태 확인
+      console.log('북마크', this.userStore.memberInfo.username)
+      if (!this.userStore.memberInfo.username) return
+
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/aladin/bookmark/deal/status?username${this.userStore.memberInfo.username}&roomboardsId=${this.id}`,
+        )
+        this.isBookmarked = response.data.success // 서버 응답에 따라 상태 업데이트
+        console.log(
+          '��마크 상태 확인 성공:',
+          response.data.success,
+          this.id,
+          this.userStore.memberInfo.username,
+        )
+      } catch (error) {
+        console.error('북마크 상태 확인 실패:', error)
+      }
+    },
+
     async fetchPropertyDetails(propertyId) {
       try {
         const response = await axios.get(`http://localhost:8080/aladin/boards/${propertyId}`)
@@ -180,6 +212,38 @@ export default {
         }
       } catch (error) {
         console.error('Error fetching property details:', error)
+      }
+    },
+    async toggleBookmark(itemNo) {
+      // 북마크 상태에 따라 POST 또는 DELETE 요청
+      if (!this.userStore.memberInfo.username) {
+        alert('로그인이 필요합니다!')
+        return
+      }
+
+      try {
+        if (this.isBookmarked) {
+          // DELETE 요청 (북마크 해제)
+          await axios.delete('http://localhost:8080/aladin/bookmark/board', {
+            data: {
+              username: this.userStore.memberInfo.username,
+              roomboardsId: this.id,
+            },
+          })
+          console.log('북마크 해제 성공:', this.id)
+        } else {
+          // POST 요청 (북마크 추가)
+          await axios.post('http://localhost:8080/aladin/bookmark/board', {
+            username: this.userStore.memberInfo.username,
+            roomboardsId: this.id,
+          })
+          console.log('북마크 추가 성공:', this.id)
+        }
+
+        // 상태 반전
+        this.isBookmarked = !this.isBookmarked
+      } catch (error) {
+        console.error('북마크 상태 변경 실패:', error)
       }
     },
     setCalendarAttrs() {
