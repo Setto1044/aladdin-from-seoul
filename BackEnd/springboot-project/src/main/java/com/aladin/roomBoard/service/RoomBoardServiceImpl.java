@@ -86,7 +86,7 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 
 			boardMapper.deleteImagesByRoomBoardId(boardId);
 
-			saveImages(requestDto.getImages(), boardId);
+			// saveImages(requestDto.getImages(), boardId);
 
 			return boardId;
 		} catch (Exception e) {

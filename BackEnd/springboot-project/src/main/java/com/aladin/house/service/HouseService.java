@@ -15,5 +15,6 @@ public interface HouseService {
 	List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto);
 
 	// 아파트 고유 번호 -> 아파트 거래 상세 정보 리스트 가져오기
-	List<HouseDealVo> findAllHouseDealsByAptSeq(String aptSeq);
+	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
+
 }

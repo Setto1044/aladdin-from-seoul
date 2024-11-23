@@ -17,5 +17,6 @@ public interface HouseMapper {
 	// DTO를 사용하여 특정 좌표 기준 데이터 가져오기
 	List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto);
 
-	List<HouseDealVo> findAllHouseDealsByAptSeq(String aptSeq);
+	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
+
 }

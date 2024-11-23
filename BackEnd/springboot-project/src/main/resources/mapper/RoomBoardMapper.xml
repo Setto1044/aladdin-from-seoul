@@ -26,7 +26,7 @@
 		<result property="nickname" column="nickname" />
 		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 	</resultMap>
-	
+
 	<resultMap id="roomBoardImageResultMap" type="com.aladin.roomBoard.vo.RoomBoardImageVo">
 		<id property="id" column="id" />
 		<result property="url" column="url" />
