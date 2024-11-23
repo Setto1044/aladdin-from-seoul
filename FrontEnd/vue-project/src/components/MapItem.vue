@@ -1,11 +1,13 @@
 <template>
   <div class="property-info">
-    <h2 class="property-title" @click="selectItem">{{ item.name }}</h2>
-    <p class="property-price">매매 {{ item.price }}</p>
+    <h2 class="property-title" @click="selectItem">{{ item.no }}</h2>
+    <p class="property-price">매매 {{ item.dealAmount }}</p>
     <p class="property-detail">
-      아파트 - {{ item.size }}, {{ item.floor }}층, {{ item.direction }}
+      아파트 -{{ item.aptDong }} {{ item.excluUseAr }}평, {{ item.floor }}층, {{ item.direction }}
     </p>
-    <p class="property-confirmation">확인일: {{ item.confirmationDate }}</p>
+    <p class="property-confirmation">
+      확인일: {{ item.dealYear }} {{ item.dealMonth }} {{ item.dealDay }}
+    </p>
   </div>
   <button class="favorite-button" @click="toggleFavorite(item)">
     <span v-if="item.isFavorite">★</span>

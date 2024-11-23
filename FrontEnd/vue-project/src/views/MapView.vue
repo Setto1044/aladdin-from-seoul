@@ -5,17 +5,17 @@
     <div class="map-section">
       <div class="sidebar-container">
         <!-- Sidebar 1 -->
-        <Sidebar1
-          class="sidebar sidebar1"
-          :isOpen="isSidebar1Open"
-          :selectedMarker="selectedMarker"
-          :openSidebar2="toggleSidebar2"
-          @select-item="openSidebar2"
-          @close1="handleCloseSidebar12"
-        />
+        <Sidebar class="sidebar1" :isOpen="isSidebar1Open" @close="handleCloseSidebar12">
+          <!-- Sidebar 1 내부 콘텐츠 -->
+          <AptInfoPanel :complex="selectedMarker" @select-item="openSidebar2" />
+        </Sidebar>
 
         <!-- Sidebar 2 -->
-        <Sidebar2 class="sidebar sidebar2" :isOpen="isSidebar2Open" @close="handleCloseSidebar2" />
+        <Sidebar class="sidebar2" :isOpen="isSidebar2Open" @close="handleCloseSidebar2">
+          <!-- Sidebar 2 내부 콘텐츠 -->
+          <!-- Pass property details as props -->
+          <PropertyDetails :property="selectedItem" />
+        </Sidebar>
       </div>
       <!-- Map -->
       <MapComponent
@@ -30,23 +30,26 @@
 
 <script>
 import MapComponent from '@/components/MapComponent.vue'
-import Sidebar1 from '@/components/MapSidebar1.vue'
-import Sidebar2 from '@/components/MapSidebar2.vue'
 import FilterBar from '@/components/Filter/FilterBar.vue'
+import Sidebar from '@/components/Sidebar.vue'
+import AptInfoPanel from '@/components/AptInfoPanel.vue'
+import PropertyDetails from '@/components/PropertyDetails.vue'
 
 export default {
   name: 'MapView',
   components: {
-    Sidebar1,
-    Sidebar2,
     MapComponent,
     FilterBar,
+    Sidebar,
+    AptInfoPanel,
+    PropertyDetails,
   },
   data() {
     return {
       isSidebar1Open: false,
       isSidebar2Open: false,
       selectedMarker: null,
+      selectedItem: null, // This must be initialized
     }
   },
   mounted() {
@@ -75,9 +78,9 @@ export default {
     openSidebar1() {
       this.isSidebar1Open = true
     },
-    openSidebar2(params) {
-      console.log(params)
-      this.isSidebar2Open = true
+    openSidebar2(selectedItem) {
+      this.selectedItem = selectedItem // Set the selected item
+      this.isSidebar2Open = true // Open Sidebar2
     },
     handleMapClick() {
       console.log('MapComponent clicked')
@@ -85,11 +88,13 @@ export default {
       // this.isSidebar2Open = false
     },
     handleCloseSidebar2() {
-      this.isSidebar2Open = false
+      this.isSidebar2Open = false // Close Sidebar2
+      this.selectedItem = null // Reset the selected item
     },
     handleCloseSidebar12() {
       this.isSidebar1Open = false
       this.isSidebar2Open = false
+      this.selectedMarker = null
     },
     handleMarkerClick(house) {
       console.log(this.selectedMarker, house)
