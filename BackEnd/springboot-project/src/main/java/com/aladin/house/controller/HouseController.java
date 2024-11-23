@@ -17,6 +17,7 @@ import com.aladin.house.dto.ClosestCoordinateHouseCardResponseDto;
 import com.aladin.house.dto.HouseDealResponseDto;
 import com.aladin.house.service.HouseService;
 import com.aladin.house.vo.HouseDealVo;
+import com.aladin.house.vo.HouseDetailVo;
 
 @RestController
 @RequestMapping("/house")
@@ -47,6 +48,12 @@ public class HouseController {
 	public ResponseEntity<ApiResponseDto<HouseDealResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
 		List<HouseDealVo> houseDeals = houseService.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", HouseDealResponseDto.of(houseDeals)));
+	}
+
+	@GetMapping("/detail/{aptSeq}")
+	public ResponseEntity<ApiResponseDto<HouseDetailVo>> getHouseDetail(@PathVariable String aptSeq) {
+		HouseDetailVo houseDetail = houseService.getHouseDetailByAptSeq(aptSeq);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "아파트 상세 데이터 조회 성공", houseDetail));
 	}
 
 }

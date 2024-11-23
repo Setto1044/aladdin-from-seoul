@@ -9,6 +9,7 @@ import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.mapper.HouseMapper;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealVo;
+import com.aladin.house.vo.HouseDetailVo;
 
 @Service
 public class HouseServiceImpl implements HouseService {
@@ -33,4 +34,8 @@ public class HouseServiceImpl implements HouseService {
 		return houseMapper.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 	}
 
+	@Override
+	public HouseDetailVo getHouseDetailByAptSeq(String aptSeq) {
+		return houseMapper.getHouseDetailByAptSeq(aptSeq);
+	}
 }

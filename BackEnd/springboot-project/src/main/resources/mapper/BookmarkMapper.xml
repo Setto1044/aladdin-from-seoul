@@ -45,6 +45,7 @@
 		WHERE members_username = #{username} AND roomboards_id = #{roomboardsId};
 	</delete>
 
+	<!-- findBoardBookmarksByCursor 수정 -->
 	<select id="findBoardBookmarksByCursor" resultMap="roomBoardCardDtoResultMap">
 		SELECT
 		rb.id AS id,
@@ -74,9 +75,10 @@
 			AND rb.id &lt; #{cursorId}
 		</if>
 		ORDER BY rb.id DESC
-		LIMIT #{pageSize};
+		LIMIT #{pageSize}
 	</select>
 
+	<!-- findOneBoardBookmarkById 수정 -->
 	<select id="findOneBoardBookmarkById" resultMap="roomBoardCardDtoResultMap">
 		SELECT
 		rb.id AS id,
@@ -101,7 +103,8 @@
 		JOIN roomboards rb ON b.roomboards_id = rb.id
 		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
 		LEFT JOIN members m ON rb.members_username = m.username
-		WHERE rb.id = #{boardId} AND rb.members_username = #{username}
+		WHERE b.members_username = #{username}
+		AND rb.id = #{boardId}
 	</select>
 
 	<insert id="insertDealBookmark" parameterType="map">
