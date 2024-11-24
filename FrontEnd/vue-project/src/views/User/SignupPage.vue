@@ -10,7 +10,9 @@
           v-model="formData.username"
           placeholder="Enter your username"
           required
+          @input="resetValidation('username')"
         />
+        <button type="button" @click="validateUsername">아이디 중복 확인</button>
         <span
           v-if="validation.usernameMessage"
           :class="{ error: !validation.username, success: validation.username }"
@@ -59,12 +61,34 @@
           v-model="formData.email"
           placeholder="Enter your email"
           required
+          @input="resetValidation('email')"
         />
+        <button type="button" @click="validateEmail">이메일 중복 확인</button>
+        <button type="button" @click="requestEmailVerification" :disabled="isEmailVerificationSent">
+          이메일 인증 요청
+        </button>
         <span
           v-if="validation.emailMessage"
           :class="{ error: !validation.email, success: validation.email }"
         >
           {{ validation.emailMessage }}
+        </span>
+      </div>
+
+      <div class="form-group" v-if="isEmailVerificationSent">
+        <label for="verificationCode">Verification Code</label>
+        <input
+          type="text"
+          id="verificationCode"
+          v-model="verificationCode"
+          placeholder="Enter the verification code"
+        />
+        <button type="button" @click="verifyEmailCode">인증 코드 확인</button>
+        <span
+          v-if="validation.emailVerificationMessage"
+          :class="{ error: !validation.emailVerified, success: validation.emailVerified }"
+        >
+          {{ validation.emailVerificationMessage }}
         </span>
       </div>
 
@@ -96,42 +120,29 @@ export default {
         email: '',
         grade: 'NORMAL',
       },
+      verificationCode: '',
+      isEmailVerificationSent: false,
       validation: {
-        username: null, // null means not checked, true/false for validity
-        email: null, // null means not checked, true/false for validity
+        username: null,
+        email: null,
+        emailVerified: null,
         usernameMessage: '',
         emailMessage: '',
+        emailVerificationMessage: '',
       },
     }
   },
-  watch: {
-    'formData.username': function (newUsername) {
-      if (newUsername) {
-        this.validateUsername(newUsername)
-      } else {
-        this.validation.username = null
-        this.validation.usernameMessage = ''
-      }
-    },
-    'formData.email': function (newEmail) {
-      if (newEmail) {
-        if (this.isValidEmailFormat(newEmail)) {
-          this.validateEmail(newEmail)
-        } else {
-          this.validation.email = false
-          this.validation.emailMessage = '올바른 이메일 형식을 입력해주세요.'
-        }
-      } else {
-        this.validation.email = null
-        this.validation.emailMessage = ''
-      }
-    },
-  },
   methods: {
-    async validateUsername(username) {
+    async validateUsername() {
+      if (!this.formData.username.trim()) {
+        this.validation.usernameMessage = '아이디를 입력해주세요.'
+        this.validation.username = false
+        return
+      }
+
       try {
         const response = await axios.get(
-          `http://localhost:8080/aladin/members/validate/username/${username}`,
+          `http://localhost:8080/aladin/members/validate/username/${this.formData.username}`,
         )
         this.validation.username = response.data.success
         this.validation.usernameMessage = response.data.success
@@ -142,10 +153,23 @@ export default {
         this.validation.usernameMessage = '아이디 확인 중 오류가 발생했습니다.'
       }
     },
-    async validateEmail(email) {
+
+    async validateEmail() {
+      if (!this.formData.email.trim()) {
+        this.validation.emailMessage = '이메일을 입력해주세요.'
+        this.validation.email = false
+        return
+      }
+
+      if (!this.isValidEmailFormat(this.formData.email)) {
+        this.validation.emailMessage = '올바른 이메일 형식을 입력해주세요.'
+        this.validation.email = false
+        return
+      }
+
       try {
         const response = await axios.get(
-          `http://localhost:8080/aladin/members/validate/email/${email}`,
+          `http://localhost:8080/aladin/members/validate/email/${this.formData.email}`,
         )
         this.validation.email = response.data.success
         this.validation.emailMessage = response.data.success
@@ -156,24 +180,87 @@ export default {
         this.validation.emailMessage = '이메일 확인 중 오류가 발생했습니다.'
       }
     },
+
+    async requestEmailVerification() {
+      if (!this.formData.email.trim() || !this.validation.email) {
+        alert('먼저 이메일 중복 확인을 완료해주세요.')
+        return
+      }
+
+      try {
+        const response = await axios.post('http://localhost:8080/aladin/email', {
+          email: this.formData.email,
+        })
+        console.log(response)
+        if (response.data.isOk) {
+          alert('인증 이메일이 발송되었습니다. 이메일을 확인해주세요.')
+          this.isEmailVerificationSent = true
+          this.validation.emailVerificationMessage = ''
+        } else {
+          alert('이메일 인증 요청에 실패했습니다. 다시 시도해주세요.')
+        }
+      } catch (error) {
+        console.error('Error sending verification email:', error)
+        alert('이메일 인증 요청 중 문제가 발생했습니다.')
+      }
+    },
+
+    async verifyEmailCode() {
+      try {
+        const response = await axios.post('http://localhost:8080/aladin/email/authentication', {
+          email: this.formData.email,
+          authentication: this.verificationCode,
+        })
+
+        if (response.data.isSuccess) {
+          this.validation.emailVerified = true
+          this.validation.emailVerificationMessage = '이메일 인증이 완료되었습니다.'
+        } else {
+          this.validation.emailVerified = false
+          this.validation.emailVerificationMessage = '인증 코드가 올바르지 않습니다.'
+        }
+      } catch (error) {
+        console.error('Error verifying email code:', error)
+        this.validation.emailVerificationMessage = '이메일 인증 중 오류가 발생했습니다.'
+      }
+    },
+
     isValidEmailFormat(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return emailRegex.test(email)
     },
+
+    resetValidation(field) {
+      if (field === 'username') {
+        this.validation.username = null
+        this.validation.usernameMessage = ''
+      }
+      if (field === 'email') {
+        this.validation.email = null
+        this.validation.emailMessage = ''
+        this.isEmailVerificationSent = false
+        this.validation.emailVerified = null
+        this.validation.emailVerificationMessage = ''
+      }
+    },
+
     async handleSignup() {
-      // Ensure username and email are validated
       if (this.validation.username === false) {
         alert('이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.')
         return
       }
+
       if (this.validation.email === false) {
         alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.')
         return
       }
 
-      try {
-        console.log('Sending signup data:', this.formData)
+      if (!this.validation.emailVerified) {
+        alert('이메일 인증을 완료해주세요.')
+        return
+      }
 
+      try {
         const response = await axios.post('http://localhost:8080/aladin/members', {
           username: this.formData.username,
           password: this.formData.password,
@@ -184,10 +271,7 @@ export default {
         })
 
         if (response.data.success) {
-          alert(response.data.message) // Display success message
-          console.log('Signup success:', response.data)
-
-          // Optional: Redirect to login page after signup
+          alert(response.data.message)
           this.$router.push('/login')
         } else {
           alert('회원가입에 실패했습니다: ' + response.data.message)
@@ -235,6 +319,12 @@ button:hover {
 }
 .error {
   color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+.success {
+  color: green;
   font-size: 12px;
   margin-top: 5px;
   display: block;
