@@ -145,4 +145,10 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 		return list;
 	}
 
+	@Override
+	public List<RoomBoardCardDto> findBoardsByHashtags(List<String> hashtags) {
+		List<RoomBoardCardDto> boards = boardMapper.findBoardsByHashtags(hashtags);
+		return boards;
+	}
+
 }

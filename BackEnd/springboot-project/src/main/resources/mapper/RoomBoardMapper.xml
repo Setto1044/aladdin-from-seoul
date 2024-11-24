@@ -110,8 +110,8 @@
 		m.profile_image_path AS profileImagePath,
 		m.nickname AS nickname
 		FROM roomboards rb
-LEFT JOIN roomboards_images rbi
-ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		LEFT JOIN roomboards_images rbi
+		ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
 		LEFT JOIN members m
 		ON rb.members_username = m.username
 		ORDER BY rb.id DESC;
@@ -182,5 +182,38 @@ ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
 	<delete id="deleteBoardById" parameterType="long">
 		DELETE FROM roomboards WHERE id = #{boardId};
 	</delete>
+
+	<select id="findBoardsByHashtags" resultMap="roomBoardCardDtoResultMap" parameterType="list">
+		SELECT
+		rb.id AS id,
+		rb.members_username AS members_username,
+		rb.title AS title,
+		rb.detail AS detail,
+		rb.address AS address,
+		rb.postcode AS postcode,
+		rb.price AS price,
+		rb.house_size AS house_size,
+		rb.price_per AS price_per,
+		rb.rent_start AS rent_start,
+		rb.rent_until AS rent_until,
+		rb.hashtags AS hashtags,
+		rb.views AS views,
+		rb.created_at AS created_at,
+		rb.updated_at AS updated_at,
+		rbi.url AS thumbnail_url,
+		m.profile_image_path AS profileImagePath,
+		m.nickname AS nickname
+		FROM roomboards rb
+		LEFT JOIN roomboards_images rbi
+		ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		LEFT JOIN members m
+		ON rb.members_username = m.username
+		WHERE
+		<foreach collection="list" item="tag" open="(" separator="AND" close=")">
+			JSON_CONTAINS(rb.hashtags, CONCAT('"', #{tag}, '"'), '$')
+		</foreach>
+		ORDER BY rb.id DESC;
+	</select>
+
 
 </mapper>

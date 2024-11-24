@@ -31,4 +31,7 @@ public interface RoomBoardMapper {
 
 	int deleteBoardById(Long boardId);
 
+	// 해시태그로 검색
+	List<RoomBoardCardDto> findBoardsByHashtags(List<String> hashtags);
+
 }

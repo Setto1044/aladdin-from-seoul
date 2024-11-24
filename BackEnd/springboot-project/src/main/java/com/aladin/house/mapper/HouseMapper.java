@@ -23,6 +23,11 @@ public interface HouseMapper {
 	// 요청한 아파트 이름을 가지는 카드 페이징 제공
 	List<HouseCardVo> findHousesByAptNameWithCursor(String keyword, String cursorId, int size);
 
+	// 모든 housecards 조회
+	List<HouseCardVo> findAllAptSeqAndAptNameOfHouseCards();
+
+	List<HouseCardVo> findAllAptSeqAndAptNameOfHouseCardsInSeoul();
+
 	List<HouseDealWithDongCodeDto> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);

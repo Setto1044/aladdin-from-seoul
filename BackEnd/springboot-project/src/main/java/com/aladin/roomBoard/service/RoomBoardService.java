@@ -20,4 +20,6 @@ public interface RoomBoardService {
 
 	int deleteBoard(Long boardId);
 
+	List<RoomBoardCardDto> findBoardsByHashtags(List<String> hashtags);
+
 }

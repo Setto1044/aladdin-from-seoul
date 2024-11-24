@@ -85,6 +85,22 @@
 		LIMIT 300
 	</select>
 
+	<select id="findAllAptSeqAndAptNameOfHouseCards" resultMap="HouseCardResultMap">
+		SELECT
+		apt_seq,
+		apt_name
+		FROM housecards
+	</select>
+
+	<select id="findAllAptSeqAndAptNameOfHouseCardsInSeoul" resultMap="HouseCardResultMap">
+		SELECT
+		apt_seq,
+		apt_name
+		FROM housecards
+		WHERE
+		sido_name = '서울특별시'
+	</select>
+
 	<!-- 아파트명 기반 housecards 페이징 조회 -->
 	<select id="findHousesByAptNameWithCursor" parameterType="map" resultMap="HouseCardResultMap">
 		SELECT
