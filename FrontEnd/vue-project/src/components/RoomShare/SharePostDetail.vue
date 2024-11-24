@@ -84,14 +84,7 @@
       </p>
       <p class="property-views"><strong>Views:</strong> {{ views }}</p>
 
-      <div class="property-comments">
-        <h3 class="comments-title">Comments:</h3>
-        <ul class="comments-list">
-          <li v-for="(comment, index) in comments" :key="index" class="comment-item">
-            {{ comment }}
-          </li>
-        </ul>
-      </div>
+      <SharePostComment :postId="id"></SharePostComment>
     </div>
   </div>
 </template>
@@ -101,6 +94,7 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css'
 import useUserStore from '@/stores/user-store' // Example: your Pinia store for user info
 import axios from 'axios'
+import SharePostComment from '@/components/RoomShare/SharePostComment.vue'
 
 export default {
   components: {
@@ -108,6 +102,7 @@ export default {
     Slide,
     Navigation,
     Pagination,
+    SharePostComment,
   },
   props: {
     id: Number,
