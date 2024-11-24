@@ -16,6 +16,7 @@ import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardResponseDto;
 import com.aladin.house.dto.HouseDealResponseDto;
 import com.aladin.house.service.HouseService;
+import com.aladin.house.vo.HouseDealStatVo;
 import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
@@ -56,4 +57,9 @@ public class HouseController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "아파트 상세 데이터 조회 성공", houseDetail));
 	}
 
+	@GetMapping("/stat/{aptSeq}")
+	public ResponseEntity<ApiResponseDto<HouseDealStatVo>> getHouseDealStat(@PathVariable String aptSeq) {
+		HouseDealStatVo stat = houseService.getHouseDealStatByAptSeq(aptSeq);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", stat));
+	}
 }

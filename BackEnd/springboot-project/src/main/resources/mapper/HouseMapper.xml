@@ -118,7 +118,20 @@
 		management_digit,
 		area_sizes
 		FROM houseinfo_details
-		WHERE apt_seq = #{aptSeq} 
+		WHERE apt_seq = #{aptSeq}
 	</select>
-
+	
+	<!-- 아파트 거래금액, 면적 최소 최대 재공 -->
+	<select id="findHouseDealStatByAptSeq" parameterType="String" resultType="com.aladin.house.vo.HouseDealStatVo">
+		SELECT
+		apt_seq,
+		MIN(CONCAT(deal_year, '-', LPAD(deal_month, 2, '0'), '-', LPAD(deal_day, 2, '0'))) AS deal_date_oldest,
+		MAX(CONCAT(deal_year, '-', LPAD(deal_month, 2, '0'), '-', LPAD(deal_day, 2, '0'))) AS deal_date_latest,
+		MIN(exclu_use_ar) AS exclu_use_ar_min,
+		MAX(exclu_use_ar) AS exclu_use_ar_max,
+		MIN(CAST(REPLACE(deal_amount, ',', '') AS UNSIGNED)) AS deal_amount_min,
+		MAX(CAST(REPLACE(deal_amount, ',', '') AS UNSIGNED)) AS deal_amount_max
+		FROM housedeals
+		WHERE apt_seq = #{aptSeq}
+	</select>
 </mapper>

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.vo.HouseCardVo;
+import com.aladin.house.vo.HouseDealStatVo;
 import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
@@ -21,4 +22,6 @@ public interface HouseMapper {
 	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
+
+	HouseDealStatVo findHouseDealStatByAptSeq(String aptSeq);
 }
