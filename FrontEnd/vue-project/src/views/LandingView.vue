@@ -1,5 +1,7 @@
 <template>
   <main>
+    <SearchAutocomplete />
+
     <Akinator></Akinator>
     <section class="hero-section">
       <div class="hero-content">
@@ -210,12 +212,14 @@
 </template>
 
 <script>
+import SearchAutocomplete from '@/components/Util/SearchAutocomplete.vue'
 import Akinator from '@/components/Akinator/GamePlay.vue'
 
 export default {
   name: 'AladinFromSeoul',
   components: {
     Akinator,
+    SearchAutocomplete,
   },
   methods: {
     handleSearch() {
