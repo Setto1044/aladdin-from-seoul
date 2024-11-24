@@ -22,4 +22,6 @@ public interface HouseService {
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 
 	HouseDealStatVo getHouseDealStatByAptSeq(String aptSeq);
+
+	List<String> searchDong(String keyword);
 }

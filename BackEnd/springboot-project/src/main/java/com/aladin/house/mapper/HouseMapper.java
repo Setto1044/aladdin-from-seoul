@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.dto.HouseDealWithDongCodeDto;
+import com.aladin.house.vo.DongCodeVo;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
 import com.aladin.house.vo.HouseDetailVo;
@@ -24,4 +25,6 @@ public interface HouseMapper {
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 
 	HouseDealStatVo findHouseDealStatByAptSeq(String aptSeq);
+
+	List<DongCodeVo> findAllDongCodes(); // 모든 동 코드를 가져오는 메서드
 }
