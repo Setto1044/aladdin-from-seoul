@@ -17,6 +17,7 @@ public class DealBookmarkResponseDto {
 	private String latitude;
 	private String longitude;
 	// card
+	private String dongCode;
 	private String sidoName;
 	private String gugunName;
 	private String dongName;

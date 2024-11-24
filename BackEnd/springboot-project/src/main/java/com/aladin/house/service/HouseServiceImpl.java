@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
+import com.aladin.house.dto.HouseDealWithDongCodeDto;
 import com.aladin.house.mapper.HouseMapper;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
-import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @Service
@@ -33,7 +33,7 @@ public class HouseServiceImpl implements HouseService {
 	}
 
 	@Override
-	public List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size) {
+	public List<HouseDealWithDongCodeDto> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size) {
 		return houseMapper.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 	}
 

@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
+import com.aladin.house.dto.HouseDealWithDongCodeDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
-import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @Mapper
@@ -19,7 +19,7 @@ public interface HouseMapper {
 	// DTO를 사용하여 특정 좌표 기준 데이터 가져오기
 	List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto);
 
-	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
+	List<HouseDealWithDongCodeDto> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 

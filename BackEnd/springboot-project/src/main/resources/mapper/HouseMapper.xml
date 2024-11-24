@@ -85,24 +85,30 @@
 		LIMIT 300
 	</select>
 
-	<select id="findAllHouseDealsByAptSeqWithCursor" parameterType="map" resultMap="HouseDealResultMap">
+	<!-- 커서 기반 아파트 거래내역 조회 -->
+	<select id="findAllHouseDealsByAptSeqWithCursor" parameterType="map">
 		SELECT
-		no,
-		apt_seq,
-		apt_dong,
-		floor,
-		deal_year,
-		deal_month,
-		deal_day,
-		exclu_use_ar,
-		deal_amount,
-		views
-		FROM housedeals
-		WHERE apt_seq = #{aptSeq}
+		h.no,
+		h.apt_seq,
+		h.apt_dong,
+		h.floor,
+		h.deal_year,
+		h.deal_month,
+		h.deal_day,
+		h.exclu_use_ar,
+		h.deal_amount,
+		h.views,
+		c.dong_code
+		FROM
+		housedeals h
+		JOIN
+		housecards c ON h.apt_seq = c.apt_seq
+		WHERE
+		h.apt_seq = #{aptSeq}
 		<if test="cursorId != null">
-			AND no &lt; #{cursorId}
+			AND h.no &lt; #{cursorId}
 		</if>
-		ORDER BY no DESC
+		ORDER BY h.no DESC
 		LIMIT #{size}
 	</select>
 

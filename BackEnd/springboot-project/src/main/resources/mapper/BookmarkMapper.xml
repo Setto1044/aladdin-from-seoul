@@ -141,6 +141,7 @@
 		AND housedeals_no = #{housedealsNo};
 	</delete>
 
+	<!-- 아파트 거래내역 커서 페이징 조회 -->
 	<select id="findDealBookmarksByCursor" resultType="com.aladin.bookmark.dto.DealBookmarkResponseDto">
 		SELECT
 		b.id AS bookmarkId,
@@ -152,6 +153,7 @@
 		c.longitude AS longitude,
 		b.created_at AS bookmarkedAt,
 		-- 추가 필드
+		c.dong_code AS dongCode,
 		c.sido_name AS sidoName,
 		c.gugun_name AS gugunName,
 		c.dong_name AS dongName,
@@ -189,6 +191,7 @@
 		c.longitude AS longitude,
 		b.created_at AS bookmarkedAt,
 		-- 추가 필드
+		c.dong_code AS dongCode,
 		c.sido_name AS sidoName,
 		c.gugun_name AS gugunName,
 		c.dong_name AS dongName,
