@@ -12,6 +12,7 @@
       <div class="user-actions">
         <button class="btn-secondary">Log Out</button>
         <button class="btn-primary" @click="goToEditPage">Edit Profile</button>
+        <button class="btn-primary" @click="goToPWEditPage">Edit password</button>
       </div>
       <img
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/4375c0390c2ebe6f7cc8a48da21680487a9b51a064afdf60421a0e7a8892be8b?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e"
@@ -99,6 +100,10 @@ export default {
   methods: {
     goToEditPage() {
       this.$router.push({ path: '/mypage/edit' })
+    },
+    goToPWEditPage() {
+      const un = useUserStore().memberInfo.username
+      this.$router.push({ name: 'chpw', params: { username: un } })
     },
   },
   data() {

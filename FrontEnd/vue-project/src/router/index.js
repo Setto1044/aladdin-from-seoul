@@ -84,6 +84,14 @@ const router = createRouter({
       component: () => import('@/components/Map/RealEstateDetail.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
+    {
+      path: '/chpw/:username',
+      name: 'chpw',
+      component: () => import('@/views/User/ChangePasswordPage.vue'),
+      meta: { showSearchBar: true, showFooterBar: false },
+
+      props: true, // params를 props로 전달
+    },
   ],
 })
 

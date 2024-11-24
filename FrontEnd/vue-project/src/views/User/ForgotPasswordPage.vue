@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -55,21 +57,86 @@ export default {
         email: '',
         verificationCode: '',
       },
+      validation: {
+        emailVerified: false,
+        verificationMessage: '',
+      },
+      isVerificationSent: false,
     }
   },
+  watch: {
+    'formData.username'(newVal) {
+      // 아이디가 변경되면 인증 상태 초기화
+      this.resetVerification()
+    },
+    'formData.email'(newVal) {
+      // 이메일이 변경되면 인증 상태 초기화
+      this.resetVerification()
+    },
+  },
   methods: {
-    sendVerificationCode() {
-      // Logic to send verification code via email
-      alert('Verification code sent to your email address.')
+    resetVerification() {
+      this.validation.emailVerified = false
+      this.validation.verificationMessage = ''
+      this.isVerificationSent = false
     },
-    verifyCode() {
-      // Logic to verify the input verification code
-      alert('Verification code verified.')
+    async sendVerificationCode() {
+      if (!this.formData.email.trim()) {
+        alert('이메일을 입력해주세요.')
+        return
+      }
+
+      try {
+        const response = await axios.post('http://localhost:8080/aladin/email', {
+          username: this.formData.username,
+          email: this.formData.email,
+          isRegister: false,
+        })
+
+        if (response.data.isOk) {
+          this.isVerificationSent = true
+          alert('인증번호가 이메일로 전송되었습니다.')
+        } else {
+          alert('이메일 전송에 실패했습니다. 다시 시도해주세요.')
+        }
+      } catch (error) {
+        console.error('Error sending verification code:', error)
+        alert('이메일 전송 중 문제가 발생했습니다.')
+      }
     },
-    handleRecovery() {
-      // Handle the password recovery process (e.g., send data to the backend)
-      console.log('Password recovery data:', this.formData)
-      alert('Password recovery process completed.')
+    async verifyCode() {
+      if (!this.formData.verificationCode.trim()) {
+        alert('인증번호를 입력해주세요.')
+        return
+      }
+
+      try {
+        const response = await axios.post('http://localhost:8080/aladin/email/authentication', {
+          email: this.formData.email,
+          authentication: this.formData.verificationCode,
+        })
+
+        if (response.data.isSuccess) {
+          this.validation.emailVerified = true
+          this.validation.verificationMessage = '인증번호가 확인되었습니다.'
+          alert('인증이 완료되었습니다.')
+        } else {
+          this.validation.emailVerified = false
+          this.validation.verificationMessage = '잘못된 인증번호입니다.'
+          alert('인증번호가 일치하지 않습니다.')
+        }
+      } catch (error) {
+        console.error('Error verifying code:', error)
+        alert('인증 중 문제가 발생했습니다.')
+      }
+    },
+    async handleRecovery() {
+      if (!this.validation.emailVerified) {
+        alert('먼저 이메일 인증을 완료해주세요.')
+        return
+      }
+
+      this.$router.push({ name: 'chpw', params: { username: this.formData.username } })
     },
   },
 }
