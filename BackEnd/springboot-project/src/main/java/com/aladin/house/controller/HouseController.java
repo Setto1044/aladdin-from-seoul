@@ -14,10 +14,10 @@ import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.BetweenRangeHouseCardResponseDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardResponseDto;
-import com.aladin.house.dto.HouseDealResponseDto;
+import com.aladin.house.dto.HouseDealWithDongCodeDto;
+import com.aladin.house.dto.HouseDealWithDongCodeResponseDto;
 import com.aladin.house.service.HouseService;
 import com.aladin.house.vo.HouseDealStatVo;
-import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @RestController
@@ -46,9 +46,9 @@ public class HouseController {
 
 	// 특정 아파트 시퀀스의 거래 정보 요청 커서 페이징
 	@GetMapping("/deals/{aptSeq}")
-	public ResponseEntity<ApiResponseDto<HouseDealResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
-		List<HouseDealVo> houseDeals = houseService.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
-		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", HouseDealResponseDto.of(houseDeals)));
+	public ResponseEntity<ApiResponseDto<HouseDealWithDongCodeResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
+		List<HouseDealWithDongCodeDto> houseDeals = houseService.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", HouseDealWithDongCodeResponseDto.of(houseDeals)));
 	}
 
 	@GetMapping("/detail/{aptSeq}")

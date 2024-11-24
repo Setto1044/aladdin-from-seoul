@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
+import com.aladin.house.dto.HouseDealWithDongCodeDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
-import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 public interface HouseService {
@@ -17,7 +17,7 @@ public interface HouseService {
 	List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto);
 
 	// 아파트 고유 번호 -> 아파트 거래 상세 정보 리스트 가져오기
-	List<HouseDealVo> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
+	List<HouseDealWithDongCodeDto> findAllHouseDealsByAptSeqWithCursor(String aptSeq, Long cursorId, int size);
 
 	HouseDetailVo getHouseDetailByAptSeq(String aptSeq);
 
