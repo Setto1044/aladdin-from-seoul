@@ -164,19 +164,27 @@ export default {
       if (!this.newComment.trim() || this.isSubmitting) return
 
       this.isSubmitting = true
+      const userStore = useUserStore()
 
       try {
-        const response = await axios.post(`http://localhost:8080/aladin/comments/add`, {
-          postId: this.postId,
+        const response = await axios.post(`http://localhost:8080/aladin/comments`, {
+          roomboardsId: this.postId,
+          membersUsername: userStore.memberInfo.username,
           comment: this.newComment,
         })
 
         if (response.data.success) {
-          this.comments.unshift(response.data.data)
-          this.newComment = ''
+          console.log('Comment added successfully:', response.data.message)
+          this.newComment = '' // Clear the input field
+          this.lastCursorId = null // Reset cursor for fetching
+          this.comments = [] // Clear the current comments
+          this.hasMoreData = true // Reset pagination state
+          await this.fetchComments() // Fetch updated comments
+        } else {
+          console.error('Failed to add comment:', response.data.message || 'Unknown error')
         }
       } catch (error) {
-        console.error('댓글 작성 중 오류:', error)
+        console.error('Error while adding comment:', error)
       } finally {
         this.isSubmitting = false
       }
