@@ -165,7 +165,8 @@
 		END AS aptDong,
 		h.deal_year AS dealYear,
 		h.deal_month AS dealMonth,
-		h.deal_day AS dealDay
+		h.deal_day AS dealDay,
+		h.views
 		FROM housedeals_bookmarks b
 		JOIN housedeals h ON b.housedeals_no = h.no
 		JOIN housecards c ON h.apt_seq = c.apt_seq
@@ -195,6 +196,7 @@
 		c.build_year AS buildYear,
 		h.exclu_use_ar AS excluUseAr,
 		h.floor AS floor,
+		h.views,
 		CASE
 		WHEN h.apt_dong = ' ' THEN NULL
 		ELSE h.apt_dong
