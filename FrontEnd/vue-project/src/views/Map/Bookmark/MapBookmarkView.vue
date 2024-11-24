@@ -41,6 +41,7 @@
             :selectedItem="selectedItem"
             @beforeClose="handleBeforeCloseSidebar"
           />
+          <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
         </Sidebar>
       </div>
       <!-- Map -->
@@ -64,6 +65,7 @@ import ShareRoomInfoPanel from '@/components/Map/Bookmark/ShareRoomInfoPanel.vue
 import PropertyDetails from '@/components/Map/PropertyDetails.vue'
 import ContentDisplayPanel from '@/components/Map/Bookmark/InfoWidgets/ContentDisplayPanel.vue'
 import NearbyStopsPanel from '@/components/Map/Bookmark/InfoWidgets/NearbyStopsPanel.vue'
+import LocalReviewPanel from '@/components/Map/Bookmark/InfoWidgets/LocalReviewPanel.vue'
 
 import { ref } from 'vue'
 
@@ -78,6 +80,7 @@ export default {
     ShareRoomInfoPanel,
     ContentDisplayPanel,
     NearbyStopsPanel,
+    LocalReviewPanel,
   },
   data() {
     return {
