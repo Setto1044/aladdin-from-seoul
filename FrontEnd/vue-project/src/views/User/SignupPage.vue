@@ -190,6 +190,7 @@ export default {
       try {
         const response = await axios.post('http://localhost:8080/aladin/email', {
           email: this.formData.email,
+          isRegister: true,
         })
         console.log(response)
         if (response.data.isOk) {
