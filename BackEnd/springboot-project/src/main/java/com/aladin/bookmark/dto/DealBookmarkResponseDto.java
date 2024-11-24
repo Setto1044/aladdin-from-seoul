@@ -30,4 +30,5 @@ public class DealBookmarkResponseDto {
 	private Integer dealMonth;
 	private Integer dealDay;
 	private LocalDateTime bookmarkedAt;
+	private Integer views;
 }
