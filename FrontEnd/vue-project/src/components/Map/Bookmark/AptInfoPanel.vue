@@ -119,6 +119,9 @@ export default {
     },
     handleItemClick(item) {
       this.$emit('select-item', item) // Emit the clicked item to the parent component
+      // 지도 중심을 마커 위치로 이동
+      this.mapInstance.setCenter(new kakao.maps.LatLng(item.latitude, item.longitude))
+      this.mapInstance.setLevel(3)
     },
     cleanupObserver() {
       if (this.observer) {

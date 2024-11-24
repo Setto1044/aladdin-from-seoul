@@ -18,23 +18,6 @@
           </Carousel>
         </div>
 
-        <!-- Thumbnail Slider -->
-        <div class="thumbnails-wrapper">
-          <Carousel
-            :items-to-show="5"
-            :wrap-around="true"
-            v-model="currentSlide"
-            :mouse-drag="false"
-            :touch-drag="false"
-          >
-            <Slide v-for="(url, index) in imageUrls" :key="index">
-              <div class="thumbnail-container">
-                <img :src="url" alt="Thumbnail Image" class="thumbnail-image" />
-              </div>
-            </Slide>
-          </Carousel>
-        </div>
-
         <div class="card-author">
           <div class="author-avatar-container">
             <div
@@ -49,7 +32,21 @@
 
         <h2 class="property-title">{{ title }}</h2>
         <p class="property-address">{{ address }}</p>
-        <p class="property-detail-text"><strong>Details:</strong> {{ detail }}{{ detail }}</p>
+
+        <div class="property-detail-container">
+          <p class="property-detail-text">
+            <strong>Details:</strong>
+            <span v-if="isExpanded || !isOverflowing" class="detail-content" ref="detailContent">
+              {{ detail }}
+              <span class="more-link" @click="toggleContent">간략히 보기</span>
+            </span>
+            <span v-else class="detail-content truncated" ref="detailContent">
+              {{ detail.substring(0, 50) }}...
+              <span class="more-link" @click="toggleContent">더 보기</span>
+            </span>
+          </p>
+        </div>
+
         <p class="property-size"><strong>House Size:</strong> {{ houseSize }} m²</p>
         <p class="property-price"><strong>Price:</strong> ${{ price }} / {{ pricePer }}</p>
         <!-- Rent Dates with Calendar -->
@@ -60,6 +57,7 @@
           </p>
           <VCalendar
             v-if="initialPage"
+            class="full-width-calendar"
             :attributes="calendarAttrs"
             :initial-page="initialPage"
             :min-page="minPage"
@@ -73,9 +71,6 @@
           <span v-for="tag in tags" :key="tag" class="property-tag">{{ tag }}</span>
         </p>
       </div>
-      <button v-if="isOverflowing" @click="toggleContent" class="toggle-button">
-        {{ isExpanded ? '접기' : '더 보기' }}
-      </button>
     </div>
   </div>
 </template>
@@ -110,9 +105,31 @@ export default {
         }
       },
     },
+    detail: {
+      immediate: true,
+      handler() {
+        this.checkOverflow() // `detail`이 변경될 때마다 overflow 상태 확인
+      },
+    },
+  },
+  computed: {
+    formattedRentFrom() {
+      return this.formatDate(this.rentFrom)
+    },
+    formattedRentTo() {
+      return this.formatDate(this.rentTo)
+    },
+  },
+  mounted() {
+    this.checkOverflow() // 컴포넌트가 마운트된 후 overflow 상태 확인
   },
   data() {
     return {
+      calendarColor: 'blue',
+      calendarAttrs: [],
+      initialPage: null, // Initial page for the calendar
+      minPage: null,
+      maxPage: null,
       currentSlide: 0,
       title: '',
       detail: '',
@@ -127,10 +144,46 @@ export default {
       imageUrls: [],
       hostNickname: '',
       isExpanded: false, // 내용이 펼쳐진 상태인지 여부
-      isOverflowing: false, // 내용이 300px을 초과하는지 여부
+      isOverflowing: true, // 내용이 300px을 초과하는지 여부
     }
   },
   methods: {
+    setCalendarAttrs() {
+      if (this.rentFrom && this.rentTo) {
+        this.initialPage = {
+          month: this.rentFrom.getMonth() + 1, // JavaScript months are 0-based
+          year: this.rentFrom.getFullYear(),
+        }
+        this.minPage = {
+          month: this.rentFrom.getMonth() + 1,
+          year: this.rentFrom.getFullYear(),
+        }
+        this.maxPage = {
+          month: this.rentTo.getMonth() + 1,
+          year: this.rentTo.getFullYear(),
+        }
+        console.log('Initial Page:', this.initialPage) // Debugging
+        console.log('Min Page:', this.minPage, 'Max Page:', this.maxPage) // Debugging
+
+        this.calendarAttrs = [
+          {
+            key: 'rent-period',
+            highlight: true,
+            dates: { start: this.rentFrom, end: this.rentTo }, // Use the dates from API
+          },
+        ]
+      } else {
+        console.error('Rent dates are not set!')
+      }
+    },
+    formatDate(date) {
+      if (!date) return '' // Handle cases where the date is null or undefined
+      const d = new Date(date) // Ensure it's a Date object
+      const year = d.getFullYear()
+      const month = String(d.getMonth() + 1).padStart(2, '0') // Months are 0-based
+      const day = String(d.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
     resetData() {
       // 데이터 초기화
       this.currentSlide = 0
@@ -150,16 +203,17 @@ export default {
       this.isOverflowing = false
     },
     toggleContent() {
-      this.isExpanded = !this.isExpanded // 펼침/접힘 상태 토글
+      this.isExpanded = !this.isExpanded
     },
     checkOverflow() {
-      this.$nextTick(() => {
-        const contentElement = this.$refs.content
-        if (contentElement && contentElement.scrollHeight > 300) {
-          this.isOverflowing = true // 높이가 초과하면 "더 보기" 버튼 표시
+      setTimeout(() => {
+        const detailContent = this.$refs.detailContent
+        if (detailContent) {
+          this.isOverflowing = 50 < detailContent.offsetHeight
         }
-      })
+      }, 100) // DOM이 완전히 렌더링될 때까지 기다림
     },
+
     async fetchPropertyDetails(propertyId) {
       try {
         const response = await axios.get(`http://localhost:8080/aladin/boards/${propertyId}`)
@@ -177,6 +231,7 @@ export default {
           this.hostNickname = nickname
           this.rentFrom = new Date(roomCardInfo.rentStart)
           this.rentTo = new Date(roomCardInfo.rentUntil)
+          this.setCalendarAttrs() // Call method to update calendar attributes
         }
       } catch (error) {
         console.error('Error fetching property details:', error)
@@ -198,8 +253,6 @@ export default {
 }
 
 .share-content {
-  max-height: 90vh; /* 최대 높이 설정 */
-  overflow-y: auto; /* 스크롤 활성화 */
   padding: 16px;
   background-color: #fff;
   border-radius: 16px;
@@ -343,25 +396,64 @@ export default {
   }
 
   .expandable-content {
-    max-height: 300px; /* 기본 높이 */
-    overflow: hidden; /* 넘치는 내용 숨김 */
-    position: relative;
-    transition: max-height 0.3s ease-in-out; /* 부드러운 확장 애니메이션 */
+    max-height: 150px; /* 초기 높이 제한 */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out; /* 부드러운 확장 효과 */
   }
 
   .expandable-content.expanded {
     max-height: none; /* 펼쳐진 상태에서는 제한 제거 */
   }
 
+  .property-detail-container {
+    margin-bottom: 16px;
+  }
+
+  .property-detail-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .detail-content {
+    display: inline-block;
+    overflow: hidden; /* 기본적으로 숨김 처리 */
+  }
+
+  .detail-content.truncated {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .toggle-button {
-    margin-top: 10px;
+    margin-top: 8px;
     background: none;
     border: none;
     color: #007bff;
     font-size: 14px;
     cursor: pointer;
-    padding: 10px;
+    padding: 0;
     text-align: left;
+    transition: color 0.3s ease;
+  }
+
+  .toggle-button:hover {
+    color: #0056b3;
+  }
+
+  .more-link {
+    color: #007bff; /* 버튼처럼 보이지 않게 링크 스타일 */
+    font-weight: bold;
+    cursor: pointer;
+    display: inline;
+    margin-left: 4px; /* 텍스트와 간격 */
+    text-decoration: underline dotted; /* 밑줄을 점선으로 */
+  }
+
+  .more-link:hover {
+    color: #0056b3; /* 호버 시 더 어두운 색상 */
+    text-decoration: underline; /* 호버 시 밑줄 변경 */
   }
 }
 </style>

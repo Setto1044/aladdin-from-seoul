@@ -111,6 +111,11 @@ export default {
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         })
+        // 지도 중심을 마커 위치로 이동
+        this.mapInstance.setCenter(
+          new kakao.maps.LatLng(coordinates.latitude, coordinates.longitude),
+        )
+        this.mapInstance.setLevel(3)
         this.$emit('select-item', {
           item: board,
           latitude: coordinates.latitude,
