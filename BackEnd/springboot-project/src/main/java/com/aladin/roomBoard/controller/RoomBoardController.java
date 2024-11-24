@@ -17,6 +17,7 @@ import com.aladin.common.ApiResponseDto;
 import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 import com.aladin.roomBoard.dto.RoomBoardDetailDto;
+import com.aladin.roomBoard.dto.RoomBoardFilterRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.service.RoomBoardService;
@@ -52,7 +53,7 @@ public class RoomBoardController {
 	@GetMapping("/{roomboardsId}")
 	public ResponseEntity<ApiResponseDto<RoomBoardDetailDto>> getBoardDetail(@PathVariable Long roomboardsId) {
 		RoomBoardDetailDto boardDetail = boardService.getBoardDetail(roomboardsId);
-		if (boardDetail == null || boardDetail.getRoomCardInfo() == null) {
+		if (boardDetail == null || boardDetail.getRoomBoardVo() == null) {
 			throw new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다.");
 		}
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardDetail));
@@ -84,6 +85,12 @@ public class RoomBoardController {
 	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getBoardsByHashtags(@RequestParam List<String> hashtags) {
 		List<RoomBoardCardDto> boardCards = boardService.findBoardsByHashtags(hashtags);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boardCards));
+	}
+
+	@GetMapping("/filter")
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getFilteredBoards(@ModelAttribute RoomBoardFilterRequestDto filterRequestDto) {
+		List<RoomBoardCardDto> boards = boardService.findBoardsWithFilters(filterRequestDto);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boards));
 	}
 
 }

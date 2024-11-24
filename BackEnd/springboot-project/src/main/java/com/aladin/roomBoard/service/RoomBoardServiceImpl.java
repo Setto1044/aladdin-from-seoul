@@ -12,6 +12,7 @@ import com.aladin.exceptions.BoardCreationException;
 import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 import com.aladin.roomBoard.dto.RoomBoardDetailDto;
+import com.aladin.roomBoard.dto.RoomBoardFilterRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.mapper.RoomBoardMapper;
@@ -66,7 +67,7 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 		try {
 			RoomBoardDetailDto boardDetailDto = boardMapper.findOneByRoomBoardId(roomboardsId);
 
-			if (boardDetailDto == null || boardDetailDto.getRoomCardInfo() == null) {
+			if (boardDetailDto == null || boardDetailDto.getRoomBoardVo() == null) {
 				throw new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다.");
 			}
 
@@ -98,12 +99,6 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 		}
 	}
 
-	/**
-	 * 이미지 저장 로직 공통화
-	 * 
-	 * @param images  저장할 이미지 목록
-	 * @param boardId 게시글 ID
-	 */
 	private void saveImages(List<MultipartFile> images, Long boardId) {
 		if (images != null && !images.isEmpty()) {
 			int imageOrder = 0;
@@ -149,6 +144,11 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 	public List<RoomBoardCardDto> findBoardsByHashtags(List<String> hashtags) {
 		List<RoomBoardCardDto> boards = boardMapper.findBoardsByHashtags(hashtags);
 		return boards;
+	}
+
+	@Override
+	public List<RoomBoardCardDto> findBoardsWithFilters(RoomBoardFilterRequestDto filterRequestDto) {
+		return boardMapper.findBoardsWithFilters(filterRequestDto);
 	}
 
 }

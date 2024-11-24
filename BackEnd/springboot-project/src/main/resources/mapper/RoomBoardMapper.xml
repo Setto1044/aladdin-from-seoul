@@ -37,7 +37,7 @@
 	<resultMap id="roomBoardDetailDtoResultMap" type="com.aladin.roomBoard.dto.RoomBoardDetailDto">
 		<result property="nickname" column="nickname" />
 		<result property="profileImagePath" column="profile_image_path" />
-		<association property="roomCardInfo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
+		<association property="roomBoardVo" javaType="com.aladin.roomBoard.vo.RoomBoardVo" resultMap="roomBoardResultMap" />
 		<collection property="roomImageInfos" ofType="com.aladin.roomBoard.vo.RoomBoardImageVo" resultMap="roomBoardImageResultMap" />
 	</resultMap>
 
@@ -213,6 +213,58 @@
 			JSON_CONTAINS(rb.hashtags, CONCAT('"', #{tag}, '"'), '$')
 		</foreach>
 		ORDER BY rb.id DESC;
+	</select>
+
+	<!-- 필터를 통한 게시물 조회 -->
+	<select id="findBoardsWithFilters" resultMap="roomBoardCardDtoResultMap" parameterType="com.aladin.roomBoard.dto.RoomBoardFilterRequestDto">
+		SELECT
+		rb.id AS id,
+		rb.members_username AS members_username,
+		rb.title AS title,
+		rb.detail AS detail,
+		rb.address AS address,
+		rb.postcode AS postcode,
+		rb.price AS price,
+		rb.house_size AS house_size,
+		rb.price_per AS price_per,
+		rb.rent_start AS rent_start,
+		rb.rent_until AS rent_until,
+		rb.hashtags AS hashtags,
+		rb.views AS views,
+		rb.created_at AS created_at,
+		rb.updated_at AS updated_at,
+		rbi.url AS thumbnail_url,
+		m.profile_image_path AS profile_image_path,
+		m.nickname AS nickname
+		FROM roomboards rb
+		LEFT JOIN roomboards_images rbi ON rb.id = rbi.roomboards_id AND rbi.image_order = 0
+		LEFT JOIN members m ON rb.members_username = m.username
+		WHERE 1=1
+		<if test="hashtags != null and hashtags.size() > 0">
+			AND JSON_CONTAINS(rb.hashtags, CONCAT('\"', #{hashtags[0]}, '\"'), '$')
+		</if>
+		<if test="rentFrom != null">
+			AND rb.rent_start &gt;= #{rentFrom}
+		</if>
+		<if test="rentTo != null">
+			AND (rb.rent_until IS NULL OR rb.rent_until &lt;= #{rentTo})
+		</if>
+		<if test="address != null and address != ''">
+			AND rb.address LIKE CONCAT('%', #{address}, '%')
+		</if>
+		<if test="priceMin != null">
+			AND rb.price &gt;= #{priceMin}
+		</if>
+		<if test="priceMax != null">
+			AND rb.price &lt;= #{priceMax}
+		</if>
+		<if test="sizeMin != null">
+			AND rb.house_size &gt;= #{sizeMin}
+		</if>
+		<if test="sizeMax != null">
+			AND rb.house_size &lt;= #{sizeMax}
+		</if>
+		ORDER BY rb.created_at DESC;
 	</select>
 
 

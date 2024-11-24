@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RoomBoardDetailDto {
-	private RoomBoardVo roomCardInfo;
+	private RoomBoardVo roomBoardVo;
 	private List<RoomBoardImageVo> roomImageInfos;
 	private String nickname;
 	private String profileImagePath;

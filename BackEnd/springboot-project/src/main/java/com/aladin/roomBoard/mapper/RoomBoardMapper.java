@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
 import com.aladin.roomBoard.dto.RoomBoardDetailDto;
+import com.aladin.roomBoard.dto.RoomBoardFilterRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.vo.RoomBoardImageVo;
@@ -33,5 +34,8 @@ public interface RoomBoardMapper {
 
 	// 해시태그로 검색
 	List<RoomBoardCardDto> findBoardsByHashtags(List<String> hashtags);
+
+	// 필터 검색
+	List<RoomBoardCardDto> findBoardsWithFilters(RoomBoardFilterRequestDto filterRequestDto);
 
 }
