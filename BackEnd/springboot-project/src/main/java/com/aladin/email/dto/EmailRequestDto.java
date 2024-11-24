@@ -14,8 +14,9 @@ public class EmailRequestDto {
 	@Email
 	private String email;
 
-	@NotBlank
 	private String username;
+
+	private Boolean isRegister;
 
 	private LocalDateTime authExpireDate;
 	private String authCode;

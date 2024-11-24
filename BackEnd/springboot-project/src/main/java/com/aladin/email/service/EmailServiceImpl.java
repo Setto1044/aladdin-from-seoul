@@ -37,12 +37,13 @@ public class EmailServiceImpl implements EmailService {
 	public boolean sendEmailAuthCode(EmailRequestDto emailRequestDto) {
 		String email = emailRequestDto.getEmail();
 		String username = emailRequestDto.getUsername();
-		String authCode = generateAuthCode();
+		Boolean isRegister = emailRequestDto.getIsRegister();
 
-		if (!emailMapper.existsByEmailAndUsername(email, username)) {
+		// 회원가입 시 이메일 인증은 다음 이메일-아이디 일치 검증 무시
+		if (!isRegister && !emailMapper.existsByEmailAndUsername(email, username)) {
 			throw new IllegalArgumentException("일치하지 않는 회원 ID, 이메일입니다.");
 		}
-
+		String authCode = generateAuthCode();
 		emailRequestDto.setAuthExpireDate(LocalDateTime.now().plusMinutes(5));
 		emailRequestDto.setAuthCode(authCode);
 		emailAuthCodeStorage.put(email, emailRequestDto);
