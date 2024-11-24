@@ -37,11 +37,20 @@ public class HouseServiceImpl implements HouseService {
 		List<DongCodeVo> dongCodes = houseMapper.findAllDongCodes();
 		// 주소 데이터만 추출하여 Trie 초기화
 		List<String> addresses = dongCodes.stream()
-				.map(d -> (d.getSidoName() != null ? d.getSidoName() : "") + " " + (d.getGugunName() != null ? d.getGugunName() : "") + " "
-						+ (d.getDongName() != null ? d.getDongName() : ""))
+				.map(d -> (d.getDongCode()) + ", " + (d.getSidoName() != null ? d.getSidoName() : "") + " "
+						+ (d.getGugunName() != null ? d.getGugunName() : "") + " " + (d.getDongName() != null ? d.getDongName() : ""))
 				.map(String::trim) // 문자열의 앞뒤 공백 제거
 				.toList();
-		trieService.initialize(addresses); // Trie에 주소만 삽입
+
+		// 아파트 이름 트라이에 삽입
+		// List<HouseCardVo> aptSeqAndNames =
+		// houseMapper.findAllAptSeqAndAptNameOfHouseCards();
+		List<HouseCardVo> aptSeqAndNames = houseMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
+		List<String> seqNames = aptSeqAndNames.stream().map(a -> (a.getAptSeq()) + ", " + (a.getAptName())).map(String::trim).toList();
+
+		trieService.initialize(addresses); // Trie에 주소 삽입
+		trieService.initialize(seqNames); // Trie에 아파트 삽입
+
 	}
 
 	@Override
