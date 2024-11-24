@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.aladin.email.dto.EmailAuthRequestDto;
 import com.aladin.email.dto.EmailRequestDto;
+import com.aladin.email.mapper.EmailMapper;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -25,14 +26,23 @@ public class EmailServiceImpl implements EmailService {
 	private final JavaMailSender mailSender;
 	private final Map<String, EmailRequestDto> emailAuthCodeStorage = new HashMap<>();
 
-	public EmailServiceImpl(JavaMailSender mailSender) {
+	private final EmailMapper emailMapper;
+
+	public EmailServiceImpl(JavaMailSender mailSender, EmailMapper emailMapper) {
 		this.mailSender = mailSender;
+		this.emailMapper = emailMapper;
 	}
 
 	@Override
 	public boolean sendEmailAuthCode(EmailRequestDto emailRequestDto) {
 		String email = emailRequestDto.getEmail();
+		String username = emailRequestDto.getUsername();
 		String authCode = generateAuthCode();
+
+		if (!emailMapper.existsByEmailAndUsername(email, username)) {
+			throw new IllegalArgumentException("일치하지 않는 회원 ID, 이메일입니다.");
+		}
+
 		emailRequestDto.setAuthExpireDate(LocalDateTime.now().plusMinutes(5));
 		emailRequestDto.setAuthCode(authCode);
 		emailAuthCodeStorage.put(email, emailRequestDto);
