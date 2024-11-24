@@ -98,6 +98,19 @@ export default {
       default: null,
     },
   },
+  watch: {
+    id: {
+      immediate: true, // 컴포넌트가 생성될 때도 실행
+      handler(newId) {
+        if (newId) {
+          // id가 있을 때만 데이터 불러오기
+          console.log('Property ID changed:', newId)
+          this.resetData() // 기존 데이터 초기화
+          this.fetchPropertyDetails(newId)
+        }
+      },
+    },
+  },
   data() {
     return {
       currentSlide: 0,
@@ -117,11 +130,25 @@ export default {
       isOverflowing: false, // 내용이 300px을 초과하는지 여부
     }
   },
-  mounted() {
-    this.fetchPropertyDetails(this.id) // Fetch property details when component mounts
-    this.$nextTick(this.checkOverflow) // DOM 업데이트 후 높이 확인
-  },
   methods: {
+    resetData() {
+      // 데이터 초기화
+      this.currentSlide = 0
+      this.title = ''
+      this.detail = ''
+      this.address = ''
+      this.price = 0
+      this.houseSize = 0
+      this.pricePer = ''
+      this.rentFrom = ''
+      this.rentTo = ''
+      this.tags = []
+      this.views = 0
+      this.imageUrls = []
+      this.hostNickname = ''
+      this.isExpanded = false
+      this.isOverflowing = false
+    },
     toggleContent() {
       this.isExpanded = !this.isExpanded // 펼침/접힘 상태 토글
     },
