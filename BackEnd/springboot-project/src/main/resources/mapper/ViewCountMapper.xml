@@ -1,0 +1,16 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aladin.viewCount.mapper.ViewCountMapper">
+	<update id="incrementHouseDealViews" parameterType="long">
+		UPDATE housedeals
+		SET views = views + 1
+		WHERE no = #{no}
+	</update>
+
+	<update id="incrementRoomBoardViews" parameterType="long">
+		UPDATE roomboards
+		SET views = views + 1
+		WHERE id = #{id}
+	</update>
+
+
+</mapper>

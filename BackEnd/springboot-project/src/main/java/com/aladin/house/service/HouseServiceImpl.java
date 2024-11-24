@@ -18,6 +18,7 @@ public class HouseServiceImpl implements HouseService {
 	private final HouseMapper houseMapper;
 
 	public HouseServiceImpl(HouseMapper houseMapper) {
+		super();
 		this.houseMapper = houseMapper;
 	}
 

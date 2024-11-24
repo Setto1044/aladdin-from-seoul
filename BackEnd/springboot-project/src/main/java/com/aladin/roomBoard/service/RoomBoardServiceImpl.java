@@ -16,6 +16,7 @@ import com.aladin.roomBoard.dto.RoomBoardInsertRequestDto;
 import com.aladin.roomBoard.dto.RoomBoardUpdateRequestDto;
 import com.aladin.roomBoard.mapper.RoomBoardMapper;
 import com.aladin.roomBoard.vo.RoomBoardImageVo;
+import com.aladin.viewCount.service.ViewCountService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,10 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RoomBoardServiceImpl implements RoomBoardService {
 
 	private final RoomBoardMapper boardMapper;
+	private final ViewCountService viewCountService;
 	private final ImageStorageMamager imageStorageMamager;
 
-	public RoomBoardServiceImpl(RoomBoardMapper boardMapper, ImageStorageMamager imageStorageMamager) {
+	public RoomBoardServiceImpl(RoomBoardMapper boardMapper, ViewCountService viewCountService, ImageStorageMamager imageStorageMamager) {
+		super();
 		this.boardMapper = boardMapper;
+		this.viewCountService = viewCountService;
 		this.imageStorageMamager = imageStorageMamager;
 	}
 
@@ -70,6 +74,7 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 			List<RoomBoardImageVo> roomImages = boardMapper.findImagesByRoomBoardId(roomboardsId);
 			boardDetailDto.setRoomImageInfos(roomImages);
 
+			viewCountService.incrementRoomBoardViews(roomboardsId);
 			return boardDetailDto;
 		} catch (Exception e) {
 			log.error("게시물 상세 조회 중 오류: {}", e.getMessage(), e);

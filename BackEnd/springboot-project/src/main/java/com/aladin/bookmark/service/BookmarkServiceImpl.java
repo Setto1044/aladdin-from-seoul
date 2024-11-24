@@ -9,6 +9,7 @@ import com.aladin.bookmark.dto.DealBookmarkResponseDto;
 import com.aladin.bookmark.mapper.BookmarkMapper;
 import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.roomBoard.dto.RoomBoardCardDto;
+import com.aladin.viewCount.service.ViewCountService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,9 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class BookmarkServiceImpl implements BookmarkService {
 	private final BookmarkMapper bookmarkMapper;
+	private final ViewCountService viewCountService;
 
-	public BookmarkServiceImpl(BookmarkMapper bookmarkMapper) {
+	public BookmarkServiceImpl(BookmarkMapper bookmarkMapper, ViewCountService viewCountService) {
 		this.bookmarkMapper = bookmarkMapper;
+		this.viewCountService = viewCountService;
 	}
 
 	@Override
@@ -49,6 +52,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 		if (result == null) {
 			throw new ResourceNotFoundException("존재하지 않거나 삭제된 북마크입니다.");
 		}
+
+		viewCountService.incrementRoomBoardViews(boardId);
 		return result;
 	}
 
@@ -79,6 +84,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 		if (result == null) {
 			throw new ResourceNotFoundException("존재하지 않는 거래내역입니다.");
 		}
+		// views 카운트 증가
+		viewCountService.incrementHouseDealViews(housedealsNo);
 		return result;
 	}
 
