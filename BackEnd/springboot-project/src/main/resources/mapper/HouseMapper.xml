@@ -85,6 +85,32 @@
 		LIMIT 300
 	</select>
 
+	<!-- 아파트명 기반 housecards 페이징 조회 -->
+	<select id="findHousesByAptNameWithCursor" parameterType="map" resultMap="HouseCardResultMap">
+		SELECT
+		apt_seq,
+		dong_code,
+		sido_name,
+		gugun_name,
+		dong_name,
+		apt_name,
+		jibun,
+		latest_deal_amount,
+		exclu_use_ar,
+		latitude,
+		longitude,
+		views,
+		build_year,
+		apt_photo_link
+		FROM housecards
+		WHERE apt_name LIKE CONCAT('%', #{keyword}, '%')
+		<if test="cursorId != null">
+			AND apt_seq &gt; #{cursorId}
+		</if>
+		ORDER BY apt_seq ASC
+		LIMIT #{size}
+	</select>
+
 	<!-- 커서 기반 아파트 거래내역 조회 -->
 	<select id="findAllHouseDealsByAptSeqWithCursor" parameterType="map">
 		SELECT
@@ -142,7 +168,7 @@
 		FROM housedeals_stat
 		WHERE apt_seq = #{aptSeq}
 	</select>
-	
+
 	<!-- Tri 검색 결과에 사용할 동코드, 시군구 이름 가져오기 -->
 	<select id="findAllDongCodes" resultType="com.aladin.house.vo.DongCodeVo">
 		SELECT dong_code, sido_name, gugun_name, dong_name

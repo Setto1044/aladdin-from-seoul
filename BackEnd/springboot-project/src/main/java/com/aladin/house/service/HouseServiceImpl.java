@@ -29,7 +29,7 @@ public class HouseServiceImpl implements HouseService {
 	}
 
 	/**
-	 * Tri 사용 추천 (시 구 동) 키워드 데이터 제공
+	 * Tri 사용해 추천 (시 구 동) 키워드 데이터 제공
 	 */
 	@PostConstruct
 	public void initializeTrie() {
@@ -57,6 +57,14 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public List<HouseCardVo> findHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto) {
 		return houseMapper.findHousesClosestToCoordinates(requestDto);
+	}
+
+	@Override
+	public List<HouseCardVo> findHousesByAptNameWithCursor(String keyword, String cursorId, int size) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			throw new IllegalArgumentException("키워드는 비어 있을 수 없습니다.");
+		}
+		return houseMapper.findHousesByAptNameWithCursor(keyword, cursorId, size);
 	}
 
 	@Override
