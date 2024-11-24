@@ -4,17 +4,22 @@
     <section class="complex-info">
       <h1 class="complex-title">{{ complex.aptName }}</h1>
       <p class="complex-summary">
-        {{ complex.buildYear }} / {{ complex.minSize }}㎡ ~ {{ complex.maxSize }}㎡
+        {{ stat.buildYear || complex.buildYear }} / {{ stat.excluUseArMin || complex.minSize }}㎡ ~
+        {{ stat.excluUseArMax || complex.maxSize }}㎡
       </p>
       <p class="complex-summary">
         {{ complex.sidoName }} {{ complex.gugunName }} {{ complex.dongName }} {{ complex.jibun }}
       </p>
       <div class="price-info">
         <div class="recent-transaction">
-          최근 매매 실거래가: <span class="price">{{ complex.latestDealAmount }}만 원</span>
+          최근 매매 실거래가:
+          <span class="price">{{ complex.latestDealAmount }}만 원 ({{ stat.dealDateLatest }})</span>
         </div>
         <div class="expected-prices">
-          <p>매매가: {{ complex.minDealAmount }}만 원 ~ {{ complex.maxDealAmount }}만 원</p>
+          <p>
+            매매가: {{ stat.dealAmountMin || complex.minDealAmount }}만 원 ~
+            {{ stat.dealAmountMax || complex.maxDealAmount }}만 원
+          </p>
         </div>
       </div>
     </section>
@@ -73,6 +78,7 @@ export default {
       observer: null,
       hasMore: true,
       observerInitialized: false,
+      stat: {}, // 거래 통계 정보 저장
     }
   },
   watch: {
@@ -82,6 +88,7 @@ export default {
         if (newComplex && newComplex.aptSeq) {
           this.resetData()
           this.fetchHouseDeals(newComplex.aptSeq)
+          this.fetchComplexStat(newComplex.aptSeq) // 통계 데이터 로드
         }
       },
     },
@@ -114,6 +121,7 @@ export default {
       this.isLoading = false
       this.hasMore = true
       this.observerInitialized = false
+      this.stat = {} // 통계 데이터 초기화
     },
     handleItemClick(item) {
       this.$emit('select-item', item) // Emit the clicked item to the parent component
@@ -125,7 +133,6 @@ export default {
       }
     },
     initializeObserver() {
-      // observer가 이미 존재하면 초기화하지 않음
       if (this.observerInitialized || !this.$refs.loadMoreTrigger) {
         return
       }
@@ -178,12 +185,30 @@ export default {
         this.isLoading = false
       }
     },
+    async fetchComplexStat(aptSeq) {
+      try {
+        const url = `http://localhost:8080/aladin/house/stat/${aptSeq}`
+        const response = await axios.get(url)
+        if (response.data.success) {
+          this.stat = response.data.data
+          console.log('Complex stats fetched:', this.stat)
+        } else {
+          console.error('Failed to fetch complex stats:', response.data.message)
+        }
+      } catch (error) {
+        console.error('Error fetching complex stats:', error.message)
+      }
+    },
   },
 }
 </script>
 
 <style scoped>
+/* Styles for better visibility */
 .complex-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
   font-family: 'Score7';
 }
 .section-title {
@@ -223,5 +248,22 @@ export default {
   text-align: center;
   padding: 20px;
   color: #666;
+}
+
+.complex-summary {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.price-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.price {
+  font-weight: bold;
+  color: #007bff;
 }
 </style>
