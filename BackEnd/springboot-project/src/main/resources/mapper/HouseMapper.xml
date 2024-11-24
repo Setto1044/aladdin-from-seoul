@@ -30,6 +30,7 @@
 		<result property="dealDay" column="deal_day" />
 		<result property="excluUseAr" column="exclu_use_ar" />
 		<result property="dealAmount" column="deal_amount" />
+		<result property="views" column="views" />
 	</resultMap>
 
 	<!-- DTO를 사용한 범위 데이터 가져오기 -->
@@ -94,7 +95,8 @@
 		deal_month,
 		deal_day,
 		exclu_use_ar,
-		deal_amount
+		deal_amount,
+		views
 		FROM housedeals
 		WHERE apt_seq = #{aptSeq}
 		<if test="cursorId != null">
@@ -120,18 +122,18 @@
 		FROM houseinfo_details
 		WHERE apt_seq = #{aptSeq}
 	</select>
-	
+
 	<!-- 아파트 거래금액, 면적 최소 최대 재공 -->
 	<select id="findHouseDealStatByAptSeq" parameterType="String" resultType="com.aladin.house.vo.HouseDealStatVo">
 		SELECT
 		apt_seq,
-		MIN(CONCAT(deal_year, '-', LPAD(deal_month, 2, '0'), '-', LPAD(deal_day, 2, '0'))) AS deal_date_oldest,
-		MAX(CONCAT(deal_year, '-', LPAD(deal_month, 2, '0'), '-', LPAD(deal_day, 2, '0'))) AS deal_date_latest,
-		MIN(exclu_use_ar) AS exclu_use_ar_min,
-		MAX(exclu_use_ar) AS exclu_use_ar_max,
-		MIN(CAST(REPLACE(deal_amount, ',', '') AS UNSIGNED)) AS deal_amount_min,
-		MAX(CAST(REPLACE(deal_amount, ',', '') AS UNSIGNED)) AS deal_amount_max
-		FROM housedeals
+		deal_date_oldest,
+		deal_date_latest,
+		exclu_use_ar_min,
+		exclu_use_ar_max,
+		deal_amount_min,
+		deal_amount_max
+		FROM housedeals_stat
 		WHERE apt_seq = #{aptSeq}
 	</select>
 </mapper>
