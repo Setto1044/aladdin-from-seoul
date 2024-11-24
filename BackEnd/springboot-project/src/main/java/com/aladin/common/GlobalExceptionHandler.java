@@ -44,4 +44,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDto.of(false, message));
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ApiResponseDto> handleValidationException(IllegalArgumentException e) {
+		String message = "잘못된 파라미터가 전달되었습니다: " + e.getLocalizedMessage();
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDto.of(false, message));
+	}
+
 }
