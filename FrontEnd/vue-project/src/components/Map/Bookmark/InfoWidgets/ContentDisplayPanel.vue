@@ -1,8 +1,9 @@
 <template>
   <div>
+    {{ id }}
+    {{ item }}
     <AptContent v-if="tab" :item="item" />
     <ShareContent v-else :id="id" />
-    {{ id }}
   </div>
 </template>
 

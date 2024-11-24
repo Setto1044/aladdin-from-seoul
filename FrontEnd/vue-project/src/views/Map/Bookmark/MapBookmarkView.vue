@@ -25,7 +25,22 @@
           <!-- Pass property details as props -->
           <!-- <PropertyDetails :property="selectedItem" /> -->
           <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
-          <ContentDisplayPanel v-if="share" :tab="apt" :id="selectedItem.roomBoardVo.id" />
+          <ContentDisplayPanel
+            v-if="share"
+            :tab="apt"
+            :id="selectedItem.item.roomBoardVo.id"
+            :item="selectedItem"
+          />
+          <NearbyStopsPanel
+            ref="nearbyStopsPanel"
+            :key="`nearby-${isSidebar2Open}`"
+            :lat="selectedItem.latitude"
+            :lng="selectedItem.longitude"
+            :mapInstance="mapInstance"
+            :isSidebarOpen="isSidebar2Open"
+            :selectedItem="selectedItem"
+            @beforeClose="handleBeforeCloseSidebar"
+          />
         </Sidebar>
       </div>
       <!-- Map -->
@@ -48,6 +63,7 @@ import AptInfoPanel from '@/components/Map/Bookmark/AptInfoPanel.vue'
 import ShareRoomInfoPanel from '@/components/Map/Bookmark/ShareRoomInfoPanel.vue'
 import PropertyDetails from '@/components/Map/PropertyDetails.vue'
 import ContentDisplayPanel from '@/components/Map/Bookmark/InfoWidgets/ContentDisplayPanel.vue'
+import NearbyStopsPanel from '@/components/Map/Bookmark/InfoWidgets/NearbyStopsPanel.vue'
 
 import { ref } from 'vue'
 
@@ -61,6 +77,7 @@ export default {
     PropertyDetails,
     ShareRoomInfoPanel,
     ContentDisplayPanel,
+    NearbyStopsPanel,
   },
   data() {
     return {
@@ -80,6 +97,18 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.updateNavHeight)
+  },
+  watch: {
+    isSidebar2Open(newVal) {
+      console.log('Sidebar2 open state changed:', newVal)
+      if (!newVal) {
+        // 사이드바가 닫힐 때 추가 정리 작업
+        if (this.$refs.nearbyStopsPanel) {
+          this.$refs.nearbyStopsPanel.clearMarkers()
+          this.$refs.nearbyStopsPanel.resetData()
+        }
+      }
+    },
   },
   methods: {
     handleMapCreated(map) {
@@ -120,6 +149,7 @@ export default {
       this.isSidebar1Open = true
     },
     openSidebar2(selectedItem) {
+      console.log('Sidebar2 open', selectedItem)
       this.selectedItem = selectedItem // Set the selected item
       this.isSidebar2Open = true // Open Sidebar2
     },
@@ -129,8 +159,17 @@ export default {
       // this.isSidebar2Open = false
     },
     handleCloseSidebar2() {
+      console.log('Closing Sidebar2')
+      // NearbyStopsPanel의 마커를 먼저 제거
+      if (this.$refs.nearbyStopsPanel) {
+        this.$refs.nearbyStopsPanel.clearMarkers()
+      }
       this.isSidebar2Open = false // Close Sidebar2
       this.selectedItem = null // Reset the selected item
+    },
+    handleBeforeCloseSidebar() {
+      // NearbyStopsPanel에서 정리 작업이 필요한 경우를 위한 메소드
+      console.log('Handling before close actions')
     },
     handleCloseSidebar12() {
       this.isSidebar1Open = false
@@ -192,6 +231,7 @@ export default {
 
 .sidebar {
   height: calc(93vh - var(--nav-height)); /* Subtract nav bar height */
+  overflow-y: auto;
 }
 
 .tab {

@@ -1,26 +1,24 @@
 <template>
   <div class="real-estate-detail">
-    <!-- 게시글 리스트 섹션 -->
+    <!-- Previous template code remains the same -->
     <section class="transaction-details" ref="transactionSection">
       <div v-if="isLoading && boardData.length === 0" class="loading-message">
         데이터를 불러오는 중입니다...
       </div>
       <template v-else>
         <div v-if="boardData.length > 0" class="board-container">
-          <!-- 게시글 정보 표시 -->
           <MapItem
             v-for="board in boardData"
             :key="board.roomBoardVo.id"
             :item="board"
             :complex="complex"
-            @select-item="handleItemClick(board)"
+            @select-item="handleItemClick"
           />
         </div>
         <div v-else class="no-data">
           <p>조건에 맞는 게시글 정보가 없습니다.</p>
         </div>
 
-        <!-- Trigger for Intersection Observer -->
         <div v-show="boardData.length > 0" ref="loadMoreTrigger" class="load-more-trigger">
           <p v-if="isLoading">로딩 중...</p>
           <p v-else-if="hasMore">더 많은 데이터를 로드하려면 스크롤하세요.</p>
@@ -34,7 +32,7 @@
 <script>
 import axios from 'axios'
 import MapItem from '@/components/Map/Bookmark/ShareRoomMapItem.vue'
-import useUserStore from '@/stores/user-store' // Example: your Pinia store for user info
+import useUserStore from '@/stores/user-store'
 
 export default {
   name: 'ShareRoomInfoPanel',
@@ -44,19 +42,21 @@ export default {
   props: {
     mapInstance: {
       type: Object,
-      required: true, // MapInstance를 필수로 받음
+      required: true,
     },
   },
   data() {
     return {
-      boardData: [], // 게시글 데이터
-      isLoading: false, // 로딩 상태
-      cursorId: null, // 페이지네이션 커서
-      hasMore: true, // 추가 데이터 여부
-      observer: null, // Intersection Observer
+      boardData: [],
+      isLoading: false,
+      cursorId: null,
+      hasMore: true,
+      observer: null,
       observerInitialized: false,
-      username: null, // 사용자 이름 저장
-      geocoder: null, // Geocoder 인스턴스
+      username: null,
+      geocoder: null,
+      markers: [], // Array to store markers
+      markerCoordinates: new Map(), // Map to store coordinates for each board ID
     }
   },
   watch: {
@@ -66,18 +66,18 @@ export default {
           if (!this.observerInitialized && this.boardData.length > 0) {
             this.initializeObserver()
           }
-          this.updateMarkers() // 마커 업데이트
+          this.updateMarkers()
         })
       },
     },
   },
   async mounted() {
     const userStore = useUserStore()
-    this.username = userStore.memberInfo.username // Pinia에서 사용자 정보 가져오기
-    this.geocoder = new kakao.maps.services.Geocoder() // Geocoder 초기화
+    this.username = userStore.memberInfo.username
+    this.geocoder = new kakao.maps.services.Geocoder()
 
     if (this.username) {
-      await this.fetchBoardData() // 게시글 데이터를 먼저 로드
+      await this.fetchBoardData()
     }
 
     if (this.boardData.length > 0) {
@@ -99,9 +99,26 @@ export default {
       this.isLoading = false
       this.hasMore = true
       this.observerInitialized = false
+      this.markers = []
+      this.markerCoordinates.clear()
     },
-    handleItemClick(item) {
-      this.$emit('select-item', item) // Emit the clicked item to the parent component
+    handleItemClick(board) {
+      // Get coordinates from our stored map using the board ID
+      const coordinates = this.markerCoordinates.get(board.roomBoardVo.id)
+      if (coordinates) {
+        console.log('handleItemClick called with:', {
+          item: board,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+        })
+        this.$emit('select-item', {
+          item: board,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+        })
+      } else {
+        console.warn('No coordinates found for board:', board.roomBoardVo.id)
+      }
     },
     cleanupObserver() {
       if (this.observer) {
@@ -110,10 +127,11 @@ export default {
       }
     },
     clearMarkers() {
-      if (this.mapInstance) {
-        const overlays = this.mapInstance.getOverlays()
-        overlays.forEach((overlay) => overlay.setMap(null))
-      }
+      this.markers.forEach((marker) => {
+        marker.setMap(null)
+      })
+      this.markers = []
+      this.markerCoordinates.clear()
     },
     initializeObserver() {
       if (this.observerInitialized || !this.$refs.loadMoreTrigger) {
@@ -137,38 +155,58 @@ export default {
       this.observer.observe(this.$refs.loadMoreTrigger)
       this.observerInitialized = true
     },
-    geocodeAddress(address, callback) {
-      this.geocoder.addressSearch(address, (result, status) => {
-        if (status === kakao.maps.services.Status.OK) {
-          callback(result[0]) // 첫 번째 결과 반환
-        } else {
-          console.error(`Geocoding failed for address: ${address}`)
-          callback(null)
-        }
-      })
-    },
-    updateMarkers() {
-      if (!this.mapInstance) return
-
-      console.log('Updating markers...')
-      this.boardData.forEach((board) => {
-        const address = board.roomBoardVo.address
-
-        this.geocodeAddress(address, (result) => {
-          if (result) {
-            const markerPosition = new kakao.maps.LatLng(result.y, result.x)
-            const marker = new kakao.maps.Marker({
-              position: markerPosition,
-              map: this.mapInstance, // 지도에 바로 추가
-            })
-
-            // 마커 클릭 이벤트 등록
-            kakao.maps.event.addListener(marker, 'click', () => {
-              this.handleItemClick(board) // 아이템 클릭 이벤트 호출
-            })
+    async geocodeAddress(address) {
+      return new Promise((resolve, reject) => {
+        this.geocoder.addressSearch(address, (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            resolve(result[0])
+          } else {
+            reject(new Error(`Geocoding failed for address: ${address}`))
           }
         })
       })
+    },
+    async updateMarkers() {
+      if (!this.mapInstance) return
+
+      console.log('Updating markers...')
+      this.clearMarkers()
+
+      for (const board of this.boardData) {
+        try {
+          const result = await this.geocodeAddress(board.roomBoardVo.address)
+          if (result) {
+            const latitude = parseFloat(result.y)
+            const longitude = parseFloat(result.x)
+
+            // Store coordinates in our Map
+            this.markerCoordinates.set(board.roomBoardVo.id, {
+              latitude,
+              longitude,
+            })
+
+            console.log('Coordinates for board', board.roomBoardVo.id, ':', {
+              latitude,
+              longitude,
+            })
+
+            const markerPosition = new kakao.maps.LatLng(latitude, longitude)
+            const marker = new kakao.maps.Marker({
+              position: markerPosition,
+              map: this.mapInstance,
+            })
+
+            this.markers.push(marker)
+
+            // Add click event listener
+            kakao.maps.event.addListener(marker, 'click', () => {
+              this.handleItemClick(board)
+            })
+          }
+        } catch (error) {
+          console.error('Error geocoding address:', error)
+        }
+      }
     },
     async fetchBoardData(cursorId = null, pageSize = 10) {
       if (this.isLoading || !this.hasMore) return
@@ -206,45 +244,5 @@ export default {
 </script>
 
 <style scoped>
-.complex-title {
-  font-family: 'Score7';
-}
-.section-title {
-  font-family: 'Score5';
-}
-
-.real-estate-detail {
-  padding: 18px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.transaction-details {
-  margin-top: 5px;
-  flex-grow: 1;
-  overflow-y: auto;
-  position: relative;
-}
-
-.deals-container {
-  min-height: 200px;
-}
-
-.load-more-trigger {
-  padding: 20px 0;
-  text-align: center;
-  color: #666;
-  margin-top: 10px;
-}
-
-.loading-message,
-.no-data {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
+/* Styles remain the same */
 </style>

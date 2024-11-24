@@ -43,6 +43,7 @@ dist-ssr/
 coverage/
 /cypress/videos/
 /cypress/screenshots/
+.env
 
 # Vue CLI Service
 package-lock.json
