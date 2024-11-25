@@ -186,23 +186,24 @@ export default {
     async fetchPropertyDetails(propertyId) {
       try {
         const response = await axios.get(`http://localhost:8080/aladin/boards/${propertyId}`)
+        console.log(response.data)
         if (response.data.success) {
-          const { roomCardInfo, roomImageInfos, nickname, profileImagePath } = response.data.data
-          this.title = roomCardInfo.title
-          this.detail = roomCardInfo.detail
-          this.address = roomCardInfo.address
-          this.price = roomCardInfo.price
-          this.houseSize = roomCardInfo.houseSize
-          this.pricePer = roomCardInfo.pricePer
-          this.tags = JSON.parse(roomCardInfo.hashtags || '[]')
-          this.views = roomCardInfo.views
+          const { roomBoardVo, roomImageInfos, nickname, profileImagePath } = response.data.data
+          this.title = roomBoardVo.title
+          this.detail = roomBoardVo.detail
+          this.address = roomBoardVo.address
+          this.price = roomBoardVo.price
+          this.houseSize = roomBoardVo.houseSize
+          this.pricePer = roomBoardVo.pricePer
+          this.tags = JSON.parse(roomBoardVo.hashtags || '[]')
+          this.views = roomBoardVo.views
           this.imageUrls = roomImageInfos.map((img) => img.url)
-          this.hostUsername = roomCardInfo.membersUsername
+          this.hostUsername = roomBoardVo.membersUsername
           this.hostNickname = nickname
           this.hostImageUrls = profileImagePath
           // Parse dates from API
-          this.rentFrom = new Date(roomCardInfo.rentStart) // Convert to Date object
-          this.rentTo = new Date(roomCardInfo.rentUntil) // Convert to Date object
+          this.rentFrom = new Date(roomBoardVo.rentStart) // Convert to Date object
+          this.rentTo = new Date(roomBoardVo.rentUntil) // Convert to Date object
           this.setCalendarAttrs() // Call method to update calendar attributes
         }
       } catch (error) {

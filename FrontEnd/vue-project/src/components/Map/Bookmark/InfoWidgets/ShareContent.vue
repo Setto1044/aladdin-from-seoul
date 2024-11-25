@@ -218,19 +218,19 @@ export default {
       try {
         const response = await axios.get(`http://localhost:8080/aladin/boards/${propertyId}`)
         if (response.data.success) {
-          const { roomCardInfo, roomImageInfos, nickname } = response.data.data
-          this.title = roomCardInfo.title
-          this.detail = roomCardInfo.detail
-          this.address = roomCardInfo.address
-          this.price = roomCardInfo.price
-          this.houseSize = roomCardInfo.houseSize
-          this.pricePer = roomCardInfo.pricePer
-          this.tags = JSON.parse(roomCardInfo.hashtags || '[]')
-          this.views = roomCardInfo.views
+          const { roomBoardVo, roomImageInfos, nickname } = response.data.data
+          this.title = roomBoardVo.title
+          this.detail = roomBoardVo.detail
+          this.address = roomBoardVo.address
+          this.price = roomBoardVo.price
+          this.houseSize = roomBoardVo.houseSize
+          this.pricePer = roomBoardVo.pricePer
+          this.tags = JSON.parse(roomBoardVo.hashtags || '[]')
+          this.views = roomBoardVo.views
           this.imageUrls = roomImageInfos.map((img) => img.url)
           this.hostNickname = nickname
-          this.rentFrom = new Date(roomCardInfo.rentStart)
-          this.rentTo = new Date(roomCardInfo.rentUntil)
+          this.rentFrom = new Date(roomBoardVo.rentStart)
+          this.rentTo = new Date(roomBoardVo.rentUntil)
           this.setCalendarAttrs() // Call method to update calendar attributes
         }
       } catch (error) {
