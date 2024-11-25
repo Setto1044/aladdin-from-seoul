@@ -90,7 +90,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/User/LoginPage.vue'),
+      component: () => import('@/views/User/AuthenticationPage.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
     },
     {

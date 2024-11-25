@@ -12,7 +12,7 @@
       <!-- 로그인 상태에 따라 다른 버튼 활성화 -->
       <button v-if="isLoggedIn" class="nav-link" @click="navigateTo('/mypage')">마이페이지</button>
       <button v-if="isLoggedIn" class="nav-link" @click="handleLogout">로그아웃</button>
-      <button v-else class="nav-link" @click="redirectToLogin">로그인</button>
+      <button v-else class="nav-link" @click="redirectToLogin">시작하기 / 로그인</button>
     </nav>
   </header>
 </template>
