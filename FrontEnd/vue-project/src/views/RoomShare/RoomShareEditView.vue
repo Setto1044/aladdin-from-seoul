@@ -153,24 +153,24 @@ export default {
       // API 호출
       const response = await axios.get(`http://localhost:8080/aladin/boards/${id}`)
       if (response.data.success) {
-        const { roomCardInfo, roomImageInfos, nickname, profileImagePath } = response.data.data
+        const { roomBoardVo, roomImageInfos, nickname, profileImagePath } = response.data.data
 
         // formData에 데이터 매핑
         this.formData = {
-          id: roomCardInfo.id,
-          title: roomCardInfo.title,
-          detail: roomCardInfo.detail,
-          address: roomCardInfo.address,
-          postcode: roomCardInfo.postcode,
-          price: roomCardInfo.price,
-          houseSize: roomCardInfo.houseSize,
-          pricePer: roomCardInfo.pricePer,
-          views: roomCardInfo.views,
-          rentStart: this.formatDate(new Date(roomCardInfo.rentStart)),
-          rentUntil: this.formatDate(new Date(roomCardInfo.rentUntil)), // Date -> YYYY-MM-DD
-          hashtags: JSON.parse(roomCardInfo.hashtags || '[]'), // `tags` 대신 `hashtags`
-          createdAt: roomCardInfo.createdAt,
-          updatedAt: roomCardInfo.updatedAt,
+          id: roomBoardVo.id,
+          title: roomBoardVo.title,
+          detail: roomBoardVo.detail,
+          address: roomBoardVo.address,
+          postcode: roomBoardVo.postcode,
+          price: roomBoardVo.price,
+          houseSize: roomBoardVo.houseSize,
+          pricePer: roomBoardVo.pricePer,
+          views: roomBoardVo.views,
+          rentStart: this.formatDate(new Date(roomBoardVo.rentStart)),
+          rentUntil: this.formatDate(new Date(roomBoardVo.rentUntil)), // Date -> YYYY-MM-DD
+          hashtags: JSON.parse(roomBoardVo.hashtags || '[]'), // `tags` 대신 `hashtags`
+          createdAt: roomBoardVo.createdAt,
+          updatedAt: roomBoardVo.updatedAt,
           images: roomImageInfos.map((img) => ({
             url: img.url,
             order: img.imageOrder,
