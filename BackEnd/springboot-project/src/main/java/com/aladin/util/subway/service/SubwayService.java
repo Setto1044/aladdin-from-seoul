@@ -11,25 +11,38 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class SubwayService {
 
 	private String subwayCsvFile = "src/main/resources/csv/subway.csv";
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
 	public static class Station {
 		private String from;
 		private String to;
-		private double morningCongestion; // 출근 혼잡도
-		private double eveningCongestion; // 퇴근 혼잡도
+		private double morningTrafficjam; // 출근 혼잡도
+		private double eveningTrafficjam; // 퇴근 혼잡도
+
+		public Station(String from, String to, double morningTrafficjam, double eveningTrafficjam) {
+			this.from = from;
+			this.to = to;
+			this.morningTrafficjam = morningTrafficjam;
+			this.eveningTrafficjam = eveningTrafficjam;
+		}
+
+		public String getFrom() {
+			return from;
+		}
+
+		public String getTo() {
+			return to;
+		}
+
+		public double getMorningTrafficjam() {
+			return morningTrafficjam;
+		}
+
+		public double getEveningTrafficjam() {
+			return eveningTrafficjam;
+		}
 	}
 
 	public List<Station> readCSVFile(String filePath) {
