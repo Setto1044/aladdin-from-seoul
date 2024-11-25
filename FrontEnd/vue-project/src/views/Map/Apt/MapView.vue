@@ -16,6 +16,8 @@
         @click="handleMapClick"
         @marker-clicked="handleMarkerClick"
         @house-card-clicked="handleHouseCardClicked"
+        @search-lat-lng-event="handleLatLngClicked"
+        :searchLatLng="localSearchLatLng"
         :searchHouseCard="localSearchHouseCard"
         class="map-component"
       />
@@ -38,12 +40,19 @@ export default {
     AptInfoPanel,
   },
   props: {
+    searchLatLng: {
+      type: Object,
+      default: null,
+    },
     searchHouseCard: {
       type: Object,
-      default: null, // houseCard가 없으면 null로 처리
+      default: null,
     },
   },
   watch: {
+    searchLatLng(newValue) {
+      this.localSearchLatLng = newValue // 로컬로 복사
+    },
     searchHouseCard(newValue) {
       // props 변경 시 로컬 데이터 업데이트
       this.localSearchHouseCard = newValue
@@ -53,13 +62,14 @@ export default {
     return {
       isSidebar1Open: false,
       selectedMarker: null,
+      localSearchLatLng: this.searchLatLng, // 로컬 데이터로 복사
       localSearchHouseCard: this.searchHouseCard, // 로컬 데이터로 복사
     }
   },
   mounted() {
     this.updateNavHeight()
     window.addEventListener('resize', this.updateNavHeight) // Recalculate on window resize
-    console.log('로컬', this.localSearchHouseCard)
+    console.log('로컬', this.localSearchHouseCard, this.localSearchLatLng)
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateNavHeight)
@@ -97,6 +107,10 @@ export default {
         this.selectedMarker = house
         this.openSidebar1()
       }
+    },
+    handleLatLngClicked() {
+      this.localSearchLatLng = null // 1회 사용 후 null로 초기화
+      console.log('handleLatLngClicked 이벤트 발생: 이동했음')
     },
     handleMarkerClick(house) {
       console.log(this.selectedMarker, house)

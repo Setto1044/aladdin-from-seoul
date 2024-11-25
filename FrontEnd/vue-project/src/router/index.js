@@ -2,6 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/LandingView.vue'
 import useUserStore from '@/stores/user-store'
 
+const isValidJSON = (str) => {
+  try {
+    JSON.parse(str)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -23,27 +32,27 @@ const router = createRouter({
       component: () => import('@/views/User/EditProfilePage.vue'),
       meta: { showSearchBar: false, showFooterBar: false, auth: true },
     },
+    // 라우터 설정
     {
-      path: '/map',
+      path: '/map/:searchHouseCard?/:searchLatLng?', // 옵셔널 파라미터로 설정
       name: 'map',
       component: () => import('@/views/Map/Apt/MapView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
       props: (route) => {
-        try {
-          // `query.houseCard`가 존재하면 JSON.parse로 객체 변환, 없으면 null
-          console.log(
-            'in 라우터',
-            route.query.searchHouseCard,
-            JSON.parse(route.query.searchHouseCard),
-          )
-          return {
-            searchHouseCard: route.query.searchHouseCard
-              ? JSON.parse(route.query.searchHouseCard)
-              : null,
-          }
-        } catch (e) {
-          console.error('searchHouseCard 파싱 에러:', e)
-          return { searchHouseCard: null } // 에러 발생 시 기본값 처리
+        console.log('route.params:', route.params) // 디버깅용 로그
+
+        // params에서 데이터 추출 및 파싱
+        const searchLatLng = route.params.searchLatLng
+          ? JSON.parse(route.params.searchLatLng)
+          : null
+
+        const searchHouseCard = route.params.searchHouseCard
+          ? JSON.parse(route.params.searchHouseCard)
+          : null
+
+        return {
+          searchLatLng,
+          searchHouseCard,
         }
       },
     },

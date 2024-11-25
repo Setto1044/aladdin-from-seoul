@@ -12,9 +12,10 @@ import { onMounted, onUnmounted, watchEffect } from 'vue'
 import axios from 'axios'
 
 // 부모 컴포넌트로 이벤트를 전달하는 emit 정의
-const emit = defineEmits(['marker-clicked', 'house-card-clicked'])
+const emit = defineEmits(['marker-clicked', 'house-card-clicked', 'search-lat-lng-event'])
 const props = defineProps({
   searchHouseCard: Object,
+  searchLatLng: Object,
 })
 
 // 전역 변수로 관리
@@ -40,11 +41,31 @@ const checkMapAndSearchHouseCard = () => {
   }
 }
 
+const checkMapAndsearchLatLng = () => {
+  if (mapInstance && props.searchLatLng) {
+    console.log('mapInstance와 searchLatLng가 모두 준비됨:', props.searchLatLng)
+
+    // 지도 중심 설정
+    const { latitude, longitude } = props.searchLatLng
+    mapInstance.setCenter(new kakao.maps.LatLng(latitude, longitude))
+    console.log('지도 중심이 설정되었습니다:', latitude, longitude)
+
+    // 이벤트 발생
+    emit('search-lat-lng-event', props.searchLatLng)
+  } else {
+    console.log('mapInstance 또는 searchLatLng가 준비되지 않음')
+  }
+}
+
 // searchHouseCard 값 변경 시 이벤트 발생
 watchEffect(() => {
   if (props.searchHouseCard) {
     console.log('searchHouseCard 값 감지')
     checkMapAndSearchHouseCard()
+  }
+  if (props.searchLatLng) {
+    console.log('searchLatLng 값 감지')
+    checkMapAndsearchLatLng()
   }
 })
 
@@ -289,6 +310,7 @@ onMounted(async () => {
 
     // 초기값 확인
     checkMapAndSearchHouseCard()
+    checkMapAndsearchLatLng()
 
     // 클러스터러 인스턴스 생성
     clustererInstance = new kakaoMaps.MarkerClusterer({

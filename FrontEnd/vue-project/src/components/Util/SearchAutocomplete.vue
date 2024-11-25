@@ -104,11 +104,15 @@ export default {
         `http://localhost:8080/aladin/house/cards/aptname/${name}?cursorId=${newCode}&size=1`,
       )
       if (houseResponse.data.success) {
+        // 집 카드 데이터 전달
         const houseCard = houseResponse.data.data[0]
-        console.log('House data:', houseCard)
+        console.log('라우터 이동 전 데이터 (searchHouseCard):', houseCard)
+
         this.$router.push({
           name: 'map',
-          query: { searchHouseCard: JSON.stringify(houseCard) },
+          params: {
+            searchHouseCard: JSON.stringify(houseCard), // 객체는 문자열로 변환
+          },
         })
       } else {
         console.error('Failed fetchAptAndSearch')
@@ -158,8 +162,16 @@ export default {
         const lng = kakaoData.documents[0]?.x
 
         if (lat && lng) {
-          console.log(`Latitude: ${lat}, Longitude: ${lng}`)
-          alert(`Latitude: ${lat}, Longitude: ${lng}`)
+          // 위도/경도 데이터 전달
+          const latLng = { latitude: lat, longitude: lng }
+          console.log('라우터 이동 전 데이터 (searchLatLng):', latLng)
+
+          this.$router.push({
+            name: 'map',
+            params: {
+              searchLatLng: JSON.stringify(latLng), // 객체는 문자열로 변환
+            },
+          })
         } else {
           console.error('Failed to extract lat/lng')
           alert('좌표 데이터를 가져올 수 없습니다.')
