@@ -73,13 +73,6 @@ public class HouseController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", stat));
 	}
 
-	// 추천 검색어 API
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponseDto<List<String>>> searchDong(@RequestParam String keyword) {
-		List<String> results = houseService.searchDong(keyword);
-		return ResponseEntity.ok(ApiResponseDto.of(true, "추천 검색어 조회 성공", results));
-	}
-
 	// 필터 검색
 	@PostMapping("/cards/filter")
 	public ResponseEntity<ApiResponseDto<List<HouseCardVo>>> getFilteredHouses(@RequestBody HouseFilterRequestDto filterRequestDto) {

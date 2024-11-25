@@ -185,11 +185,6 @@
 		WHERE apt_seq = #{aptSeq}
 	</select>
 
-	<!-- Tri 검색 결과에 사용할 동코드, 시군구 이름 가져오기 -->
-	<select id="findAllDongCodes" resultType="com.aladin.house.vo.DongCodeVo">
-		SELECT dong_code, sido_name, gugun_name, dong_name
-		FROM dongcodes
-	</select>
 
 	<select id="findFilteredHouses" parameterType="com.aladin.house.dto.HouseFilterRequestDto" resultMap="HouseCardResultMap">
 		SELECT

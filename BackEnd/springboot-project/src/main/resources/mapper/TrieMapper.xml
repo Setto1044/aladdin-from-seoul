@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aladin.util.triSearch.mapper.TrieMapper">
+
+    <!-- 전체 동코드 조회 -->
+    <select id="findAllDongCodes" resultType="com.aladin.house.vo.DongCodeVo">
+        SELECT 
+            dong_code as dongCode,
+            sido_name as sidoName,
+            gugun_name as gugunName,
+            dong_name as dongName
+        FROM dongcodes
+    </select>
+
+    <!-- 전체 아파트 시퀀스와 이름 조회 -->
+    <select id="findAllAptSeqAndAptNameOfHouseCards" resultType="com.aladin.house.vo.HouseCardVo">
+        SELECT 
+            apt_seq as aptSeq,
+            apt_name as aptName
+        FROM housecards
+    </select>
+
+    <!-- 서울의 아파트 시퀀스와 이름 조회 -->
+    <select id="findAllAptSeqAndAptNameOfHouseCardsInSeoul" resultType="com.aladin.house.vo.HouseCardVo">
+        SELECT 
+            hc.apt_seq as aptSeq,
+            hc.apt_name as aptName
+        FROM housecards hc
+        JOIN dongcodes dc ON hc.dong_code = dc.dong_code
+        WHERE dc.sido_name = '서울특별시'
+    </select>
+
+</mapper>

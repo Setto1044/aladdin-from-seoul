@@ -27,8 +27,6 @@ public interface HouseService {
 
 	HouseDealStatVo getHouseDealStatByAptSeq(String aptSeq);
 
-	List<String> searchDong(String keyword);
-
 	List<HouseCardVo> findFilteredHouses(HouseFilterRequestDto filterRequestDto);
 
 }
