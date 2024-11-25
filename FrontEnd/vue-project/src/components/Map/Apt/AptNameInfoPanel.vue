@@ -205,23 +205,32 @@ export default {
 
 .complex-card:hover {
   background: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+}
+
+.complex-card:hover .complex-name {
+  color: #ff2969; /* hover 시 변경할 색상 */
+  transition: color 0.3s ease; /* 부드러운 전환 효과 */
 }
 
 /* 제목 및 요약 */
 .complex-name {
+  margin-top: 6px;
   font-size: 18px;
   font-weight: bold;
-  color: #007bff;
+  color: #8b2645;
 }
 
 .complex-summary {
   font-size: 14px;
   color: #555;
+  margin: 0px;
 }
 
 /* 가격 정보 */
 .price-info {
-  font-size: 14px;
+  font-size: 13px;
   color: #333;
 }
 
@@ -249,24 +258,5 @@ export default {
 /* 칸 구분 */
 .complex-card + .complex-card {
   border-top: 1px solid #ddd;
-}
-
-/* 반응형 처리 */
-@media (max-width: 768px) {
-  .complex-card {
-    padding: 12px;
-  }
-
-  .complex-name {
-    font-size: 16px;
-  }
-
-  .complex-summary {
-    font-size: 13px;
-  }
-
-  .price-info {
-    font-size: 13px;
-  }
 }
 </style>

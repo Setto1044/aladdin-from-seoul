@@ -178,6 +178,13 @@ const registerPolygonEvents = (polygon, name, center) => {
       mapInstance.setLevel(7) // 지도 레벨 설정
     }
   })
+  // hover 이벤트
+  kakao.maps.event.addListener(polygon, 'mouseover', (mouseEvent) => {
+    polygon.setOptions({ fillColor: '#d9b5e7' })
+  })
+  kakao.maps.event.addListener(polygon, 'mouseout', function () {
+    polygon.setOptions({ fillColor: '#fff' })
+  })
 }
 
 // 폴리곤 표시
@@ -190,7 +197,7 @@ const displayArea = (coordinates, name) => {
     strokeColor: '#3d4249',
     strokeOpacity: 0.8,
     strokeStyle: 'dashed',
-    fillColor: '#e9eae8',
+    fillColor: '#fff',
     fillOpacity: 0.5,
   })
 
@@ -203,7 +210,7 @@ const displayArea = (coordinates, name) => {
   const customOverlay = new kakao.maps.CustomOverlay({
     map: mapInstance,
     position: center,
-    content: `<div class="polygon-overlay" style="background: white; solid gray; padding: 5px;">${name}</div>`,
+    content: `<div class="polygon-overlay" style="background: #e6c5e2; solid gray; padding: 5px; color:#655e8a">${name}</div>`,
   })
 
   overlays.push(customOverlay)
@@ -255,11 +262,26 @@ const displayMarkers = (houseData) => {
     overlayElement.innerHTML = content
 
     // 마우스 오버/아웃 이벤트 추가
+    // 마우스 오버/아웃 이벤트 추가
     overlayElement.addEventListener('mouseover', () => {
-      overlay.setZIndex(999) // 오버레이를 앞으로 가져오기
+      if (house.aptPhotoLink) {
+        // 말풍선 요소 생성
+        const tooltip = document.createElement('div')
+        tooltip.className = 'custom-tooltip'
+        tooltip.innerHTML = `<img src="${house.aptPhotoLink}" alt="Apartment Photo" class="tooltip-image" />`
+
+        // 오버레이를 DOM에 추가
+        overlayElement.appendChild(tooltip)
+        overlay.setZIndex(999) // 오버레이를 앞으로 가져오기
+      }
     })
 
     overlayElement.addEventListener('mouseout', () => {
+      // 말풍선 제거
+      const tooltip = overlayElement.querySelector('.custom-tooltip')
+      if (tooltip) {
+        overlayElement.removeChild(tooltip)
+      }
       overlay.setZIndex(1) // 오버레이를 뒤로 보내기
     })
 
@@ -318,12 +340,33 @@ onMounted(async () => {
       averageCenter: true,
       minLevel: 4,
       gridSize: 60,
+      calculator: [3, 6, 10], // 클러스터의 크기 구분 값, 각 사이값마다 설정된 text나 style이 적용된다
       styles: [
         {
-          width: '50px',
-          height: '50px',
-          background: 'rgba(51, 153, 255, .8)',
-          borderRadius: '25px',
+          width: '35px',
+          height: '35px',
+          background: 'rgba(121,113,162, .8)',
+          borderRadius: '30px',
+          color: '#fff',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          lineHeight: '35px',
+        },
+        {
+          width: '40px',
+          height: '40px',
+          background: 'rgba(58,98,121, .8)',
+          borderRadius: '30px',
+          color: '#fff',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          lineHeight: '40px',
+        },
+        {
+          width: '60px',
+          height: '60px',
+          background: 'rgba(191,107,141, .8)',
+          borderRadius: '50px',
           color: '#fff',
           textAlign: 'center',
           fontWeight: 'bold',
@@ -410,7 +453,7 @@ onUnmounted(() => {
 /* 오버레이 제목 */
 .custom-overlay .overlay-title {
   font-weight: bold;
-  font-size: 14px; /* 기본 글자 크기 */
+  font-size: 13px; /* 기본 글자 크기 */
   overflow: hidden; /* 넘칠 경우 숨김 */
   white-space: nowrap; /* 한 줄로 제한 */
   text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
@@ -418,11 +461,31 @@ onUnmounted(() => {
 
 /* 오버레이 가격 */
 .custom-overlay .overlay-price {
-  color: green;
-  font-size: 12px;
+  color: #f37441;
+  font-size: 11px;
   margin-top: 5px;
   overflow: hidden; /* 넘칠 경우 숨김 */
   white-space: nowrap; /* 한 줄로 제한 */
   text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
+}
+
+.custom-tooltip {
+  position: absolute;
+  bottom: 110%; /* 부모 요소 위에 나타나도록 설정 */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff3e9;
+  border: 1px solid rgba(0, 0, 0, 0.2); /* 약간 더 진한 테두리 */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 그림자를 더 크게 설정 */
+  border-radius: 8px;
+  padding: 2px;
+  z-index: 1000;
+}
+
+.tooltip-image {
+  max-width: 200px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 </style>

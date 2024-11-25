@@ -82,7 +82,7 @@
         type="text"
         id="search-input"
         class="header-search-input"
-        placeholder="Search in site"
+        placeholder="검색어로 찾기"
         aria-label="Search in site"
         v-model="newAptName"
       />
@@ -244,6 +244,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 5px;
   overflow: hidden;
+  margin-left: auto; /* 검색창을 오른쪽으로 이동 */
 }
 
 .header-search-input {

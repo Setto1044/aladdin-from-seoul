@@ -4,7 +4,8 @@
     <section class="complex-info">
       <h1 class="complex-title">{{ complex.aptName }}</h1>
       <p class="complex-summary">
-        {{ stat.buildYear || complex.buildYear }} / {{ stat.excluUseArMin || complex.minSize }}㎡ ~
+        준공년도 {{ stat.buildYear || complex.buildYear }} ⠀/⠀
+        {{ stat.excluUseArMin || complex.minSize }}㎡ ~
         {{ stat.excluUseArMax || complex.maxSize }}㎡
       </p>
       <p class="complex-summary">
@@ -205,6 +206,10 @@ export default {
 
 <style scoped>
 /* Styles for better visibility */
+.complex-info {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #bdbdbd;
+}
 .complex-title {
   font-size: 24px;
   font-weight: bold;

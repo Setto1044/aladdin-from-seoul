@@ -13,8 +13,12 @@
       class="favorite-button"
       @click="toggleBookmark(item.no)"
     >
-      <span v-if="isBookmarked">★</span>
-      <span v-else>☆</span>
+      <button class="bookmark-button on-bookmark-button" v-if="isBookmarked">
+        <img src="@/assets/button/bookmark-on.png" alt="btnImages" class="btnImages" />
+      </button>
+      <button class="bookmark-button off-bookmark-button" v-else>
+        <img src="@/assets/button/bookmark-off.png" alt="btnImages" class="btnImages" />
+      </button>
     </button>
   </div>
 </template>
@@ -122,6 +126,17 @@ export default {
   border-bottom: 1px solid #ddd;
 }
 
+.property-item:hover {
+  background-color: #f9f9f9; /* 배경색 변경 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+}
+
+.property-info:hover {
+  font-weight: bold; /* 텍스트 강조 */
+  color: #333; /* 텍스트 색상 변경 */
+}
+
 .complex-info {
   margin-bottom: 20px;
 }
@@ -200,5 +215,22 @@ export default {
   border: none;
   cursor: pointer;
   font-size: 20px;
+}
+
+.bookmark-button {
+  margin-left: auto; /* 오른쪽으로 이동 */
+  text-align: center; /* 가운데 정렬 */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btnImages {
+  width: 20px;
+}
+
+.btnImages:hover {
+  scale: 1.2;
+  cursor: pointer; /* 마우스 포인터 변경 */
 }
 </style>
