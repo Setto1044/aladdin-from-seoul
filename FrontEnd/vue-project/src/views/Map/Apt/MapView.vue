@@ -1,13 +1,18 @@
 <template>
   <div class="property-map">
-    <FilterBar></FilterBar>
+    <FilterBar @search-action="handleSearchClick"></FilterBar>
 
     <div class="map-section">
       <div class="sidebar-container">
         <!-- Sidebar 1 -->
         <Sidebar class="sidebar1" :isOpen="isSidebar1Open" @close="handleCloseSidebar12">
           <!-- Sidebar 1 내부 콘텐츠 -->
-          <AptInfoPanel :complex="selectedMarker" @select-item="openSidebar2" />
+          <AptInfoPanel
+            v-if="currentVersion"
+            :complex="selectedMarker"
+            @select-item="openSidebar2"
+          />
+          <AptNameInfoPanel v-else :query="searchQuery" @name-item="handleSearchComplexClick" />
         </Sidebar>
       </div>
       <!-- Map -->
@@ -30,6 +35,7 @@ import MapComponent from '@/components/Map/Apt/MapComponent.vue'
 import FilterBar from '@/components/Map/Filter/FilterBar.vue'
 import Sidebar from '@/components/Map/Util/Sidebar.vue'
 import AptInfoPanel from '@/components/Map/Apt/AptInfoPanel.vue'
+import AptNameInfoPanel from '@/components/Map/Apt/AptNameInfoPanel.vue'
 
 export default {
   name: 'MapView',
@@ -38,6 +44,7 @@ export default {
     FilterBar,
     Sidebar,
     AptInfoPanel,
+    AptNameInfoPanel,
   },
   props: {
     searchLatLng: {
@@ -64,6 +71,8 @@ export default {
       selectedMarker: null,
       localSearchLatLng: this.searchLatLng, // 로컬 데이터로 복사
       localSearchHouseCard: this.searchHouseCard, // 로컬 데이터로 복사
+      searchQuery: null,
+      currentVersion: true,
     }
   },
   mounted() {
@@ -96,6 +105,7 @@ export default {
     handleCloseSidebar12() {
       this.isSidebar1Open = false
       this.selectedMarker = null
+      this.resetToVersionA()
     },
     handleHouseCardClicked(house) {
       this.localSearchHouseCard = null // 1회 사용 후 null로 초기화
@@ -123,6 +133,22 @@ export default {
         this.selectedMarker = house
         this.openSidebar1() // 사이드바 1 열기
       }
+    },
+    handleSearchClick(query) {
+      console.log('Search query:', query)
+      this.searchQuery = query.trim() // 검색어 저장
+      this.currentVersion = false // 검색 시 버전 B로 전환 (AptNameInfoPanel 활성화)
+      this.openSidebar1() // 사이드바 1 열기
+    },
+    resetToVersionA() {
+      this.currentVersion = true // 다시 버전 A로 전환
+    },
+    handleSearchComplexClick(house) {
+      // 사이드바는 닫지 않음.
+      console.log('선택하셧습니까?', house)
+      this.localSearchHouseCard = house
+      this.selectedMarker = house
+      this.resetToVersionA()
     },
   },
 }

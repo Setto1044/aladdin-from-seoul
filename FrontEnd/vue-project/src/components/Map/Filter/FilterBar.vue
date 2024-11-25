@@ -73,13 +73,18 @@
       />
     </div>
 
-    <form v-if="$route.meta.showSearchBar" class="header-search-form">
+    <form
+      v-if="$route.meta.showSearchBar"
+      class="header-search-form"
+      @submit.prevent="searchAptName"
+    >
       <input
         type="text"
         id="search-input"
         class="header-search-input"
         placeholder="Search in site"
         aria-label="Search in site"
+        v-model="newAptName"
       />
       <button type="submit" class="header-search-button" aria-label="Submit search">
         <img
@@ -115,6 +120,7 @@ export default {
       roomsizevalue: [0, 6], // 초기 방크기 (전체)
       selectedApprovalDate: '전체', // 승인일 초기값
       activeModal: null,
+      newAptName: '',
     }
   },
   computed: {
@@ -172,6 +178,9 @@ export default {
     updateApprovalDate(option) {
       this.selectedApprovalDate = option // 선택된 옵션 업데이트
       this.closeModal() // 모달 닫기
+    },
+    searchAptName() {
+      this.$emit('search-action', this.newAptName)
     },
   },
 }
