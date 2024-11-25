@@ -23,6 +23,7 @@
         v-if="activeModal === 'price'"
         v-model:priceRange="pricevalue"
         :buttonRef="priceButtonRef"
+        @update="updatePrice"
         @close="closeModal"
       />
     </div>
@@ -36,6 +37,7 @@
         v-if="activeModal === 'roomSize'"
         v-model:roomSizeRange="roomsizevalue"
         :buttonRef="roomSizeButtonRef"
+        @update="updateRoomSize"
         @close="closeModal"
       />
     </div>
@@ -174,8 +176,21 @@ export default {
     closeModal() {
       this.activeModal = null
     },
+    updateRoomSize({ minSize, maxSize }) {
+      this.roomsizevalue[0] = minSize // 태그 업데이트
+      this.roomsizevalue[1] = maxSize
+    },
+    updatePrice({ minPrice, maxPrice }) {
+      this.pricevalue[0] = minPrice // 태그 업데이트
+      this.pricevalue[1] = maxPrice
+    },
     updateHashtags(newHashtags) {
       this.hashtags = newHashtags // 태그 업데이트
+    },
+    updateDateRange({ startDate, endDate }) {
+      // DateRangeModal에서 전달된 날짜 데이터를 상위 컴포넌트의 데이터에 반영
+      this.selectedStartDate = startDate
+      this.selectedEndDate = endDate
     },
     resetFilters() {
       this.hashtags = []
@@ -189,14 +204,6 @@ export default {
       // 필터 수정 플래그 초기화
       this.isPriceModified = false
       this.isRoomSizeModified = false
-    },
-    updateApprovalDate({ startDate, endDate }) {
-      this.selectedUsedDate = startDate && endDate ? `${startDate} ~ ${endDate}` : '전체'
-    },
-    updateDateRange({ startDate, endDate }) {
-      // DateRangeModal에서 전달된 날짜 데이터를 상위 컴포넌트의 데이터에 반영
-      this.selectedStartDate = startDate
-      this.selectedEndDate = endDate
     },
     search() {
       // 검색 조건 생성
