@@ -22,36 +22,6 @@ export default {
     closeSidebar() {
       this.$emit('close')
     },
-    updateCloseButtonHeight() {
-      // $el이 DOM 요소인지 확인
-      if (this.$el instanceof HTMLElement) {
-        const closeButton = this.$el.querySelector('.close-button')
-        if (closeButton) {
-          closeButton.style.height = `${this.$el.offsetHeight}px` // Sidebar 높이 동기화
-        }
-      } else {
-        console.warn('$el is not a DOM element.')
-      }
-    },
-  },
-  watch: {
-    isOpen(newValue) {
-      if (newValue) {
-        // isOpen이 true가 될 때 높이 업데이트
-        this.$nextTick(() => {
-          this.updateCloseButtonHeight()
-        })
-      }
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.updateCloseButtonHeight()
-      window.addEventListener('resize', this.updateCloseButtonHeight) // 창 크기 변경 시 업데이트
-    })
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.updateCloseButtonHeight)
   },
 }
 </script>
@@ -66,8 +36,7 @@ export default {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   transition: transform 0.3s ease;
-  overflow-y: auto; /* 내부 콘텐츠 스크롤 가능 */
-  overflow-x: visible; /* 버튼을 포함한 x축 컨텐츠 숨김 */
+  overflow-y: auto;
 }
 
 .slot-wrapper {
@@ -78,6 +47,7 @@ export default {
 
 .sidebar.sidebar1 {
   left: 0; /* 왼쪽 사이드바 */
+  width: 18%;
 }
 
 .sidebar.sidebar2 {
@@ -86,36 +56,54 @@ export default {
 
 .close-button {
   position: fixed; /* 부모 요소와 상관없이 고정 */
-  top: 110px; /* 위쪽 기준 10px */
-  background: #ffbdbd91; /* 흰색 배경 */
+  background: #6f5f9052; /*  배경 */
   color: #555; /* 텍스트 색상 */
-  border: 1px solid #ddd; /* 연한 테두리 */
-  width: 20px; /* 버튼 너비 */
-  height: 30px; /* 버튼 높이 */
+  width: 25px; /* 버튼 너비 */
+  height: 100%; /* 버튼 높이 */
   font-size: 16px; /* 글씨 크기 */
   font-weight: bold; /* 글씨 두께 */
   cursor: pointer; /* 클릭 가능 */
   display: flex;
   align-items: center;
-  justify-content: center; /* 텍스트 가운데 정렬 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 */
-  z-index: 2; /* 버튼이 사이드바 위로 보이도록 설정 */
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    color 0.2s ease;
+  z-index: 2; /* 버튼이 사이드바 아래로 보이도록 설정 */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+:root {
+  --sidebar1-wrapper-width: 0px; /* 초기값 */
+  --sidebar2-wrapper-width: 0;
 }
 
 .sidebar1 .close-button {
-  right: calc(74% - 20px); /* 사이드바1의 바깥 오른쪽 */
+  left: calc(var(--sidebar1-wrapper-width)); /* .slot-wrapper 너비를 기준으로 이동 */
+  justify-content: right;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
 }
 
 .sidebar2 .close-button {
-  left: calc(74% - 20px); /* 사이드바2의 바깥 왼쪽 */
+  right: calc(var(--sidebar2-wrapper-width)); /* .slot-wrapper 너비를 기준으로 이동 */
+  justify-content: left;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
 }
 
-.close-button:hover {
-  background: #f5f5f5; /* 호버 시 밝은 회색 배경 */
-  color: #000; /* 호버 시 텍스트 색상 변경 */
+.sidebar1 .close-button:hover {
+  transform: translateX(10px);
+  width: 40px; /* 버튼 너비 증가 */
+  background: #f5f5f5; /* 밝은 회색 배경 */
+  color: #000; /* 텍스트 색상 변경 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.603); /* 그림자 */
+}
+
+.sidebar2 .close-button:hover {
+  transform: translateX(-10px);
+  width: 33px; /* 버튼 너비 증가 */
+  background: #f5f5f5; /* 밝은 회색 배경 */
+  color: #000; /* 텍스트 색상 변경 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.603); /* 그림자 */
 }
 </style>

@@ -162,18 +162,60 @@ export default {
 
       console.log('!!!!! Markers cleared and re-added')
       const markers = this.houseDeals.map((deal) => {
-        const markerPosition = new kakao.maps.LatLng(deal.latitude, deal.longitude)
-        const marker = new kakao.maps.Marker({
-          position: markerPosition,
-          map: this.mapInstance, // 지도에 바로 추가
+        const content = `<div class="custom-overlay">
+            <div class="overlay-content">
+              <div class="overlay-title">${deal.aptName}</div>
+              <div class="overlay-price">${deal.dealAmount}만원</div>
+            </div>
+            <div class="overlay-tail"></div>
+          </div>
+        `
+
+        const overlay = new kakao.maps.CustomOverlay({
+          position: new kakao.maps.LatLng(deal.latitude, deal.longitude),
+          content: content,
+          yAnchor: 1.3, // 오버레이 기준점을 꼬리에 맞춤
         })
 
-        // 마커 클릭 이벤트 등록
-        kakao.maps.event.addListener(marker, 'click', () => {
+        // 이벤트를 content에 추가하려면 DOM 객체를 직접 접근해야 함
+        const overlayElement = document.createElement('div')
+        overlayElement.innerHTML = content
+
+        // 마우스 오버/아웃 이벤트 추가
+        // 마우스 오버/아웃 이벤트 추가
+        overlayElement.addEventListener('mouseover', () => {
+          if (deal.aptPhotoLink) {
+            // 말풍선 요소 생성
+            const tooltip = document.createElement('div')
+            tooltip.className = 'custom-tooltip'
+            tooltip.innerHTML = `<img src="${deal.aptPhotoLink}" alt="Apartment Photo" class="tooltip-image" />`
+
+            // 오버레이를 DOM에 추가
+            overlayElement.appendChild(tooltip)
+            overlay.setZIndex(999) // 오버레이를 앞으로 가져오기
+          }
+        })
+
+        overlayElement.addEventListener('mouseout', () => {
+          // 말풍선 제거
+          const tooltip = overlayElement.querySelector('.custom-tooltip')
+          if (tooltip) {
+            overlayElement.removeChild(tooltip)
+          }
+          overlay.setZIndex(1) // 오버레이를 뒤로 보내기
+        })
+
+        overlayElement.addEventListener('click', () => {
           this.handleItemClick(deal) // 아이템 클릭 이벤트 호출
+          console.log('Overlay clicked:', deal)
         })
 
-        return marker
+        // 커스텀 오버레이에 이벤트가 적용된 DOM 요소 설정
+        overlay.setContent(overlayElement)
+
+        overlay.setMap(this.mapInstance) // 지도에 오버레이 추가
+
+        return overlay
       })
 
       return markers
@@ -215,32 +257,13 @@ export default {
 </script>
 
 <style scoped>
-.complex-title {
-  font-family: 'Score7';
-}
-.section-title {
-  font-family: 'Score5';
-}
-
 .real-estate-detail {
-  padding: 18px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.transaction-details {
-  margin-top: 5px;
-  flex-grow: 1;
-  overflow-y: auto;
-  position: relative;
-}
-
-.deals-container {
-  min-height: 200px;
 }
 
 .load-more-trigger {

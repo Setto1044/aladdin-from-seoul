@@ -1,51 +1,67 @@
 <template>
   <div class="property-map">
-    <FilterBar></FilterBar>
-
     <div class="map-section">
       <!-- 작은 탭 열기 버튼 -->
       <button class="open-sidebar-button" @click="toggleSidebar1">☰</button>
 
       <div class="sidebar-container">
         <!-- Sidebar 1 -->
-        <Sidebar class="sidebar1" :isOpen="isSidebar1Open" @close="handleCloseSidebar12">
+        <Sidebar
+          ref="sidebar1"
+          class="sidebar1"
+          :isOpen="isSidebar1Open"
+          @close="handleCloseSidebar12"
+        >
           <!-- 탭 -->
           <div class="tab">
             <span @click="aptClick" :class="{ active: apt }">매매</span>
             <span @click="shareClick" :class="{ active: share }">방 나누기</span>
           </div>
-          <!-- Sidebar 1 내부 콘텐츠 -->
-          <AptInfoPanel v-if="apt" @select-item="openSidebar2" :mapInstance="mapInstance" />
-          <ShareRoomInfoPanel v-if="share" @select-item="openSidebar2" :mapInstance="mapInstance" />
+          <section class="sidebar-content">
+            <!-- Sidebar 1 내부 콘텐츠 -->
+            <AptInfoPanel v-if="apt" @select-item="openSidebar2" :mapInstance="mapInstance" />
+            <ShareRoomInfoPanel
+              v-if="share"
+              @select-item="openSidebar2"
+              :mapInstance="mapInstance"
+            />
+          </section>
         </Sidebar>
 
         <!-- Sidebar 2 -->
-        <Sidebar class="sidebar2" :isOpen="isSidebar2Open" @close="handleCloseSidebar2">
+        <Sidebar
+          ref="sidebar2"
+          class="sidebar2"
+          :isOpen="isSidebar2Open"
+          @close="handleCloseSidebar2"
+        >
           <!-- Sidebar 2 내부 콘텐츠 -->
           <!-- Pass property details as props -->
           <!-- <PropertyDetails :property="selectedItem" /> -->
-          <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
-          <ContentDisplayPanel
-            v-if="share"
-            :tab="apt"
-            :id="selectedItem.item.roomBoardVo.id"
-            :item="selectedItem"
-          />
-          <NearbyStopsPanel
-            ref="nearbyStopsPanel"
-            :key="`nearby-${isSidebar2Open}`"
-            :lat="selectedItem.latitude"
-            :lng="selectedItem.longitude"
-            :mapInstance="mapInstance"
-            :isSidebarOpen="isSidebar2Open"
-            :selectedItem="selectedItem"
-            @beforeClose="handleBeforeCloseSidebar"
-          />
-          <TrafficHeatPanel
-            :lat="selectedItem.latitude"
-            :lng="selectedItem.longitude"
-          ></TrafficHeatPanel>
-          <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
+          <section class="sidebar-content">
+            <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
+            <ContentDisplayPanel
+              v-if="share"
+              :tab="apt"
+              :id="selectedItem.item.roomBoardVo.id"
+              :item="selectedItem"
+            />
+            <NearbyStopsPanel
+              ref="nearbyStopsPanel"
+              :key="`nearby-${isSidebar2Open}`"
+              :lat="selectedItem.latitude"
+              :lng="selectedItem.longitude"
+              :mapInstance="mapInstance"
+              :isSidebarOpen="isSidebar2Open"
+              :selectedItem="selectedItem"
+              @beforeClose="handleBeforeCloseSidebar"
+            />
+            <TrafficHeatPanel
+              :lat="selectedItem.latitude"
+              :lng="selectedItem.longitude"
+            ></TrafficHeatPanel>
+            <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
+          </section>
         </Sidebar>
       </div>
       <!-- Map -->
@@ -101,15 +117,22 @@ export default {
   },
   setup() {},
   mounted() {
+    this.updateSidebarWidths()
+    window.addEventListener('resize', this.updateSidebarWidths)
     this.updateNavHeight()
     window.addEventListener('resize', this.updateNavHeight) // Recalculate on window resize
   },
   beforeDestroy() {
+    window.removeEventListener('resize', this.updateSidebarWidths)
     window.removeEventListener('resize', this.updateNavHeight)
   },
   watch: {
+    isSidebar1Open(newVal) {
+      this.updateSidebarWidths()
+    },
     isSidebar2Open(newVal) {
       console.log('Sidebar2 open state changed:', newVal)
+      this.updateSidebarWidths()
       if (!newVal) {
         // 사이드바가 닫힐 때 추가 정리 작업
         if (this.$refs.nearbyStopsPanel) {
@@ -120,6 +143,42 @@ export default {
     },
   },
   methods: {
+    updateSidebarWidths() {
+      const sidebar1 = this.$refs.sidebar1?.$el || this.$refs.sidebar1
+      const sidebar2 = this.$refs.sidebar2?.$el || this.$refs.sidebar2
+
+      // Handle Sidebar 1 only if it's open
+      if (this.isSidebar1Open && sidebar1 instanceof HTMLElement) {
+        const wrapper1 = sidebar1.querySelector('.slot-wrapper')
+        if (wrapper1) {
+          const slotWidth1 = wrapper1.offsetWidth
+          const adjustedWidth1 = slotWidth1 - 10 // Adjust based on your needs
+          document.documentElement.style.setProperty(
+            '--sidebar1-wrapper-width',
+            `${adjustedWidth1}px`,
+          )
+        }
+      } else {
+        // Reset the value when sidebar 1 is closed
+        document.documentElement.style.setProperty('--sidebar1-wrapper-width', `0px`)
+      }
+
+      // Handle Sidebar 2 only if it's open
+      if (this.isSidebar2Open && sidebar2 instanceof HTMLElement) {
+        const wrapper2 = sidebar2.querySelector('.slot-wrapper')
+        if (wrapper2) {
+          const slotWidth2 = wrapper2.offsetWidth
+          const adjustedWidth2 = slotWidth2 - 10 // Adjust based on your needs
+          document.documentElement.style.setProperty(
+            '--sidebar2-wrapper-width',
+            `${adjustedWidth2}px`,
+          )
+        }
+      } else {
+        // Reset the value when sidebar 2 is closed
+        document.documentElement.style.setProperty('--sidebar2-wrapper-width', `0px`)
+      }
+    },
     handleMapCreated(map) {
       this.mapInstance = map // MapInstance를 저장
       console.log('맵 붙었다우 MapInstance received in parent:', this.mapInstance)
@@ -150,6 +209,10 @@ export default {
       console.log('오픈')
       this.isSidebar1Open = !this.isSidebar1Open
       this.isSidebar2Open = false // Close Sidebar 2 when Sidebar 1 is toggled
+      // Delay width update to wait for animation
+      setTimeout(() => {
+        this.updateSidebarWidths()
+      }, 100) // Match this value with your CSS transition duration
     },
     toggleSidebar2() {
       this.isSidebar2Open = true
@@ -161,6 +224,10 @@ export default {
       console.log('Sidebar2 open', selectedItem)
       this.selectedItem = selectedItem // Set the selected item
       this.isSidebar2Open = true // Open Sidebar2
+      // Delay width update to wait for animation
+      setTimeout(() => {
+        this.updateSidebarWidths()
+      }, 100) // Match this value with your CSS transition duration
     },
     handleMapClick() {
       console.log('MapComponent clicked')
@@ -212,7 +279,7 @@ export default {
 .property-map {
   display: flex;
   flex-direction: column; /* FilterBar on top, Map Section below */
-  height: calc(98vh - var(--nav-height)); /* Subtract nav bar height */
+  height: calc(100vh - var(--nav-height)); /* Subtract nav bar height */
   position: relative; /* Required for absolutely positioned children */
 }
 
@@ -239,8 +306,14 @@ export default {
 }
 
 .sidebar {
-  height: calc(93vh - var(--nav-height)); /* Subtract nav bar height */
+  height: calc(100vh - var(--nav-height)); /* Subtract nav bar height */
+}
+
+.sidebar-content {
+  margin-top: 5px;
+  flex-grow: 1;
   overflow-y: auto;
+  position: relative;
 }
 
 .tab {
@@ -249,7 +322,10 @@ export default {
   padding: 10px;
   background-color: #f9f9f9; /* 전체 배경색 */
   border-bottom: 1px solid #ddd; /* 탭 하단 경계선 */
-  z-index: 100; /* 다른 요소보다 위에 표시 */
+  z-index: 10; /* 다른 요소보다 위에 표시 */
+  position: sticky; /* 스크롤 시 고정 */
+  top: 0; /* 상단에서 0px 위치에 고정 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 스크롤 시 시각적 구분 */
 }
 
 .tab span {
@@ -263,7 +339,7 @@ export default {
   transition:
     color 0.3s ease,
     background-color 0.3s ease; /* 부드러운 전환 효과 */
-  border-radius: 5px; /* 버튼 모서리를 살짝 둥글게 */
+  border-radius: 3px; /* 버튼 모서리를 살짝 둥글게 */
 }
 
 .tab span:hover {
@@ -272,7 +348,7 @@ export default {
 }
 
 .tab span.active {
-  background-color: #007bff; /* 활성화된 탭 배경색 */
+  background-color: #603e75; /* 활성화된 탭 배경색 */
   color: #fff; /* 활성화된 탭 텍스트 색상 */
   font-weight: bold; /* 활성화된 탭 강조 */
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
@@ -283,13 +359,13 @@ export default {
   top: 20px; /* 맵의 위쪽에 위치 */
   left: 20px; /* 맵의 왼쪽에 위치 */
   z-index: 100; /* 맵 위에 오버레이되도록 설정 */
-  background-color: #007bff; /* 파란색 배경 */
+  background-color: #d2a3d3; /* 파란색 배경 */
   color: white; /* 흰색 텍스트 */
   border: none;
   border-radius: 50%; /* 동그랗게 만듦 */
-  width: 40px;
-  height: 40px;
-  font-size: 18px; /* 텍스트 크기 */
+  width: 60px;
+  height: 60px;
+  font-size: 28px; /* 텍스트 크기 */
   display: flex;
   justify-content: center;
   align-items: center; /* 버튼 내용 중앙 정렬 */
@@ -301,7 +377,7 @@ export default {
 }
 
 .open-sidebar-button:hover {
-  background-color: #0056b3; /* 호버 시 더 짙은 파란색 */
+  background-color: #421c46; /* 호버 시 더 짙은 파란색 */
   transform: scale(1.1); /* 버튼 크기 살짝 확대 */
 }
 

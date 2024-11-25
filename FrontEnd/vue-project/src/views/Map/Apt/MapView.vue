@@ -165,7 +165,7 @@ export default {
 .property-map {
   display: flex;
   flex-direction: column; /* FilterBar on top, Map Section below */
-  height: calc(98vh - var(--nav-height)); /* Subtract nav bar height */
+  height: calc(100vh - var(--nav-height)); /* Subtract nav bar height */
   position: relative; /* Required for absolutely positioned children */
 }
 

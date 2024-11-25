@@ -195,18 +195,56 @@ export default {
               longitude,
             })
 
-            const markerPosition = new kakao.maps.LatLng(latitude, longitude)
-            const marker = new kakao.maps.Marker({
-              position: markerPosition,
-              map: this.mapInstance,
+            const content = `<div class="custom-overlay-share">
+                <div class="overlay-content-share">
+                  <div class="overlay-title-share">${board.roomBoardVo.title}</div>
+                  <div class="overlay-price-share">${board.roomBoardVo.pricePer} ${board.roomBoardVo.price} 만원</div>
+                </div>
+                <div class="overlay-tail-share"></div>
+              </div>
+            `
+
+            const overlay = new kakao.maps.CustomOverlay({
+              position: new kakao.maps.LatLng(latitude, longitude),
+              content: content,
+              yAnchor: 1.3, // 오버레이 기준점을 꼬리에 맞춤
             })
 
-            this.markers.push(marker)
+            // 이벤트를 content에 추가하려면 DOM 객체를 직접 접근해야 함
+            const overlayElement = document.createElement('div')
+            overlayElement.innerHTML = content
 
-            // Add click event listener
-            kakao.maps.event.addListener(marker, 'click', () => {
+            // 마우스 오버/아웃 이벤트 추가
+            // 마우스 오버/아웃 이벤트 추가
+            overlayElement.addEventListener('mouseover', () => {
+              if (board.thumbnailUrl) {
+                // 말풍선 요소 생성
+                const tooltip = document.createElement('div')
+                tooltip.className = 'custom-tooltip'
+                tooltip.innerHTML = `<img src="${board.thumbnailUrl}" alt="Apartment Photo" class="tooltip-image" />`
+
+                // 오버레이를 DOM에 추가
+                overlayElement.appendChild(tooltip)
+                overlay.setZIndex(999) // 오버레이를 앞으로 가져오기
+              }
+            })
+
+            overlayElement.addEventListener('mouseout', () => {
+              // 말풍선 제거
+              const tooltip = overlayElement.querySelector('.custom-tooltip')
+              if (tooltip) {
+                overlayElement.removeChild(tooltip)
+              }
+              overlay.setZIndex(1) // 오버레이를 뒤로 보내기
+            })
+
+            overlayElement.addEventListener('click', () => {
               this.handleItemClick(board)
             })
+
+            // 커스텀 오버레이에 이벤트가 적용된 DOM 요소 설정
+            overlay.setContent(overlayElement)
+            overlay.setMap(this.mapInstance) // 지도에 오버레이 추가
           }
         } catch (error) {
           console.error('Error geocoding address:', error)
@@ -249,5 +287,26 @@ export default {
 </script>
 
 <style scoped>
-/* Styles remain the same */
+.real-estate-detail {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.load-more-trigger {
+  padding: 20px 0;
+  text-align: center;
+  color: #666;
+  margin-top: 10px;
+}
+
+.loading-message,
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
 </style>

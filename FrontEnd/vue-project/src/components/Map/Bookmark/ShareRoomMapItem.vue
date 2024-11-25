@@ -8,7 +8,7 @@
             alt="Thumbnail"
             class="title-thumbnail"
           />
-        {{ item.roomBoardVo.title }} ({{ item.buildYear }})
+          ⠀{{ item.roomBoardVo.title }}
         </p>
       </p>
       <p class="property-address">
@@ -20,7 +20,7 @@
       <p class="property-detail" title="{{ item.roomBoardVo.detail }}">
         {{ truncateDetail(item.roomBoardVo.detail) }}
       </p>
-      <p class="property-confirmation">확인일: {{ item.roomBoardVo.createdAt }}</p>
+      <p class="property-confirmation">등록일: {{ item.roomBoardVo.createdAt }}</p>
     </div>
     <!-- username이 있을 때만 즐겨찾기 버튼 표시 -->
     <button
@@ -28,8 +28,12 @@
       class="favorite-button"
       @click="toggleBookmark(item.no)"
     >
-      <span v-if="isBookmarked">★</span>
-      <span v-else>☆</span>
+      <button class="bookmark-button on-bookmark-button" v-if="isBookmarked">
+        <img src="@/assets/button/bookmark-on.png" alt="btnImages" class="btnImages" />
+      </button>
+      <button class="bookmark-button off-bookmark-button" v-else>
+        <img src="@/assets/button/bookmark-off.png" alt="btnImages" class="btnImages" />
+      </button>
     </button>
   </div>
 </template>
@@ -143,26 +147,35 @@ export default {
 </script>
 
 <style scoped>
-.real-estate-detail {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
 .property-item {
   display: flex;
   justify-content: space-between; /* 정보와 버튼 좌우 배치 */
   align-items: center; /* 수직 중앙 정렬 */
-  padding: 10px;
+  padding: 8px;
   border-bottom: 1px solid #ddd;
 }
 
 .property-item:hover {
   transform: scale(1.02); /* 살짝 확대 */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 강조 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+}
+
+.property-item:hover .property-name {
+  color: #603e75; /* hover 시 변경할 색상 */
+  transition: color 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.property-name {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.property-address {
+  font-size: 14px;
+  margin-top: 0;
 }
 
 .property-info {
@@ -270,7 +283,9 @@ export default {
 }
 
 .property-confirmation {
-  color: #888;
+  font-size: 12px;
+  color: #999; 
+  margin-top: 0px;
 }
 
 .favorite-button {
@@ -280,5 +295,22 @@ export default {
   border: none;
   cursor: pointer;
   font-size: 20px;
+}
+
+.bookmark-button {
+  margin-left: auto; /* 오른쪽으로 이동 */
+  text-align: center; /* 가운데 정렬 */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btnImages {
+  width: 20px;
+}
+
+.btnImages:hover {
+  scale: 1.2;
+  cursor: pointer; /* 마우스 포인터 변경 */
 }
 </style>
