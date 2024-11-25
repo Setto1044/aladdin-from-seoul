@@ -8,6 +8,7 @@ import com.aladin.exceptions.ResourceNotFoundException;
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.dto.HouseDealWithDongCodeDto;
+import com.aladin.house.dto.HouseFilterRequestDto;
 import com.aladin.house.mapper.HouseMapper;
 import com.aladin.house.vo.DongCodeVo;
 import com.aladin.house.vo.HouseCardVo;
@@ -36,10 +37,7 @@ public class HouseServiceImpl implements HouseService {
 		// mapper에서 `dongcodes` vo 데이터를 조회하고 하나의 문자열 주소로 변환해 Trie에 삽입
 		List<DongCodeVo> dongCodes = houseMapper.findAllDongCodes();
 		// 주소 데이터만 추출하여 Trie 초기화
-		List<String> addresses = dongCodes.stream()
-				.map(d -> (d.getDongCode()) + ", " + (d.getSidoName() != null ? d.getSidoName() : "") + " "
-						+ (d.getGugunName() != null ? d.getGugunName() : "") + " " + (d.getDongName() != null ? d.getDongName() : ""))
-				.map(String::trim) // 문자열의 앞뒤 공백 제거
+		List<String> addresses = dongCodes.stream().map(d -> (d.getDongCode()) + ", " + (d.getSidoName() != null ? d.getSidoName() : "") + " " + (d.getGugunName() != null ? d.getGugunName() : "") + " " + (d.getDongName() != null ? d.getDongName() : "")).map(String::trim) // 문자열의 앞뒤 공백 제거
 				.toList();
 
 		// 아파트 이름 트라이에 삽입
@@ -48,8 +46,8 @@ public class HouseServiceImpl implements HouseService {
 		List<HouseCardVo> aptSeqAndNames = houseMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
 		List<String> seqNames = aptSeqAndNames.stream().map(a -> (a.getAptSeq()) + ", " + (a.getAptName())).map(String::trim).toList();
 
-		trieService.initialize(addresses); // Trie에 주소 삽입
-		trieService.initialize(seqNames); // Trie에 아파트 삽입
+		// trieService.initialize(addresses); // Trie에 주소 삽입
+		// trieService.initialize(seqNames); // Trie에 아파트 삽입
 
 	}
 
@@ -93,6 +91,11 @@ public class HouseServiceImpl implements HouseService {
 			throw new ResourceNotFoundException("아파트 거래 통계 없음");
 		}
 		return result;
+	}
+
+	@Override
+	public List<HouseCardVo> findFilteredHouses(HouseFilterRequestDto filterRequestDto) {
+		return houseMapper.findFilteredHouses(filterRequestDto);
 	}
 
 }
