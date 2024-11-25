@@ -7,16 +7,8 @@
           <button class="action-button" @click="goToMyPosts">내 글 보기</button>
           <button class="action-button create-button" @click="createNewPost">작성하기</button>
         </div>
-        <form class="search-form" @submit.prevent="handleSearch">
-          <input
-            type="text"
-            id="propertySearch"
-            class="search-input"
-            placeholder="Search for properties..."
-            aria-label="Search for properties"
-          />
-          <button type="submit" class="search-button">Search</button>
-        </form>
+
+        <FilterBar />
       </div>
     </div>
 
@@ -41,11 +33,13 @@
 import CardRow from '@/components/RoomShare/SharePostCardList.vue'
 import PropertyDetailModal from '@/components/RoomShare/SharePostDetail.vue'
 import axios from 'axios'
+import FilterBar from '@/components/RoomShare/Filter/FilterBar.vue'
 
 export default {
   components: {
     CardRow,
     PropertyDetailModal,
+    FilterBar,
   },
   data() {
     return {
