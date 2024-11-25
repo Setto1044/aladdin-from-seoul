@@ -12,6 +12,7 @@ import com.aladin.house.dto.HouseFilterRequestDto;
 import com.aladin.house.mapper.HouseMapper;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
+import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @Service
@@ -63,6 +64,11 @@ public class HouseServiceImpl implements HouseService {
 	@Override
 	public List<HouseCardVo> findFilteredHouses(HouseFilterRequestDto filterRequestDto) {
 		return houseMapper.findFilteredHouses(filterRequestDto);
+	}
+
+	@Override
+	public List<HouseDealVo> findTop3ViewsHouseDeal() {
+		return houseMapper.findTop3ViewsHouseDeal();
 	}
 
 }

@@ -218,4 +218,12 @@
 		</if>
 	</select>
 
+	<select id="findTop3ViewsHouseDeal" resultType="com.aladin.house.vo.HouseDealVo">
+		SELECT *
+		FROM housedeals
+		where views != 0
+		ORDER BY views DESC
+		LIMIT 3
+	</select>
+
 </mapper>
