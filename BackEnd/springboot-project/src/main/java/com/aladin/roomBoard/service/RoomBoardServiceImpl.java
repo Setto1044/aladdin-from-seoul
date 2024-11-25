@@ -151,4 +151,9 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 		return boardMapper.findBoardsWithFilters(filterRequestDto);
 	}
 
+	@Override
+	public List<RoomBoardCardDto> findTop3ViewsBoardCard() {
+		return boardMapper.findTop3ViewsBoardCard();
+	}
+
 }
