@@ -169,66 +169,104 @@ export default {
 </script>
 
 <style scoped>
-/* Styles for better visibility */
-.complex-title {
+/* 전체 레이아웃 */
+.real-estate-list {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.list-title {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
-  font-family: 'Score7';
-}
-.section-title {
-  font-family: 'Score5';
-}
-
-.real-estate-detail {
-  padding: 18px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.transaction-details {
-  margin-top: 5px;
-  flex-grow: 1;
-  overflow-y: auto;
-  position: relative;
-}
-
-.deals-container {
-  min-height: 200px;
-}
-
-.load-more-trigger {
-  padding: 20px 0;
   text-align: center;
-  color: #666;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 단지 목록 */
+.complex-list {
+  border-top: 1px solid #ddd;
   margin-top: 10px;
 }
 
-.loading-message,
-.no-data {
-  text-align: center;
-  padding: 20px;
-  color: #666;
+/* 단지 항목 */
+.complex-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.complex-card:hover {
+  background: #f9f9f9;
+}
+
+/* 제목 및 요약 */
+.complex-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
 }
 
 .complex-summary {
-  margin: 5px 0;
   font-size: 14px;
   color: #555;
 }
 
+/* 가격 정보 */
 .price-info {
-  margin-top: 10px;
   font-size: 14px;
   color: #333;
 }
 
-.price {
-  font-weight: bold;
-  color: #007bff;
+.price-info p {
+  margin: 0;
+}
+
+/* 로딩 및 데이터 없음 메시지 */
+.loading-message,
+.no-data {
+  font-size: 16px;
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+/* 페이징 메시지 */
+.load-more-trigger {
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 칸 구분 */
+.complex-card + .complex-card {
+  border-top: 1px solid #ddd;
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+  .complex-card {
+    padding: 12px;
+  }
+
+  .complex-name {
+    font-size: 16px;
+  }
+
+  .complex-summary {
+    font-size: 13px;
+  }
+
+  .price-info {
+    font-size: 13px;
+  }
 }
 </style>
