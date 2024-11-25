@@ -53,7 +53,7 @@ export default {
           console.log('Sending request with query:', value)
 
           const response = await fetch(
-            `http://localhost:8080/aladin/house/search?keyword=${encodeURIComponent(value.trim())}`,
+            `http://localhost:8080/aladin/trie/search?keyword=${encodeURIComponent(value.trim())}`,
           )
 
           if (!response.ok) {
