@@ -20,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class SubwayService {
-	private static final double TRANSFER_WEIGHT = 1.1; // 기본 환승역 가중치
-	private static final double MULTI_TRANSFER_WEIGHT = 1.2; // 3개 이상 노선이 교차하는 환승역 가중치
-	private static final double SUSTAINED_THRESHOLD = 3;
+	private static final double TRANSFER_WEIGHT = 1.2; // 기본 환승역 가중치
+	private static final double MULTI_TRANSFER_WEIGHT = 1.3; // 3개 이상 노선이 교차하는 환승역 가중치
+	private static final double SUSTAINED_THRESHOLD = 3.5;
 	private String subwayCsvFile = "src/main/resources/csv/subway.csv";
 	private static List<PathData> stations = new ArrayList<>();
 
@@ -120,7 +120,7 @@ public class SubwayService {
 				// 연속 혼잡 구간 가중치 적용
 				if (congestion > SUSTAINED_THRESHOLD) {
 					sustainedMorningCongestionCount++;
-					double sustainedWeight = 1 + (0.05 * sustainedMorningCongestionCount);
+					double sustainedWeight = 1 + (0.1 * sustainedMorningCongestionCount);
 					congestion *= sustainedWeight;
 				} else {
 					sustainedMorningCongestionCount = 0; // 기준 미달이면 리셋
@@ -145,7 +145,7 @@ public class SubwayService {
 				// 연속 혼잡 구간 가중치 적용
 				if (congestion > SUSTAINED_THRESHOLD) {
 					sustainedEveningCongestionCount++;
-					double sustainedWeight = 1 + (0.05 * sustainedEveningCongestionCount);
+					double sustainedWeight = 1 + (0.1 * sustainedEveningCongestionCount);
 					congestion *= sustainedWeight;
 				} else {
 					sustainedEveningCongestionCount = 0; // 기준 미달이면 리셋
