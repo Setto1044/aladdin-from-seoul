@@ -14,18 +14,10 @@
     <div v-else class="chat-container">
       <div class="chat-box">
         <!-- 채팅 메시지 -->
-        <div
-          v-for="(message, index) in chatMessages"
-          :key="index"
-          :class="['message', message.isUser ? 'user-message' : 'bot-message']"
-        >
+        <div v-for="(message, index) in chatMessages" :key="index"
+          :class="['message', message.isUser ? 'user-message' : 'bot-message']">
           <!-- 프로필 이미지 -->
-          <img
-            v-if="message.isUser"
-            src="./user-avatar.png"
-            alt="User Avatar"
-            class="avatar user-avatar"
-          />
+          <img v-if="message.isUser" src="./user-avatar.png" alt="User Avatar" class="avatar user-avatar" />
           <img v-else src="./bot-avatar.png" alt="Bot Avatar" class="avatar bot-avatar" />
           <!-- 말풍선 -->
           <div class="bubble">
@@ -103,6 +95,7 @@ export default {
         this.currentQuestion = response.data.choices[0].message.content.trim()
         this.addBotMessage(this.currentQuestion)
         this.isLoading = false
+        console.log(this.currentQuestion)
       } catch (error) {
         console.error('Error fetching question:', error)
         this.isLoading = false
@@ -110,20 +103,58 @@ export default {
     },
     generatePrompt() {
       if (this.answers.length === 0) {
-        return `당신은 사용자가 서울특별시 내에서 자신에게 가장 잘 어울리는 동을 맞출 수 있도록 돕는 역할을 합니다.
-          사용자는 당신이 던지는 질문에 '예', '아니오', '모르겠음'으로 답할 수 있습니다.
-          답변을 통해 사용자의 취향과 선호도를 바탕으로 적합한 서울의 동을 제안하세요.
-          대화는 친근하고 사용자가 편안하게 느낄 수 있도록 진행됩니다.`
+        return `
+# 서울 자치구 추천 챗봇 프롬프트
+
+## 역할 및 규칙
+
+### 기본 설정
+- 목적: 사용자에게 가장 적합한 서울시 자치구 추천
+- 사용자 응답 제한: "예", "아니오", "모르겠음"만 가능
+- 질문 형식: "~~를 선호하나요?" 형태로 통일
+- 부가 설명 금지: 질문에 다른 부연 설명 첨부 불가
+
+### 질문 가이드라인
+- 응답 명확성: "예", "아니오", "모르겠음"으로 답할 수 있는 질문만 허용
+- 질문 길이: 50자 미만으로 제한
+- 질문 주제: 도시 인프라, 환경, 편의시설 관련 선호도
+- 질문 개수: 최대 6개로 제한
+- 6개 질문 후: 추가 질문 없이 결과 제시
+
+### 결과 제시 형식
+추천 선호지역: [자치구명]
+
+
+### 예시 질문
+1. "인근 공원이 많은 지역을 선호하나요?"
+2. "대중교통 접근성이 좋은 지역을 선호하나요?"
+3. "핫플레이스 주변 지역을 선호하나요?"
+4. "의료시설이 가까운 지역을 선호하나요?"
+5. "쇼핑몰이 가까운 지역을 선호하나요?"
+6. "학교와 교육 시설이 근처에 있는 지역을 선호하나요?"
+
+### 추천 프로세스
+1. 사용자의 답변을 바탕으로 최적의 자치구 추천
+2. 친근하고 접근하기 쉬운 대화 방식 유지
+3. 6개 질문 완료 후 즉시 결과 제시 및 대화 종료
+
+### 언어
+- 모든 질문과 답변은 한국어로 진행
+`
       }
       const answerHistory = this.answers
         .map((a) => `Question: ${a.question}, Answer: ${a.answer}`)
         .join('\n')
-      return `${answerHistory}\nWhat is the next question?`
+      if (this.answers.length >= 6) {
+        return `${answerHistory}\n지금까지의 답변을 바탕으로 "추천 선호지역: [자치구명]" 형식으로 결과만 알려주세요.`
+      } else {
+        return `${answerHistory}\n다음 한 개의 질문을 "~~를 선호하나요?" 형식으로만 작성해주세요. 50자를 넘지 않아야 합니다.`
+      }
     },
     handleAnswer(answer) {
       this.addUserMessage(answer)
       this.answers.push({ question: this.currentQuestion, answer })
-      if (this.answers.length >= 20) {
+      if (this.answers.length >= 7) {
         this.fetchResult()
       } else {
         this.fetchNextQuestion()
@@ -134,15 +165,19 @@ export default {
         const answerHistory = this.answers
           .map((a) => `Question: ${a.question}, Answer: ${a.answer}`)
           .join('\n')
+
         const response = await axios.post(
           'https://api.openai.com/v1/chat/completions',
           {
             model: 'gpt-4o-mini',
             messages: [
-              { role: 'system', content: 'You are a helpful assistant.' },
+              {
+                role: 'system',
+                content: '당신은 서울시 자치구 추천 시스템입니다. 사용자의 답변을 바탕으로 가장 적합한 서울시 자치구를 추천해주세요.'
+              },
               {
                 role: 'user',
-                content: `${answerHistory}\nBased on the answers, what is the user thinking of?`,
+                content: `${answerHistory}\n이 답변들을 바탕으로 가장 적합한 서울시 자치구를 추천해주세요. "추천 선호지역: [자치구명]" 형식으로 응답해주세요.`,
               },
             ],
             max_tokens: 100,
@@ -152,12 +187,14 @@ export default {
             headers: {
               Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
             },
-          },
+          }
         )
+
         this.result = response.data.choices[0].message.content.trim()
-        this.addBotMessage(`결과는: ${this.result}`)
+        this.addBotMessage(this.result)
       } catch (error) {
         console.error('Error fetching result:', error)
+        this.addBotMessage('죄송합니다. 결과를 가져오는 데 실패했습니다.')
       }
     },
     addBotMessage(text) {
@@ -262,10 +299,12 @@ export default {
 .start-button {
   font-size: 18px;
   padding: 12px 24px;
-  background-color: #f9a825; /* 밝은 노란색 */
+  background-color: #f9a825;
+  /* 밝은 노란색 */
   color: white;
   border: none;
-  border-radius: 25px; /* 둥근 버튼 */
+  border-radius: 25px;
+  /* 둥근 버튼 */
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition:
@@ -274,12 +313,15 @@ export default {
 }
 
 .start-button:hover {
-  background-color: #f57f17; /* 진한 노란색 */
-  transform: scale(1.1); /* 살짝 확대 */
+  background-color: #f57f17;
+  /* 진한 노란색 */
+  transform: scale(1.1);
+  /* 살짝 확대 */
 }
 
 .start-button:active {
-  transform: scale(0.95); /* 클릭 시 축소 */
+  transform: scale(0.95);
+  /* 클릭 시 축소 */
 }
 
 /* 응답 입력 버튼 */
@@ -291,9 +333,11 @@ export default {
   font-weight: bold;
   color: white;
   border: none;
-  border-radius: 25px; /* 둥근 버튼 */
+  border-radius: 25px;
+  /* 둥근 버튼 */
   cursor: pointer;
-  background: linear-gradient(45deg, #42a5f5, #1e88e5); /* 그라데이션 */
+  background: linear-gradient(45deg, #42a5f5, #1e88e5);
+  /* 그라데이션 */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition:
     background-color 0.3s ease,
@@ -301,22 +345,27 @@ export default {
 }
 
 .input-button:hover {
-  background: linear-gradient(45deg, #1e88e5, #1565c0); /* 더 진한 색상 */
-  transform: translateY(-2px); /* 살짝 위로 */
+  background: linear-gradient(45deg, #1e88e5, #1565c0);
+  /* 더 진한 색상 */
+  transform: translateY(-2px);
+  /* 살짝 위로 */
 }
 
 .input-button:active {
-  transform: translateY(1px); /* 클릭 시 아래로 */
+  transform: translateY(1px);
+  /* 클릭 시 아래로 */
 }
 
 /* 결과 화면 다시 시작 버튼 */
 .restart-button {
   font-size: 16px;
   padding: 10px 20px;
-  background-color: #8e24aa; /* 보라색 */
+  background-color: #8e24aa;
+  /* 보라색 */
   color: white;
   border: none;
-  border-radius: 25px; /* 둥근 버튼 */
+  border-radius: 25px;
+  /* 둥근 버튼 */
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition:
@@ -325,11 +374,14 @@ export default {
 }
 
 .restart-button:hover {
-  background-color: #7b1fa2; /* 진한 보라색 */
-  transform: scale(1.05); /* 살짝 확대 */
+  background-color: #7b1fa2;
+  /* 진한 보라색 */
+  transform: scale(1.05);
+  /* 살짝 확대 */
 }
 
 .restart-button:active {
-  transform: scale(0.95); /* 클릭 시 축소 */
+  transform: scale(0.95);
+  /* 클릭 시 축소 */
 }
 </style>

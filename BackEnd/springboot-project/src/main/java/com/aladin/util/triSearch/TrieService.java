@@ -21,30 +21,20 @@ public class TrieService {
 	}
 
 	@PostConstruct
-	public void initializeTrie() {
+	public void initializeTrieSearch() {
+		// Fetch data from the database using AptMapper
 		List<DongCodeVo> dongCodes = triMapper.findAllDongCodes();
-		List<String> addresses = dongCodes.stream().map(d -> (d.getDongCode()) + ", " + (d.getSidoName() != null ? d.getSidoName() : "") + " " + (d.getGugunName() != null ? d.getGugunName() : "") + " " + (d.getDongName() != null ? d.getDongName() : "")).map(String::trim) // 문자열의 앞뒤 공백 제거
-				.toList();
-
-// List<HouseCardVo> aptSeqAndNames = houseMapper.findAllAptSeqAndAptNameOfHouseCards();
-		List<HouseCardVo> aptSeqAndNames = triMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
-		List<String> seqNames = aptSeqAndNames.stream().map(a -> (a.getAptSeq()) + ", " + (a.getAptName())).map(String::trim).toList();
-
-		initializeKeyWordsInList(addresses); // Trie에 주소 삽입
-		initializeKeyWordsInList(seqNames); // Trie에 아파트 삽입
-
-		log.debug("Tri 초기화 완료");
-	}
-
-	// Trie 초기화
-	public static void initializeKeyWordsInList(List<String> keywords) {
-		for (String keyword : keywords) {
-			TrieSearch.insert(keyword); // 주소 삽입
+		List<HouseCardVo> houseCardVos = triMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
+		// Insert data into TrieSearch
+		for (DongCodeVo apt : dongCodes) {
+			TrieSearch.insert(apt.getDongCode(), apt.getSidoName() + " " + apt.getGugunName() + " " + apt.getDongName());
+		}
+		for (HouseCardVo houseCardVo : houseCardVos) {
+			TrieSearch.insert(houseCardVo.getDongCode(), houseCardVo.getAptName());
 		}
 	}
 
 	public List<String> searchKeywords(String keyword) {
 		return TrieSearch.search(keyword);
 	}
-
 }
