@@ -20,6 +20,14 @@
 
 <script>
 import axios from 'axios'
+
+function decrementLastNumber(str) {
+  return str.replace(/(\d+)-(\d+)/, (match, part1, part2) => {
+    const decremented = parseInt(part2) - 1
+    return `${part1}-${decremented}`
+  })
+}
+
 export default {
   data() {
     return {
@@ -76,7 +84,8 @@ export default {
       if (code.includes('-')) {
         // 하이픈이 있는 경우 로직
         console.log('Code contains a hyphen. Performing logic for hyphenated code.')
-        window.location.href = `http://localhost:8080/aladin/house/hyphen?code=${code}`
+        // window.location.href = `http://localhost:8080/aladin/house/hyphen?code=${code}`
+        this.fetchAptAndSearch(code, name)
       } else {
         // 하이픈이 없는 경우 로직
 
@@ -86,7 +95,25 @@ export default {
         this.fetchRegionAndSearch(code)
       }
     },
-
+    async fetchAptAndSearch(code, name) {
+      const newCode = decrementLastNumber(code)
+      console.log(
+        `http://localhost:8080/aladin/house/cards/aptname/${name}?cursorId=${newCode}&size=1`,
+      )
+      const houseResponse = await axios.get(
+        `http://localhost:8080/aladin/house/cards/aptname/${name}?cursorId=${newCode}&size=1`,
+      )
+      if (houseResponse.data.success) {
+        const houseCard = houseResponse.data.data[0]
+        console.log('House data:', houseCard)
+        this.$router.push({
+          name: 'map',
+          query: { searchHouseCard: JSON.stringify(houseCard) },
+        })
+      } else {
+        console.error('Failed fetchAptAndSearch')
+      }
+    },
     async fetchRegionAndSearch(code) {
       try {
         // 첫 번째 API 호출

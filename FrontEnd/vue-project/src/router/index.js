@@ -28,6 +28,24 @@ const router = createRouter({
       name: 'map',
       component: () => import('@/views/Map/Apt/MapView.vue'),
       meta: { showSearchBar: true, showFooterBar: false },
+      props: (route) => {
+        try {
+          // `query.houseCard`가 존재하면 JSON.parse로 객체 변환, 없으면 null
+          console.log(
+            'in 라우터',
+            route.query.searchHouseCard,
+            JSON.parse(route.query.searchHouseCard),
+          )
+          return {
+            searchHouseCard: route.query.searchHouseCard
+              ? JSON.parse(route.query.searchHouseCard)
+              : null,
+          }
+        } catch (e) {
+          console.error('searchHouseCard 파싱 에러:', e)
+          return { searchHouseCard: null } // 에러 발생 시 기본값 처리
+        }
+      },
     },
     {
       path: '/share',
