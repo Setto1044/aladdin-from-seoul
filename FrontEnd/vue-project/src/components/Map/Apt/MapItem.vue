@@ -51,7 +51,7 @@ export default {
 
       try {
         const response = await axios.get(
-          `http://localhost:8080/aladin/bookmark/deal/status?username${this.userStore.memberInfo.username}&housedealsNo=${this.item.no}`,
+          `http://localhost:8080/aladin/bookmark/deal/status?username=${this.userStore.memberInfo.username}&housedealsNo=${this.item.no}`,
         )
         this.isBookmarked = response.data.success // 서버 응답에 따라 상태 업데이트
         console.log(
