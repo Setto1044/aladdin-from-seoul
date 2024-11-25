@@ -41,6 +41,10 @@
             :selectedItem="selectedItem"
             @beforeClose="handleBeforeCloseSidebar"
           />
+          <TrafficHeatPanel
+            :lat="selectedItem.latitude"
+            :lng="selectedItem.longitude"
+          ></TrafficHeatPanel>
           <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
         </Sidebar>
       </div>
@@ -66,6 +70,7 @@ import PropertyDetails from '@/components/Map/PropertyDetails.vue'
 import ContentDisplayPanel from '@/components/Map/Bookmark/InfoWidgets/ContentDisplayPanel.vue'
 import NearbyStopsPanel from '@/components/Map/Bookmark/InfoWidgets/NearbyStopsPanel.vue'
 import LocalReviewPanel from '@/components/Map/Bookmark/InfoWidgets/LocalReviewPanel.vue'
+import TrafficHeatPanel from '@/components/Map/Bookmark/InfoWidgets/TrafficHeatPanel.vue'
 
 import { ref } from 'vue'
 
@@ -81,6 +86,7 @@ export default {
     ContentDisplayPanel,
     NearbyStopsPanel,
     LocalReviewPanel,
+    TrafficHeatPanel,
   },
   data() {
     return {
