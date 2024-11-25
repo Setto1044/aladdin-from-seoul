@@ -474,7 +474,7 @@ onUnmounted(() => {
   bottom: 110%; /* 부모 요소 위에 나타나도록 설정 */
   left: 50%;
   transform: translateX(-50%);
-  background-color: #fff3e9;
+  background-color: #ffffff3a;
   border: 1px solid rgba(0, 0, 0, 0.2); /* 약간 더 진한 테두리 */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 그림자를 더 크게 설정 */
   border-radius: 8px;

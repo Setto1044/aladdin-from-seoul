@@ -160,7 +160,6 @@ export default {
         // lat, lng 추출
         const lat = kakaoData.documents[0]?.y
         const lng = kakaoData.documents[0]?.x
-
         if (lat && lng) {
           // 위도/경도 데이터 전달
           const latLng = { latitude: lat, longitude: lng }
