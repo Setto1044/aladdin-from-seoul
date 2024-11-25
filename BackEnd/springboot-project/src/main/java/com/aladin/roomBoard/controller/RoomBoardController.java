@@ -93,4 +93,10 @@ public class RoomBoardController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", boards));
 	}
 
+	@GetMapping("/top")
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> findTop3ViewsBoardCard() {
+		List<RoomBoardCardDto> boards = boardService.findTop3ViewsBoardCard();
+		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", boards));
+	}
+
 }

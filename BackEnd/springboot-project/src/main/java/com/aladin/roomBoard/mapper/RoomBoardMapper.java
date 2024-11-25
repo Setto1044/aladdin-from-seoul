@@ -38,4 +38,5 @@ public interface RoomBoardMapper {
 	// 필터 검색
 	List<RoomBoardCardDto> findBoardsWithFilters(RoomBoardFilterRequestDto filterRequestDto);
 
+	List<RoomBoardCardDto> findTop3ViewsBoardCard();
 }

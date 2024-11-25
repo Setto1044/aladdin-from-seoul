@@ -10,6 +10,7 @@ import com.aladin.house.dto.HouseDealWithDongCodeDto;
 import com.aladin.house.dto.HouseFilterRequestDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
+import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @Mapper
@@ -31,4 +32,5 @@ public interface HouseMapper {
 
 	List<HouseCardVo> findFilteredHouses(HouseFilterRequestDto filterRequestDto);
 
+	List<HouseDealVo> findTop3ViewsHouseDeal();
 }

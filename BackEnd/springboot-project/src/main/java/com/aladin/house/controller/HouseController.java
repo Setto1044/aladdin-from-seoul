@@ -22,6 +22,7 @@ import com.aladin.house.dto.HouseFilterRequestDto;
 import com.aladin.house.service.HouseService;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
+import com.aladin.house.vo.HouseDealVo;
 import com.aladin.house.vo.HouseDetailVo;
 
 @RestController
@@ -43,20 +44,24 @@ public class HouseController {
 
 	// 특정 좌표 기준으로 가까운 집 정보 요청 (Closest Coordinates)
 	@GetMapping("/cards/closest")
-	public ResponseEntity<ApiResponseDto<ClosestCoordinateHouseCardResponseDto>> getHousesClosestToCoordinates(ClosestCoordinateHouseCardRequestDto requestDto) {
-		ClosestCoordinateHouseCardResponseDto responseDto = ClosestCoordinateHouseCardResponseDto.of(houseService.findHousesClosestToCoordinates(requestDto));
+	public ResponseEntity<ApiResponseDto<ClosestCoordinateHouseCardResponseDto>> getHousesClosestToCoordinates(
+			ClosestCoordinateHouseCardRequestDto requestDto) {
+		ClosestCoordinateHouseCardResponseDto responseDto = ClosestCoordinateHouseCardResponseDto
+				.of(houseService.findHousesClosestToCoordinates(requestDto));
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", responseDto));
 	}
 
 	@GetMapping("/cards/aptname/{keyword}")
-	public ResponseEntity<ApiResponseDto<List<HouseCardVo>>> getHousesByAptNameWithCursor(@PathVariable String keyword, @RequestParam(required = false) String cursorId, @RequestParam(defaultValue = "10") int size) {
+	public ResponseEntity<ApiResponseDto<List<HouseCardVo>>> getHousesByAptNameWithCursor(@PathVariable String keyword,
+			@RequestParam(required = false) String cursorId, @RequestParam(defaultValue = "10") int size) {
 		List<HouseCardVo> houseCards = houseService.findHousesByAptNameWithCursor(keyword, cursorId, size);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "아파트 정보 조회 성공", houseCards));
 	}
 
 	// 특정 아파트 시퀀스의 거래 정보 요청 커서 페이징
 	@GetMapping("/deals/{aptSeq}")
-	public ResponseEntity<ApiResponseDto<HouseDealWithDongCodeResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
+	public ResponseEntity<ApiResponseDto<HouseDealWithDongCodeResponseDto>> getHouseDealsByAptSeqWithCursor(@PathVariable String aptSeq,
+			@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int size) {
 		List<HouseDealWithDongCodeDto> houseDeals = houseService.findAllHouseDealsByAptSeqWithCursor(aptSeq, cursorId, size);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "조회 성공", HouseDealWithDongCodeResponseDto.of(houseDeals)));
 	}
@@ -78,6 +83,12 @@ public class HouseController {
 	public ResponseEntity<ApiResponseDto<List<HouseCardVo>>> getFilteredHouses(@RequestBody HouseFilterRequestDto filterRequestDto) {
 		List<HouseCardVo> houses = houseService.findFilteredHouses(filterRequestDto);
 		return ResponseEntity.ok(ApiResponseDto.of(true, "필터 조건에 따른 아파트 조회 성공", houses));
+	}
+
+	@GetMapping("/deals/top")
+	public ResponseEntity<ApiResponseDto<List<HouseDealVo>>> findTop3ViewsHouseDeal() {
+		List<HouseDealVo> deals = houseService.findTop3ViewsHouseDeal();
+		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", deals));
 	}
 
 }
