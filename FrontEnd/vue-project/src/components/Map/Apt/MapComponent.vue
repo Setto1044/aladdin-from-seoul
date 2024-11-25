@@ -8,11 +8,14 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, watchEffect } from 'vue'
 import axios from 'axios'
 
 // 부모 컴포넌트로 이벤트를 전달하는 emit 정의
-const emit = defineEmits(['marker-clicked'])
+const emit = defineEmits(['marker-clicked', 'house-card-clicked'])
+const props = defineProps({
+  searchHouseCard: Object,
+})
 
 // 전역 변수로 관리
 let mapInstance = null
@@ -20,6 +23,30 @@ let clustererInstance = null
 let currentZoomLevel = null
 let polygons = []
 let overlays = [] // 이름 오버레이를 저장할 배열
+
+const checkMapAndSearchHouseCard = () => {
+  if (mapInstance && props.searchHouseCard) {
+    console.log('mapInstance와 searchHouseCard가 모두 준비됨:', props.searchHouseCard)
+
+    // 지도 중심 설정
+    const { latitude, longitude } = props.searchHouseCard
+    mapInstance.setCenter(new kakao.maps.LatLng(latitude, longitude))
+    console.log('지도 중심이 설정되었습니다:', latitude, longitude)
+
+    // 이벤트 발생
+    emit('house-card-clicked', props.searchHouseCard)
+  } else {
+    console.log('mapInstance 또는 searchHouseCard가 준비되지 않음')
+  }
+}
+
+// searchHouseCard 값 변경 시 이벤트 발생
+watchEffect(() => {
+  if (props.searchHouseCard) {
+    console.log('searchHouseCard 값 감지')
+    checkMapAndSearchHouseCard()
+  }
+})
 
 const loadKakaoMap = () => {
   return new Promise((resolve, reject) => {
@@ -259,6 +286,9 @@ onMounted(async () => {
       center: new kakaoMaps.LatLng(37.571924, 126.975391),
       level: 4,
     })
+
+    // 초기값 확인
+    checkMapAndSearchHouseCard()
 
     // 클러스터러 인스턴스 생성
     clustererInstance = new kakaoMaps.MarkerClusterer({

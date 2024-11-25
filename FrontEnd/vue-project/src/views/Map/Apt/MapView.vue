@@ -15,6 +15,8 @@
         ref="mapComponent"
         @click="handleMapClick"
         @marker-clicked="handleMarkerClick"
+        @house-card-clicked="handleHouseCardClicked"
+        :searchHouseCard="localSearchHouseCard"
         class="map-component"
       />
     </div>
@@ -35,17 +37,31 @@ export default {
     Sidebar,
     AptInfoPanel,
   },
+  props: {
+    searchHouseCard: {
+      type: Object,
+      default: null, // houseCard가 없으면 null로 처리
+    },
+  },
+  watch: {
+    searchHouseCard(newValue) {
+      // props 변경 시 로컬 데이터 업데이트
+      this.localSearchHouseCard = newValue
+    },
+  },
   data() {
     return {
       isSidebar1Open: false,
       selectedMarker: null,
+      localSearchHouseCard: this.searchHouseCard, // 로컬 데이터로 복사
     }
   },
   mounted() {
     this.updateNavHeight()
     window.addEventListener('resize', this.updateNavHeight) // Recalculate on window resize
+    console.log('로컬', this.localSearchHouseCard)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('resize', this.updateNavHeight)
   },
   methods: {
@@ -70,6 +86,17 @@ export default {
     handleCloseSidebar12() {
       this.isSidebar1Open = false
       this.selectedMarker = null
+    },
+    handleHouseCardClicked(house) {
+      this.localSearchHouseCard = null // 1회 사용 후 null로 초기화
+      console.log('house-card-clicked 이벤트 발생:', house, ' 초기화->', this.localSearchHouseCard)
+      if (this.selectedMarker?.aptSeq == house.aptSeq) {
+        console.log('이미 선택된 하우스 카드 클릭')
+      } else {
+        console.log('다른 하우스 카드 클릭')
+        this.selectedMarker = house
+        this.openSidebar1()
+      }
     },
     handleMarkerClick(house) {
       console.log(this.selectedMarker, house)
