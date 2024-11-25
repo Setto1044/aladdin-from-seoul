@@ -190,4 +190,37 @@
 		SELECT dong_code, sido_name, gugun_name, dong_name
 		FROM dongcodes
 	</select>
+
+	<select id="findFilteredHouses" parameterType="com.aladin.house.dto.HouseFilterRequestDto" resultMap="HouseCardResultMap">
+		SELECT
+		hc.*
+		FROM
+		housecards hc
+		LEFT JOIN
+		housedeals_stat hds ON hc.apt_seq = hds.apt_seq
+		WHERE
+		-- 위도와 경도를 기반으로 범위 필터링
+		CAST(hc.latitude AS DECIMAL(10,6)) BETWEEN #{latA} AND #{latB}
+		AND CAST(hc.longitude AS DECIMAL(10,6)) BETWEEN #{lngA} AND #{lngB}
+		-- 옵션 조건 추가
+		<if test="excluUseArMin != null">
+			AND hds.exclu_use_ar_min &gt;= #{excluUseArMin}
+		</if>
+		<if test="excluUseArMax != null">
+			AND hds.exclu_use_ar_max &lt;= #{excluUseArMax}
+		</if>
+		<if test="dealAmountMin != null">
+			AND CAST(hds.deal_amount_min AS UNSIGNED) &gt;= #{dealAmountMin}
+		</if>
+		<if test="dealAmountMax != null">
+			AND CAST(hds.deal_amount_max AS UNSIGNED) &lt;= #{dealAmountMax}
+		</if>
+		<if test="buildYearMin != null">
+			AND hc.build_year &gt;= #{buildYearMin}
+		</if>
+		<if test="buildYearMax != null">
+			AND hc.build_year &lt;= #{buildYearMax}
+		</if>
+	</select>
+
 </mapper>

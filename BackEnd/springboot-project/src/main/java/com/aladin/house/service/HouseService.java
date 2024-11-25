@@ -5,6 +5,7 @@ import java.util.List;
 import com.aladin.house.dto.BetweenRangeHouseCardRequestDto;
 import com.aladin.house.dto.ClosestCoordinateHouseCardRequestDto;
 import com.aladin.house.dto.HouseDealWithDongCodeDto;
+import com.aladin.house.dto.HouseFilterRequestDto;
 import com.aladin.house.vo.HouseCardVo;
 import com.aladin.house.vo.HouseDealStatVo;
 import com.aladin.house.vo.HouseDetailVo;
@@ -27,4 +28,7 @@ public interface HouseService {
 	HouseDealStatVo getHouseDealStatByAptSeq(String aptSeq);
 
 	List<String> searchDong(String keyword);
+
+	List<HouseCardVo> findFilteredHouses(HouseFilterRequestDto filterRequestDto);
+
 }
