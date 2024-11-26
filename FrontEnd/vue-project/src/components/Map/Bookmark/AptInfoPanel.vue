@@ -259,9 +259,8 @@ export default {
 <style scoped>
 .real-estate-detail {
   background: white;
-  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 100%;
+  height: calc(100vh - 108px); /* Subtract nav bar height  var(--nav-height)*/
   display: flex;
   flex-direction: column;
 }

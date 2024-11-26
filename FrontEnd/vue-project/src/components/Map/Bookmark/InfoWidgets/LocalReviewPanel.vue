@@ -13,67 +13,84 @@ const config = {
 </script>
 
 <template>
-  <div class="neighborhood-slider">
-    <h2>{{ data.gugunName || '동네 정보' }}</h2>
-    <Carousel v-bind="config">
-      <Slide>
-        <div class="info-card dynamic-indicator">
-          <h3>상권 변화 지표</h3>
-          <p>{{ data.businessChangeIndicator || '정보 없음' }}</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card cctv-info">
-          <h3>CCTV</h3>
-          <p>설치 대수: {{ simplifyNumber(data.cctv) || '정보 없음' }} 대</p>
-          <p>순위: {{ data.cctvRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card floating-population">
-          <h3>유동 인구</h3>
-          <p>{{ simplifyNumber(data.totalFloatingPopulation) || '정보 없음' }} 명</p>
-          <p>순위: {{ data.floatingPopulationRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card working-population">
-          <h3>근로 인구</h3>
-          <p>{{ simplifyNumber(data.avgWorkingPopulation) || '정보 없음' }} 명</p>
-          <p>순위: {{ data.workingPopulationRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card residential-population">
-          <h3>거주 인구</h3>
-          <p>{{ simplifyNumber(data.totalResidentialPopulation) || '정보 없음' }} 명</p>
-          <p>순위: {{ data.residentialPopulationRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card apartment-price">
-          <h3>평균 아파트 가격</h3>
-          <p>{{ formatCurrency(data.avgApartmentPrice) || '정보 없음' }} 원</p>
-          <p>순위: {{ data.apartmentPriceRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
-      <Slide>
-        <div class="info-card apartment-complex">
-          <h3>아파트 단지</h3>
-          <p>평균 단지 수: {{ simplifyNumber(data.avgApartmentComplexes) || '정보 없음' }} 개</p>
-          <p>순위: {{ data.apartmentComplexesRank || '정보 없음' }}위</p>
-        </div>
-      </Slide>
+  <div class="neighborhood-content">
+    <h2 class="neighborhood-title">✏️ {{ data.gugunName || '동네 정보' }}</h2>
+    <div class="neighborhood-slider">
+      <Carousel v-bind="config">
+        <Slide>
+          <div class="info-card dynamic-indicator">
+            <div class="info-card-header">상권 변화 지표</div>
+            <div class="info-card-body">
+              <p>{{ data.businessChangeIndicator || '정보 없음' }}</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card cctv-info">
+            <div class="info-card-header">CCTV</div>
+            <div class="info-card-body">
+              <p>{{ simplifyNumber(data.cctv) || '정보 없음' }} 대 설치</p>
+              <p class="highlight">{{ data.cctvRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card floating-population">
+            <div class="info-card-header">유동 인구</div>
+            <div class="info-card-body">
+              <p>{{ simplifyNumber(data.totalFloatingPopulation) || '정보 없음' }} 명</p>
+              <p class="highlight">{{ data.floatingPopulationRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card working-population">
+            <div class="info-card-header">근로 인구</div>
+            <div class="info-card-body">
+              <p>{{ simplifyNumber(data.avgWorkingPopulation) || '정보 없음' }} 명</p>
+              <p class="highlight">{{ data.workingPopulationRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card residential-population">
+            <div class="info-card-header">거주 인구</div>
+            <div class="info-card-body">
+              <p>{{ simplifyNumber(data.totalResidentialPopulation) || '정보 없음' }} 명</p>
+              <p class="highlight">{{ data.residentialPopulationRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card apartment-price">
+            <div class="info-card-header">평균 아파트 가격</div>
+            <div class="info-card-body">
+              <p>{{ formatCurrency(data.avgApartmentPrice) || '정보 없음' }} 원</p>
+              <p class="highlight">{{ data.apartmentPriceRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="info-card apartment-complex">
+            <div class="info-card-header">아파트 단지</div>
+            <div class="info-card-body">
+              <p>
+                평균 단지 수: {{ simplifyNumber(data.avgApartmentComplexes) || '정보 없음' }} 개
+              </p>
+              <p class="highlight">{{ data.apartmentComplexesRank || '정보 없음' }}위</p>
+            </div>
+          </div>
+        </Slide>
 
-      <!-- 네비게이션 버튼 추가 -->
-      <template #addons>
-        <Navigation />
-      </template>
-    </Carousel>
-
+        <!-- 네비게이션 버튼 추가 -->
+        <template #addons>
+          <Navigation />
+        </template>
+      </Carousel>
+    </div>
     <!-- 뉴스 섹션 -->
     <div class="news-section">
-      <h3>{{ data.gugunName || '동네' }} 뉴스</h3>
+      <h3>📰 {{ data.gugunName || '동네' }} 뉴스</h3>
       <ul>
         <li v-for="news in newsData" :key="news.link" class="news-item">
           <a :href="news.link" target="_blank">
@@ -131,7 +148,7 @@ function simplifyNumber(num) {
 
 function formatCurrency(num) {
   const simplified = simplifyNumber(num)
-  return simplified ? `₩${simplified}` : null
+  return simplified ? `${simplified}` : null
 }
 
 export default {
@@ -238,12 +255,27 @@ export default {
 </script>
 
 <style scoped>
+.neighborhood-content {
+  padding: 15px;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.neighborhood-title {
+  font-size: 20px; /* 최소 16px, 최대 20px */
+  font-weight: bold;
+  color: #44afbe;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #44afbe;
+  padding-bottom: 8px;
+}
+
 /* 전체 컨테이너 */
 .neighborhood-slider {
   font-family: Arial, sans-serif;
   max-width: 800px;
-  margin: 20px auto;
   text-align: center;
+  padding-bottom: 20px;
 }
 
 .neighborhood-slider h2 {
@@ -259,7 +291,6 @@ export default {
   margin: 20px auto;
   padding: 20px;
   background-color: #f9f9f9;
-  border-radius: 12px;
   text-align: center;
 }
 
@@ -283,22 +314,25 @@ export default {
     box-shadow 0.2s ease;
 }
 
-.info-card h3 {
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #555;
-  font-weight: bold;
-}
-
-.info-card p {
-  margin: 5px 0;
+.info-card-header {
   font-size: 14px;
-  color: #666;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px;
+  text-align: center; /* 중앙 정렬 */
+  overflow: hidden; /* 내용 넘침 방지 */
+  text-overflow: ellipsis; /* 말줄임표 처리 */
 }
 
-.info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.info-card-body {
+  font-size: 12px;
+  color: #75767a;
+}
+
+.info-card-body .highlight {
+  color: #000000; /* 주요 텍스트 강조 */
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* 비활성 슬라이드 상태 */
@@ -315,6 +349,7 @@ export default {
 
 .carousel__slide--active {
   transform: scale(1);
+  z-index: 10;
   opacity: 1; /* 기본 상태는 흐림 */
   transition:
     transform 0.5s ease,
@@ -352,19 +387,18 @@ export default {
 /* 뉴스 섹션 스타일 */
 /* 뉴스 섹션 스타일 */
 .news-section {
-  margin-top: 20px;
   padding: 15px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  background-color: #f7f6f4;
+
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .news-section h3 {
   font-size: 18px;
   font-weight: bold;
-  color: #007bff;
+  color: #31869e;
   margin-bottom: 15px;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 2px solid #31869e;
   padding-bottom: 5px;
 }
 

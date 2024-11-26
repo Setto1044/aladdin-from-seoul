@@ -1,6 +1,6 @@
 <template>
   <div class="transport-info">
-    <h2 class="section-title">교통 정보</h2>
+    <h2 class="section-title">🚌 교통 정보</h2>
 
     <div class="bus-info">
       <h3 class="sub-title">버스 정류장 (총 {{ busCount }}개)</h3>
@@ -153,9 +153,9 @@ export default {
     addMarkers() {
       this.clearMarkers() // Ensure no duplicate markers
 
-      var markerImage = new kakao.maps.MarkerImage(
-        'https://cdn-icons-png.flaticon.com/512/5860/5860579.png',
-        new kakao.maps.Size(31, 35),
+      var busMarkerImage = new kakao.maps.MarkerImage(
+        'https://map.pstatic.net/resource/api/v2/image/maps/selected-marker/bus_stop.png?version=3',
+        new kakao.maps.Size(43, 57),
         new kakao.maps.Point(13, 34),
       )
       this.busMarkers = this.busStations.map((station) => {
@@ -164,17 +164,22 @@ export default {
           position,
           map: this.mapInstance,
         })
-        marker.setImage(markerImage)
+        marker.setImage(busMarkerImage)
         return marker
       })
 
+      var subwayMarkerImage = new kakao.maps.MarkerImage(
+        'https://map.pstatic.net/resource/api/v2/image/maps/selected-marker/subway.png?version=11',
+        new kakao.maps.Size(43, 57),
+        new kakao.maps.Point(13, 34),
+      )
       this.subwayMarkers = this.subwayStations.map((station) => {
         const position = new kakao.maps.LatLng(station.y, station.x)
         const marker = new kakao.maps.Marker({
           position,
           map: this.mapInstance,
         })
-        marker.setImage(markerImage)
+        marker.setImage(subwayMarkerImage)
         return marker
       })
 
@@ -222,11 +227,8 @@ export default {
 <style scoped>
 /* 전체 컨테이너 스타일 */
 .transport-info {
-  font-family: 'Arial', sans-serif;
   padding: 15px;
   background-color: #f9f9f9;
-  border-radius: 6px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
   color: #333;
 }
 
@@ -234,9 +236,9 @@ export default {
 .section-title {
   font-size: 20px;
   font-weight: bold;
-  color: #007bff;
+  color: #2053d2;
   margin-bottom: 15px;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 2px solid #2053d2;
   padding-bottom: 8px;
 }
 
@@ -277,10 +279,10 @@ export default {
   font-size: 14px;
 }
 
-.station-item:hover {
+/* .station-item:hover {
   transform: translateY(-2px);
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
-}
+} */
 
 /* 정류장 이름 스타일 */
 .station-name {

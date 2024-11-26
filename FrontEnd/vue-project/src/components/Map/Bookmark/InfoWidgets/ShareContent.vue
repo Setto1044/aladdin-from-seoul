@@ -2,9 +2,15 @@
   <div class="share-content">
     <div class="modal-content property-detail" @click.stop>
       <div class="expandable-content" :class="{ expanded: isExpanded }" ref="content">
+        <h2 class="property-title">✏️ {{ title }}</h2>
         <!-- Main Image Slider -->
         <div class="carousel-wrapper">
-          <Carousel :items-to-show="1" :wrap-around="true" v-model="currentSlide">
+          <Carousel
+            v-if="imageUrls.length > 0"
+            :items-to-show="1"
+            :wrap-around="true"
+            v-model="currentSlide"
+          >
             <Slide v-for="(url, index) in imageUrls" :key="index">
               <div class="slider-image-container">
                 <img :src="url" alt="Property Image" class="slider-image" />
@@ -30,32 +36,30 @@
           <span class="author-name">{{ hostNickname }}</span>
         </div>
 
-        <h2 class="property-title">{{ title }}</h2>
         <p class="property-address">{{ address }}</p>
 
         <div class="property-detail-container">
           <p class="property-detail-text">
-            <strong>Details:</strong>
             <span v-if="isExpanded || !isOverflowing" class="detail-content" ref="detailContent">
               {{ detail }}
-              <span class="more-link" @click="toggleContent">간략히 보기</span>
+              <span v-if="isOverflowing" class="more-link" @click="toggleContent">간략히 보기</span>
             </span>
             <span v-else class="detail-content truncated" ref="detailContent">
               {{ detail.substring(0, 50) }}...
-              <span class="more-link" @click="toggleContent">더 보기</span>
+              <span v-if="isOverflowing" class="more-link" @click="toggleContent">더 보기</span>
             </span>
           </p>
         </div>
 
-        <p class="property-size"><strong>House Size:</strong> {{ houseSize }} m²</p>
-        <p class="property-price"><strong>Price:</strong> ${{ price }} / {{ pricePer }}</p>
+        <span class="property-size property-tag">{{ houseSize }} m²</span>⠀
+        <span class="property-price property-tag"
+          >{{ price }}만 원/{{ pricePer == 'WEEK' ? '주당' : '월당' }}</span
+        >
         <!-- Rent Dates with Calendar -->
         <div class="calendar-section">
-          <p class="property-rent-dates">
-            <strong>Rent From:</strong> {{ formattedRentFrom }} <br />
-            <strong>Rent To:</strong> {{ formattedRentTo }}
-          </p>
+          <p class="property-rent-dates">[ {{ formattedRentFrom }} ~ {{ formattedRentTo }} ]</p>
           <VCalendar
+            trim-weeks
             v-if="initialPage"
             class="full-width-calendar"
             :attributes="calendarAttrs"
@@ -64,12 +68,10 @@
             :max-page="maxPage"
             :color="calendarColor"
           />
+          <p class="property-tags">
+            <span v-for="tag in tags" :key="tag" class="property-tag">#{{ tag }}</span>
+          </p>
         </div>
-
-        <p class="property-tags">
-          <strong>Tags:</strong>
-          <span v-for="tag in tags" :key="tag" class="property-tag">{{ tag }}</span>
-        </p>
       </div>
     </div>
   </div>
@@ -242,45 +244,43 @@ export default {
 </script>
 
 <style scoped>
-.modal-content {
+.share-content {
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  height: 30%;
-  /* max-height: 90vh; 최대 높이 설정 */
+  max-width: 600px;
   padding: 10px;
-  position: relative;
+  margin: 0 auto;
 }
 
-.share-content {
-  padding: 16px;
+.modal-content {
   background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 0 auto;
+  height: 30%;
+  /* max-height: 90vh; 최대 높이 설정 */
+  position: relative;
 }
 
 .carousel-wrapper {
   width: 100%;
-  max-width: 400px;
+  height: 120px;
   margin-bottom: 16px;
+  background-color: #f0f0f0;
 }
 
 .slider-image-container {
-  width: 100%;
-  height: 240px;
+  width: 100%; /* 부모 요소의 너비에 맞춤 */
+  height: 120px; /* 고정된 높이 설정 */
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  border-radius: 8px;
+  overflow: hidden; /* 틀을 벗어난 부분 숨김 */
+  border-radius: 8px; /* 모서리 둥글게 처리 */
+  background-color: #f0f0f0; /* 배경색 추가 (이미지 로드 전 대비) */
 }
 
 .slider-image {
-  width: auto;
-  height: 100%;
-  object-fit: cover;
+  width: auto; /* 가로를 자동 조정 */
+  height: 100%; /* 슬라이더 틀의 높이에 맞춤 */
+  object-fit: cover; /* 이미지 비율 유지하며 틀에 맞춤 */
 }
 
 .thumbnails-wrapper {
@@ -330,17 +330,28 @@ export default {
 }
 
 .property-title {
-  font-size: 20px;
+  font-size: clamp(8px, 2vw, 20px); /* 최소 16px, 최대 20px */
   font-weight: bold;
-  margin-bottom: 8px;
+  color: #d03d3e;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #d03d3e;
+  padding-bottom: 8px;
 }
 
-.property-address,
-.property-detail-text,
+.property-address {
+  font-size: 14px;
+  margin: 0px;
+  color: #666;
+}
+
 .property-size,
 .property-price {
+  font-size: 12px;
+}
+
+.property-detail-text {
   font-size: 14px;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .calendar-section {
@@ -349,6 +360,7 @@ export default {
   padding: 16px;
   background-color: #f8f9fa;
   border-radius: 8px;
+  text-align: center;
 }
 
 .property-tags {
@@ -443,7 +455,7 @@ export default {
   }
 
   .more-link {
-    color: #007bff; /* 버튼처럼 보이지 않게 링크 스타일 */
+    color: #ff0800; /* 버튼처럼 보이지 않게 링크 스타일 */
     font-weight: bold;
     cursor: pointer;
     display: inline;

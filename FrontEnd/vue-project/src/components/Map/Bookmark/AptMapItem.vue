@@ -130,7 +130,7 @@ export default {
 }
 
 .property-item:hover {
-  transform: scale(1.02); /* 살짝 확대 */
+  transform: scale(1, 1.02); /* 살짝 확대 */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 강조 */
   cursor: pointer; /* 마우스 포인터 변경 */
 }

@@ -38,30 +38,40 @@
           <!-- Sidebar 2 내부 콘텐츠 -->
           <!-- Pass property details as props -->
           <!-- <PropertyDetails :property="selectedItem" /> -->
-          <section class="sidebar-content">
-            <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
-            <ContentDisplayPanel
-              v-if="share"
-              :tab="apt"
-              :id="selectedItem.item.roomBoardVo.id"
-              :item="selectedItem"
-            />
-            <NearbyStopsPanel
-              ref="nearbyStopsPanel"
-              :key="`nearby-${isSidebar2Open}`"
-              :lat="selectedItem.latitude"
-              :lng="selectedItem.longitude"
-              :mapInstance="mapInstance"
-              :isSidebarOpen="isSidebar2Open"
-              :selectedItem="selectedItem"
-              @beforeClose="handleBeforeCloseSidebar"
-            />
-            <TrafficHeatPanel
-              :lat="selectedItem.latitude"
-              :lng="selectedItem.longitude"
-            ></TrafficHeatPanel>
-            <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
-          </section>
+          <div class="real-estate-detail">
+            <section class="sidebar-content">
+              <div class="sidebar-content-item">
+                <ContentDisplayPanel v-if="apt" :tab="apt" :item="selectedItem" />
+                <ContentDisplayPanel
+                  v-if="share"
+                  :tab="apt"
+                  :id="selectedItem.item.roomBoardVo.id"
+                  :item="selectedItem"
+                />
+              </div>
+              <div class="sidebar-content-item">
+                <NearbyStopsPanel
+                  ref="nearbyStopsPanel"
+                  :key="`nearby-${isSidebar2Open}`"
+                  :lat="selectedItem.latitude"
+                  :lng="selectedItem.longitude"
+                  :mapInstance="mapInstance"
+                  :isSidebarOpen="isSidebar2Open"
+                  :selectedItem="selectedItem"
+                  @beforeClose="handleBeforeCloseSidebar"
+                />
+              </div>
+              <div class="sidebar-content-item">
+                <TrafficHeatPanel
+                  :lat="selectedItem.latitude"
+                  :lng="selectedItem.longitude"
+                ></TrafficHeatPanel>
+              </div>
+              <div class="sidebar-content-item">
+                <LocalReviewPanel :selectedItem="selectedItem"></LocalReviewPanel>
+              </div>
+            </section>
+          </div>
         </Sidebar>
       </div>
       <!-- Map -->
@@ -269,12 +279,24 @@ export default {
 </script>
 
 <style scoped>
+.real-estate-detail {
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: calc(100vh); /* Subtract nav bar height  var(--nav-height)*/
+  display: flex;
+  flex-direction: column;
+}
 .sidebar-container {
   display: flex; /* Flexbox를 사용해 가로 정렬 */
   flex-direction: row; /* 사이드바를 가로로 나란히 배치 */
   width: 100%;
-  height: 100%; /* 전체 높이를 차지 */
 }
+
+.sidebar-content-item {
+  /* padding: 12px; */
+  border-bottom: 1px solid #ddd;
+}
+
 /* Main container */
 .property-map {
   display: flex;
@@ -310,7 +332,7 @@ export default {
 }
 
 .sidebar-content {
-  margin-top: 5px;
+  /* margin-top: 5px; */
   flex-grow: 1;
   overflow-y: auto;
   position: relative;
@@ -325,7 +347,6 @@ export default {
   z-index: 10; /* 다른 요소보다 위에 표시 */
   position: sticky; /* 스크롤 시 고정 */
   top: 0; /* 상단에서 0px 위치에 고정 */
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 스크롤 시 시각적 구분 */
 }
 
 .tab span {

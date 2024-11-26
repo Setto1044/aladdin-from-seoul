@@ -198,7 +198,7 @@ export default {
             const content = `<div class="custom-overlay-share">
                 <div class="overlay-content-share">
                   <div class="overlay-title-share">${board.roomBoardVo.title}</div>
-                  <div class="overlay-price-share">${board.roomBoardVo.pricePer} ${board.roomBoardVo.price} 만원</div>
+                  <div class="overlay-price-share">${board.roomBoardVo.pricePer == 'WEEK' ? '주당' : '월당'} ${board.roomBoardVo.price} 만원</div>
                 </div>
                 <div class="overlay-tail-share"></div>
               </div>
@@ -289,9 +289,8 @@ export default {
 <style scoped>
 .real-estate-detail {
   background: white;
-  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 100%;
+  height: calc(100vh - 108px); /* Subtract nav bar height  var(--nav-height)*/
   display: flex;
   flex-direction: column;
 }

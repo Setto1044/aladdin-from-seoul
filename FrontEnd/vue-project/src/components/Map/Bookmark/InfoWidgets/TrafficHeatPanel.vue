@@ -2,39 +2,62 @@
   <div class="traffic-info">
     <!-- 혼잡도 정보 -->
     <div class="traffic-content">
-      <h3 class="title">혼잡도 정보</h3>
-      <button class="action-button" @click="toggleModal">모달 열기</button>
+      <h3 class="traffic-title">
+        🚥 혼잡도 정보
+        <button class="action-button-inline" @click="toggleModal">🔍︎주소</button>
+      </h3>
 
       <div v-if="loading" class="loading-message">로딩 중...</div>
       <div v-if="error" class="error-message">{{ error }}</div>
 
       <div v-if="paths.length" class="results">
-        <h4 class="results-title">검색 결과:</h4>
         <div class="results-container">
-          <div v-for="(path, index) in paths" :key="index" class="result-item">
-            <div class="result-header">
-              <p>
-                <strong>경로 {{ index + 1 }}:</strong>
-              </p>
-              <p>총 소요: {{ path.info.totalTime }}분, 거리: {{ path.info.totalDistance }}m</p>
-            </div>
-            <SubwayLine v-if="path.pathType === 1" :stations="uiPaths[index]" />
-            <div class="result-details">
-              <div v-for="(subPath, i) in path.subPath" :key="i">
-                <p v-if="subPath.trafficType === 1">
-                  <span class="label">지하철:</span> {{ getSubwayInfo(subPath) }}
-                </p>
-                <p v-if="subPath.trafficType === 2">
-                  <span class="label">버스:</span> {{ getBusInfo(subPath) }}
-                </p>
-                <p v-if="subPath.trafficType === 3">
-                  <span class="label">도보:</span> {{ subPath.distance }}m ({{
-                    subPath.sectionTime
-                  }}분)
-                </p>
+          <Carousel v-bind="config">
+            <Slide v-for="(path, index) in paths" :key="index" class="result-item">
+              <div class="result-card">
+                <div class="result-header">
+                  <p>
+                    <strong>[경로 {{ index + 1 }}] </strong>
+                  </p>
+                  <p>
+                    총 소요: {{ path.info.totalTime }}분 ({{
+                      (path.info.totalDistance / 1000).toFixed(2)
+                    }}km)
+                  </p>
+                </div>
+
+                <div class="subway-line-draggable">
+                  <SubwayLine
+                    v-if="path.pathType === 1"
+                    :stations="uiPaths[index]"
+                    class="subway-line"
+                  />
+                </div>
+
+                <div class="result-details">
+                  <div v-for="(subPath, i) in path.subPath" :key="i" class="subpath-info">
+                    <p>
+                      <span class="label" v-if="subPath.trafficType === 1">지하철:</span>
+                      <span class="label" v-if="subPath.trafficType === 2">버스:</span>
+                      <span class="label" v-if="subPath.trafficType === 3">도보:</span>
+                      <template v-if="subPath.trafficType === 1">{{
+                        getSubwayInfo(subPath)
+                      }}</template>
+                      <template v-if="subPath.trafficType === 2">{{
+                        getBusInfo(subPath)
+                      }}</template>
+                      <template v-if="subPath.trafficType === 3">
+                        {{ subPath.distance }}m ({{ subPath.sectionTime }}분)
+                      </template>
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </Slide>
+            <template #addons>
+              <Navigation />
+            </template>
+          </Carousel>
         </div>
       </div>
     </div>
@@ -50,6 +73,9 @@
 import SearchModal from '@/components/Map/Bookmark/InfoWidgets/TrafficSearchModal.vue'
 import SubwayLine from '@/components/Map/Bookmark/InfoWidgets/SubwayLine.vue'
 import axios from 'axios'
+import 'vue3-carousel/dist/carousel.css'
+import { Carousel, Slide, Navigation } from 'vue3-carousel'
+import { ref } from 'vue'
 
 const lineColors = {
   '수도권 1호선': '#1E90FF', // 파란색
@@ -62,21 +88,28 @@ const lineColors = {
   '수도권 8호선': '#FF69B4', // 핑크색
   '수도권 9호선': '#DC143C', // 빨간색
   '수도권 공항철도': '#00CED1', // 청록색
-  신분당선: '#FF4500', // 진한 주황색
+  '수도권 신분당선': '#FF4500', // 진한 주황색
 }
 
 function getColorByLineName(lineName) {
-  return lineColors[lineName] || '#000000' // 기본값은 검은색
+  return lineColors[lineName] || '#ADB5BD' // 기본값은
 }
 
 export default {
-  components: { SearchModal, SubwayLine },
+  components: { SearchModal, SubwayLine, Carousel, Slide, Navigation },
   props: {
     lat: { type: String, required: true },
     lng: { type: String, required: true },
   },
   data() {
     return {
+      config: {
+        itemsToShow: 1, // 한 화면에 보여줄 카드 수
+        wrapAround: true, // 순환 슬라이더
+        transition: 500, // 슬라이드 전환 속도
+        pauseAutoplayOnHover: true,
+        mouseDrag: false, // 마우스 드래그 비활성화
+      },
       showModal: true,
       paths: [], // 경로 데이터
       allPaths: [], // 정제된 경로
@@ -163,6 +196,7 @@ export default {
       return paths.map((path) =>
         path.map((station) => {
           const matchingCongest = mappedCongests.find((item) => item.name === station.stationName)
+          console.log(matchingCongest, station)
           return {
             name: station.stationName,
             color: getColorByLineName(station.lineName), // 호선 기반 색상
@@ -223,12 +257,38 @@ export default {
 </script>
 
 <style scoped>
+.traffic-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #92bf3d;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #92bf3d;
+  padding-bottom: 8px;
+}
+
+.action-button-inline {
+  background: none; /* 배경 제거 */
+  border: none; /* 테두리 제거 */
+  color: #2053d2; /* 텍스트 색상 (파란색으로 강조) */
+  font-size: 16px; /* 부모 요소의 글자 크기를 상속 */
+  font-weight: normal; /* 일반 텍스트와 유사하게 보이도록 설정 */
+  cursor: pointer; /* 클릭 가능하다는 느낌 제공 */
+  padding: 0; /* 여백 제거 */
+  text-decoration: underline dotted; /* 점선 밑줄로 강조 */
+  margin-left: 5px; /* 제목과 간격 조정 */
+  display: inline; /* 텍스트처럼 인라인으로 배치 */
+  transition: color 0.3s ease; /* 색상 변경 효과 */
+}
+
+.action-button-inline:hover {
+  color: #103a91; /* 호버 시 색상 진하게 변경 */
+  text-decoration: underline; /* 밑줄 강조 */
+}
+
 .traffic-info {
   position: relative;
-  height: 450px;
+  height: 570px;
   background: #f5f7fa;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
@@ -248,8 +308,7 @@ export default {
 
 .results-container {
   flex-grow: 1;
-  overflow-y: auto;
-  padding: 10px;
+  height: 455px;
   background-color: #ffffff;
   border-radius: 8px;
   border: 1px solid #e4e8ee;
@@ -324,8 +383,72 @@ export default {
   display: inline; /* 인라인 텍스트로 정렬 */
 }
 
+.result-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.result-header {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center; /* 중앙 정렬 */
+  white-space: nowrap; /* 한 줄로 표시 */
+  overflow: hidden; /* 넘치는 내용 숨김 */
+  text-overflow: ellipsis; /* 말줄임표 처리 */
+}
+
+.result-details {
+  flex-grow: 1; /* 가변적 내용 영역 */
+  height: 290px; /* 고정된 영역 크기 */
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  color: #333;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.subpath-info {
+  margin-bottom: 8px;
+}
+
 .label {
-  font-weight: 700;
-  color: #3a4f6c;
+  font-weight: bold;
+  margin-right: 5px;
+  color: #5c8126;
+}
+
+.subway-line-draggable {
+  display: flex;
+  overflow-x: auto; /* 수평 스크롤 활성화 */
+  gap: 10px;
+  cursor: grab; /* 드래그 가능 커서 */
+}
+
+.station-item {
+  min-width: 150px; /* 각 역의 최소 너비 */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.station-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.station-detail {
+  color: #666;
 }
 </style>

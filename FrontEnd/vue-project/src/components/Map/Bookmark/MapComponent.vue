@@ -117,7 +117,7 @@ onUnmounted(() => {
   background-color: #2c2c2c;
   border: 1px solid #444;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   font-size: 12px;
   overflow: hidden;
@@ -145,7 +145,7 @@ onUnmounted(() => {
   position: relative;
   background-color: #2c2c2c; /* 다크모드 배경색 */
   border: 1px solid #444; /* 다크모드 테두리색 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); /* 다크모드 그림자 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 다크모드 그림자 */
   overflow: visible; /* 말풍선 꼬리가 잘리지 않게 설정 */
   color: #f2f2f2; /* 다크모드 텍스트 색상 */
 }

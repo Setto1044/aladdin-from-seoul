@@ -1,10 +1,10 @@
 <template>
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-content">
-      <div class="title">주소 검색</div>
+      <div class="title">도착지의 주소 검색</div>
       <div class="address-input">
-        <input type="text" v-model="currentAddress" placeholder="Type your address..." />
-        <button @click="searchAddress">검색</button>
+        <input type="text" v-model="currentAddress" placeholder="출발지는 현재 조회 위치" />
+        <button class="address-button" @click="searchAddress">검색</button>
       </div>
 
       <!-- 검색 결과 -->
@@ -113,7 +113,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgb(218, 218, 218);
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -122,7 +122,6 @@ export default {
 .modal-content {
   background: white;
   border-radius: 8px;
-  width: 300px; /* 너비 줄이기 */
   max-width: 90%;
   text-align: center;
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
@@ -131,33 +130,56 @@ export default {
   overflow: auto; /* 콘텐츠가 넘칠 경우 스크롤 */
   max-height: 80vh; /* 최대 높이 제한 */
 }
-.address-input {
-  margin-bottom: 10px; /* 여백 줄이기 */
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #485f1e;
+  padding-bottom: 8px;
 }
+
+.address-input {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
 .address-input input {
-  width: calc(100% - 60px); /* 버튼 크기에 맞춰 동적 계산 */
-  padding: 8px;
-  margin-right: 10px;
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin-right: 10px;
+  box-sizing: border-box;
 }
-.address-input button {
-  padding: 8px 12px; /* 크기 줄이기 */
-  background: #007bff;
+
+.address-input .address-button {
+  height: 90%;
+  width: 95%;
+  padding: 8px 15px;
+  background-color: #4e4f54;
   color: white;
   border: none;
   border-radius: 4px;
+
+  font-size: 12px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-.address-input button:hover {
-  background: #0056b3;
+
+.address-input .address-button:hover {
+  background-color: #485f1e;
 }
 .results {
   text-align: left;
   margin-bottom: 10px;
   padding: 0;
   list-style-type: none;
-  max-height: 200px;
+  height: 200px;
   overflow-y: auto; /* 세로 스크롤 활성화 */
 }
 .result-item {
@@ -173,7 +195,7 @@ export default {
 }
 .result-item:hover {
   background: #f9f9f9; /* 배경색 변경 */
-  transform: scale(1.02); /* 약간 확대 */
+  transform: scale(1, 1.02); /* 약간 확대 */
 }
 .result-item p {
   margin: 0; /* 텍스트 여백 제거 */
