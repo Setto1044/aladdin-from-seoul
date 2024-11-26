@@ -82,6 +82,8 @@ export default {
   justify-content: right;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
+  background: #f5f5f5a9; /* 밝은 회색 배경 */
+  color: #000; /* 텍스트 색상 변경 */
 }
 
 .sidebar2 .close-button {
@@ -89,21 +91,23 @@ export default {
   justify-content: left;
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
+  background: #f5f5f5a9; /* 밝은 회색 배경 */
+  color: #000; /* 텍스트 색상 변경 */
 }
 
 .sidebar1 .close-button:hover {
   transform: translateX(10px);
   width: 40px; /* 버튼 너비 증가 */
-  background: #f5f5f5; /* 밝은 회색 배경 */
-  color: #000; /* 텍스트 색상 변경 */
+  background: #da2b2bab; /* 밝은 회색 배경 */
+  color: #ffffff; /* 텍스트 색상 변경 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.603); /* 그림자 */
 }
 
 .sidebar2 .close-button:hover {
   transform: translateX(-10px);
   width: 33px; /* 버튼 너비 증가 */
-  background: #f5f5f5; /* 밝은 회색 배경 */
-  color: #000; /* 텍스트 색상 변경 */
+  background: #da2b2bab; /* 밝은 회색 배경 */
+  color: #ffffff; /* 텍스트 색상 변경 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.603); /* 그림자 */
 }
 </style>

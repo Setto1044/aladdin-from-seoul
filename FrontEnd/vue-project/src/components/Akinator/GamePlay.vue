@@ -14,10 +14,18 @@
     <div v-else class="chat-container">
       <div class="chat-box">
         <!-- 채팅 메시지 -->
-        <div v-for="(message, index) in chatMessages" :key="index"
-          :class="['message', message.isUser ? 'user-message' : 'bot-message']">
+        <div
+          v-for="(message, index) in chatMessages"
+          :key="index"
+          :class="['message', message.isUser ? 'user-message' : 'bot-message']"
+        >
           <!-- 프로필 이미지 -->
-          <img v-if="message.isUser" src="./user-avatar.png" alt="User Avatar" class="avatar user-avatar" />
+          <img
+            v-if="message.isUser"
+            src="./user-avatar.png"
+            alt="User Avatar"
+            class="avatar user-avatar"
+          />
           <img v-else src="./bot-avatar.png" alt="Bot Avatar" class="avatar bot-avatar" />
           <!-- 말풍선 -->
           <div class="bubble">
@@ -190,7 +198,7 @@ export default {
                 role: 'system',
                 content: `당신은 서울시 자치구 추천 시스템입니다. 
                 다음 대화 내용 ${answerHistory} 중 질문과
-                사용자의 답변을 바탕으로 가장 적합한 서울시 자치구를 추천합니다.`
+                사용자의 답변을 바탕으로 가장 적합한 서울시 자치구를 추천합니다.`,
               },
               {
                 role: 'user',
@@ -204,18 +212,17 @@ export default {
             headers: {
               Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
             },
-          }
+          },
         )
 
         this.result = response.data.choices[0].message.content.trim()
-        this.addBotMessage("추천 장소를 말씀드리죠.")
+        this.addBotMessage('추천 장소를 말씀드리죠.')
       } catch (error) {
         console.error('Error fetching result:', error)
         this.addBotMessage('죄송합니다. 결과를 가져오는 데 실패했습니다.')
       }
     },
     addBotMessage(text) {
-
       this.chatMessages.push({ text, isUser: false })
     },
     addUserMessage(text) {
@@ -229,7 +236,7 @@ export default {
       this.result = null
     },
     async handleResultClick(address) {
-      address = "서울특별시 " + this.removeQuotes(address)
+      address = '서울특별시 ' + this.removeQuotes(address)
       console.log(address)
 
       try {
@@ -277,9 +284,9 @@ export default {
       }
     },
     removeQuotes(str) {
-      if (!str) return ''; // null 또는 undefined 처리
-      return str.replace(/^["']|["']$/g, '');
-    }
+      if (!str) return '' // null 또는 undefined 처리
+      return str.replace(/^["']|["']$/g, '')
+    },
   },
 }
 </script>
@@ -289,9 +296,11 @@ export default {
 .Akinator-Game {
   text-align: center;
   font-family: Arial, sans-serif;
-  height: 565px;
-  max-width: 600px;
+  height: calc(100vh); /* Subtract nav bar height  - var(--nav-height)*/
+  width: 100%;
   margin: 0 auto;
+  background-color: #007bff;
+  padding: 20px;
 }
 
 .chat-header {
