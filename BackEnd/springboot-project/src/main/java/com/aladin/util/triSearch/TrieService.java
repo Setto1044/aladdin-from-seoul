@@ -24,14 +24,16 @@ public class TrieService {
 	public void initializeTrieSearch() {
 		// Fetch data from the database using AptMapper
 		List<DongCodeVo> dongCodes = triMapper.findAllDongCodes();
-		List<HouseCardVo> houseCardVos = triMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
-		// Insert data into TrieSearch
-		for (DongCodeVo apt : dongCodes) {
-			TrieSearch.insert(apt.getDongCode(), apt.getSidoName() + " " + apt.getGugunName() + " " + apt.getDongName());
+
+		for (DongCodeVo dongcodeVo : dongCodes) {
+			TrieSearch.insert(dongcodeVo.getDongCode(), dongcodeVo.getDongName() + " " + dongcodeVo.getSidoName() + " " + dongcodeVo.getGugunName());
 		}
-		for (HouseCardVo houseCardVo : houseCardVos) {
-			TrieSearch.insert(houseCardVo.getDongCode(), houseCardVo.getAptName());
+
+		List<HouseCardVo> housecards = triMapper.findAllAptSeqAndAptNameOfHouseCardsInSeoul();
+		for (HouseCardVo housecard : housecards) {
+			TrieSearch.insert(housecard.getAptSeq(), housecard.getAptName());
 		}
+
 	}
 
 	public List<String> searchKeywords(String keyword) {
