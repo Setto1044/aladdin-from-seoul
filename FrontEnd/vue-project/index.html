@@ -1,19 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0e288718588d113b05e09a2a447b4df7&libraries=services,clusterer"
+    ></script>
 
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="text/javascript"
-    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0e288718588d113b05e09a2a447b4df7&libraries=services,clusterer"></script>
-  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <title>알라딘 프롬 서울</title>
-</head>
+    <link rel="stylesheet" type="text/css" href="fullpage.css" />
 
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <script type="text/javascript" src="fullpage.js"></script>
+    <title>알라딘 프롬 서울</title>
+  </head>
 
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  </body>
 </html>

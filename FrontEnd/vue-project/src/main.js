@@ -9,6 +9,8 @@ import VCalendar from 'v-calendar'
 import App from './App.vue'
 import router from './router'
 
+import VueFullPage from 'vue-fullpage.js' // 여기!
+
 // No need for dotenv in the browser
 console.log(import.meta.env.VITE_ODSAY_DEV_API_KEY) // Access environment variables
 
@@ -22,5 +24,6 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 app.use(VCalendar, {})
+app.use(VueFullPage)
 
 app.mount('#app')

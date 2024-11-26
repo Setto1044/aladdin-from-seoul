@@ -1,61 +1,66 @@
 <template>
   <div class="Akinator-Game">
-    <!-- 게임 제목 -->
-    <div class="chat-header">
-      <h1>Akinator Chat</h1>
+    <div class="top-left-image">
+      <img src="@/assets/genie.png" alt="Bottom Left Decoration" />
     </div>
+    <div class="akinator-chat">
+      <!-- 게임 제목 -->
+      <div class="chat-header">
+        <h1>지니 와의 대화방</h1>
+      </div>
 
-    <!-- 시작 버튼 -->
-    <div v-if="!isGameStarted" class="start-screen">
-      <button @click="startGame" class="start-button">게임 시작</button>
-    </div>
+      <!-- 시작 버튼 -->
+      <div v-if="!isGameStarted" class="start-screen">
+        <button @click="startGame" class="start-button">시작</button>
+      </div>
 
-    <!-- 채팅 화면 -->
-    <div v-else class="chat-container">
-      <div class="chat-box">
-        <!-- 채팅 메시지 -->
-        <div
-          v-for="(message, index) in chatMessages"
-          :key="index"
-          :class="['message', message.isUser ? 'user-message' : 'bot-message']"
-        >
-          <!-- 프로필 이미지 -->
-          <img
-            v-if="message.isUser"
-            src="./user-avatar.png"
-            alt="User Avatar"
-            class="avatar user-avatar"
-          />
-          <img v-else src="./bot-avatar.png" alt="Bot Avatar" class="avatar bot-avatar" />
-          <!-- 말풍선 -->
-          <div class="bubble">
-            <p v-html="message.text" class="bubble-text"></p>
+      <!-- 채팅 화면 -->
+      <div v-else class="chat-container">
+        <div ref="chatBox" class="chat-box">
+          <!-- 채팅 메시지 -->
+          <div
+            v-for="(message, index) in chatMessages"
+            :key="index"
+            :class="['message', message.isUser ? 'user-message' : 'bot-message']"
+          >
+            <!-- 프로필 이미지 -->
+            <img
+              v-if="message.isUser"
+              src="./user-avatar.png"
+              alt="User Avatar"
+              class="avatar user-avatar"
+            />
+            <img v-else src="./bot-avatar.png" alt="Bot Avatar" class="avatar bot-avatar" />
+            <!-- 말풍선 -->
+            <div class="bubble">
+              <p v-html="message.text" class="bubble-text"></p>
+            </div>
+          </div>
+
+          <!-- 로딩 상태 -->
+          <div v-if="isLoading" class="loading">
+            <p>입력 중...</p>
           </div>
         </div>
 
-        <!-- 로딩 상태 -->
-        <div v-if="isLoading" class="loading">
-          <p>입력 중...</p>
+        <!-- 응답 입력 버튼 -->
+        <div v-if="!result" class="input-container">
+          <button @click="handleAnswer('예')" class="input-button">예</button>
+          <button @click="handleAnswer('아니오')" class="input-button">아니오</button>
+          <button @click="handleAnswer('모르겠음')" class="input-button">모르겠음</button>
         </div>
-      </div>
 
-      <!-- 응답 입력 버튼 -->
-      <div v-if="!result" class="input-container">
-        <button @click="handleAnswer('예')" class="input-button">예</button>
-        <button @click="handleAnswer('아니오')" class="input-button">아니오</button>
-        <button @click="handleAnswer('모르겠음')" class="input-button">모르겠음</button>
-      </div>
-
-      <!-- 결과 및 다시 시작 -->
-      <div v-if="result" class="result-section">
-        <div class="message bot-message">
-          <div class="bubble">
-            <!-- <p>{{ result }}</p> -->
-            당신에게 딱 맞는 장소:
-            <a href="#" @click.prevent="handleResultClick(result)">{{ result }}</a>
+        <!-- 결과 및 다시 시작 -->
+        <div v-if="result" class="result-section">
+          <div class="message bot-message">
+            <div class="bubble">
+              <!-- <p>{{ result }}</p> -->
+              당신에게 딱 맞는 장소:
+              <a href="#" @click.prevent="handleResultClick(result)">{{ result }}</a>
+            </div>
           </div>
+          <button @click="restartGame" class="restart-button">다시 시작</button>
         </div>
-        <button @click="restartGame" class="restart-button">다시 시작</button>
       </div>
     </div>
   </div>
@@ -224,9 +229,20 @@ export default {
     },
     addBotMessage(text) {
       this.chatMessages.push({ text, isUser: false })
+      this.scrollToBottom()
     },
     addUserMessage(text) {
       this.chatMessages.push({ text, isUser: true })
+      this.scrollToBottom()
+    },
+    scrollToBottom() {
+      // 스크롤 박스를 자동으로 맨 아래로 이동
+      this.$nextTick(() => {
+        const chatBox = this.$refs.chatBox
+        if (chatBox) {
+          chatBox.scrollTop = chatBox.scrollHeight
+        }
+      })
     },
     restartGame() {
       this.isGameStarted = false
@@ -294,20 +310,33 @@ export default {
 <style scoped>
 /* 공통 스타일 */
 .Akinator-Game {
-  text-align: center;
-  font-family: Arial, sans-serif;
-  height: calc(100vh); /* Subtract nav bar height  - var(--nav-height)*/
-  width: 100%;
-  margin: 0 auto;
-  background-color: #007bff;
+  font-family: 'Roboto', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* 부드러운 그라데이션 배경 */
   padding: 20px;
 }
 
+.akinator-chat {
+  width: 90%;
+  max-width: 500px;
+  height: 700px;
+  background-color: #ffffff; /* 깔끔한 흰색 배경 */
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* 은은한 그림자 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-header {
-  background-color: #007bff;
+  background-color: #4a90e2; /* 현대적인 블루 */
   color: white;
-  padding: 10px;
-  border-radius: 8px 8px 0 0;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 /* 말풍선 스타일 */
@@ -316,8 +345,8 @@ export default {
   flex-direction: column;
   gap: 10px;
   margin: 10px;
-  height: 400px;
-  max-height: 400px;
+  height: 500px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
@@ -341,6 +370,7 @@ export default {
   border-radius: 15px;
   word-break: break-word;
   position: relative;
+  text-align: left;
 }
 
 .bubble-text {
@@ -348,13 +378,13 @@ export default {
 }
 
 .user-message .bubble {
-  background-color: #daf8cb;
+  background-color: #fff79b;
   color: #333;
   border-radius: 15px 15px 0 15px;
 }
 
 .bot-message .bubble {
-  background-color: #e8e8e8;
+  background-color: #f5f9ff;
   color: #333;
   border-radius: 15px 15px 15px 0;
 }
@@ -372,6 +402,14 @@ export default {
 
 .bot-avatar {
   margin-right: 10px;
+}
+
+/* 시작 버튼 스타일 */
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* 채팅 박스 중앙 정렬 */
 }
 
 /* 시작 버튼 */
@@ -401,6 +439,15 @@ export default {
 .start-button:active {
   transform: scale(0.95);
   /* 클릭 시 축소 */
+}
+
+/* 응답 버튼 컨테이너 */
+.input-container {
+  display: flex;
+  justify-content: space-between; /* 버튼을 균등하게 배치 */
+  padding: 10px 20px;
+  background-color: #f1f1f1;
+  border-top: 1px solid #ddd;
 }
 
 /* 응답 입력 버튼 */
@@ -440,16 +487,14 @@ export default {
   font-size: 16px;
   padding: 10px 20px;
   background-color: #8e24aa;
-  /* 보라색 */
   color: white;
   border: none;
   border-radius: 25px;
-  /* 둥근 버튼 */
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition:
-    transform 0.3s ease,
-    background-color 0.3s ease;
+    transform 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .restart-button:hover {
