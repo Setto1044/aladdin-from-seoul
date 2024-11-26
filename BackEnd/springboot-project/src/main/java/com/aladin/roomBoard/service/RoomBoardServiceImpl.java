@@ -156,4 +156,9 @@ public class RoomBoardServiceImpl implements RoomBoardService {
 		return boardMapper.findTop3ViewsBoardCard();
 	}
 
+	@Override
+	public List<RoomBoardCardDto> findBoardCardsByUsername(String usermame) {
+		return boardMapper.findBoardCardsByUsername(usermame);
+	}
+
 }

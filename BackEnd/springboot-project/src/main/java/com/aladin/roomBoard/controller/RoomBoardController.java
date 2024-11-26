@@ -39,8 +39,7 @@ public class RoomBoardController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId,
-			@RequestParam(defaultValue = "10") Long pageSize) {
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> getBoardsByCursor(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") Long pageSize) {
 		List<RoomBoardCardDto> boardCards = boardService.findBoardsByCursor(cursorId, pageSize);
 		if (boardCards == null || boardCards.isEmpty()) {
 			throw new ResourceNotFoundException("게시물이 존재하지 않습니다.");
@@ -99,4 +98,9 @@ public class RoomBoardController {
 		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", boards));
 	}
 
+	@GetMapping("/my/{username}")
+	public ResponseEntity<ApiResponseDto<List<RoomBoardCardDto>>> findBoardCardsByUsername(@PathVariable String username) {
+		List<RoomBoardCardDto> boards = boardService.findBoardCardsByUsername(username);
+		return ResponseEntity.ok(ApiResponseDto.of(true, "거래 통계 조회 성공", boards));
+	}
 }
