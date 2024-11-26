@@ -41,33 +41,44 @@
           <div
             class="author-avatar"
             :style="{
-              backgroundImage: `url(${authorImageUrl || 'https://via.placeholder.com/150'})`,
+              backgroundImage: `url(${authorImageUrl || './basic/basic2.jpg'})`,
             }"
           ></div>
         </div>
         <span class="author-name">{{ hostNickname }}</span>
         <div class="action-buttons">
-          <button v-if="isAuthor" class="edit-button" @click.stop="goToEditPage">Edit</button>
-          <button v-if="isAuthor" class="delete-button" @click.stop="goToDeletePage">Delete</button>
+          <p class="property-views">{{ views }}회 조회</p>
+          <button v-if="isAuthor" class="edit-button" @click.stop="goToEditPage">수정</button>
+          <button v-if="isAuthor" class="delete-button" @click.stop="goToDeletePage">삭제</button>
           <!-- username이 있을, isAuthor 아닐 때만 즐겨찾기 버튼 표시 -->
-          <button v-else class="favorite-button" @click="toggleBookmark(id)">
-            <span v-if="isBookmarked">★</span>
-            <span v-else>☆</span>
+          <button
+            v-if="!isAuthor && userStore.memberInfo.username"
+            class="favorite-button"
+            @click="toggleBookmark(id)"
+          >
+            <button class="bookmark-button on-bookmark-button" v-if="isBookmarked">
+              <img src="@/assets/button/bookmark-on.png" alt="btnImages" class="btnImages" />
+            </button>
+            <button class="bookmark-button off-bookmark-button" v-else>
+              <img src="@/assets/button/bookmark-off.png" alt="btnImages" class="btnImages" />
+            </button>
           </button>
         </div>
       </div>
 
       <h2 class="property-title">{{ title }}</h2>
-      <p class="property-address">{{ address }}</p>
-      <p class="property-detail-text"><strong>Details:</strong> {{ detail }}</p>
-      <p class="property-size"><strong>House Size:</strong> {{ houseSize }} m²</p>
-      <p class="property-price"><strong>Price:</strong> ${{ price }} / {{ pricePer }}</p>
+      <p class="property-tags">
+      <p class="property-address">{{ address }}⠀</p>
+      <span class="property-size property-tag">{{ houseSize }} m²</span>
+      <span class="property-price property-tag">
+        {{ price }}만 원/{{ pricePer == 'WEEK' ? '주당' : '월당' }}
+      </span>
+      </p>
+      <p class="property-detail-text">{{ detail }}</p>
+
       <!-- Rent Dates with Calendar -->
       <div class="calendar-section">
-        <p class="property-rent-dates">
-          <strong>Rent From:</strong> {{ formattedRentFrom }} <br />
-          <strong>Rent To:</strong> {{ formattedRentTo }}
-        </p>
+        <p class="property-rent-dates">[ {{ formattedRentFrom }} ~ {{ formattedRentTo }} ]</p>
         <VCalendar
           v-if="initialPage"
           :attributes="calendarAttrs"
@@ -80,9 +91,9 @@
 
       <p class="property-tags">
         <strong>Tags:</strong>
-        <span v-for="tag in tags" :key="tag" class="property-tag">{{ tag }}</span>
+        <span v-for="tag in tags" :key="tag" class="property-tag">#{{ tag }}</span>
       </p>
-      <p class="property-views"><strong>Views:</strong> {{ views }}</p>
+      
 
       <SharePostComment :postId="id"></SharePostComment>
     </div>
@@ -323,7 +334,6 @@ export default {
 
 .modal-content {
   background-color: #fff;
-  border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   max-width: 800px;
   width: 90%;
@@ -345,10 +355,14 @@ export default {
   cursor: pointer;
   width: 30px;
   height: 30px;
+  z-index: 100;
 }
 
 .carousel-wrapper {
+  width: 100%;
+  height: 300px;
   margin-bottom: 20px;
+  background-color: #f0f0f0;
 }
 
 .slider-image-container {
@@ -375,8 +389,7 @@ export default {
 }
 
 .thumbnail-container {
-  width: 80px;
-  height: 80px;
+  height: 40px;
   border-radius: 8px;
   overflow: hidden;
   margin-right: 8px;
@@ -385,10 +398,10 @@ export default {
 }
 
 .thumbnail-image {
-  width: 100%;
-  height: 100%;
+  height: 40px;
   object-fit: cover;
   transition: transform 0.2s ease-in-out;
+  filter: blur(1px);
 }
 
 .thumbnail-container:hover .thumbnail-image {
@@ -401,23 +414,91 @@ export default {
   margin: 10px 0;
 }
 
-.edit-button,
-.delete-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
 .edit-button {
-  background-color: #007bff;
-  color: white;
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #2054d2; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.edit-button:hover {
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
+}
+
+.edit-button:active {
+  background-color: #e0f0ff; /* 누를 때 더 밝은 배경 */
+  border-color: #2054d2; /* 테두리 색상 어둡게 */
+  color: #003d7a; /* 텍스트 색상 더 어둡게 */
 }
 
 .delete-button {
-  background-color: #dc3545;
-  color: white;
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #f14e42; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.delete-button:hover {
+  background-color: #fce6d9; /* 살짝 밝은 배경 */
+  color: #d03d3e; /* 텍스트 색상 어둡게 */
+}
+
+.delete-button:active {
+  background-color: #fce6d9; /* 누를 때 더 밝은 배경 */
+  border-color: #f14e42; /* 테두리 색상 어둡게 */
+  color: #ad2f3a; /* 텍스트 색상 더 어둡게 */
+}
+
+.property-title {
+  font-size: clamp(8px, 2vw, 20px); /* 최소 16px, 최대 20px */
+  font-weight: bold;
+  color: #0d0d0d;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #0d0d0d;
+  padding-bottom: 8px;
+}
+
+.property-address {
+  font-size: 15px;
+  margin: 0px;
+  color: #666;
+}
+
+.property-size,
+.property-price {
+  font-size: 12px;
+}
+
+.property-detail-text {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.calendar-section {
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.property-views {
+  margin: 2px;
+  color:#5A6868;
+  background-color: #F4F4F4;
+  font-size: 15px;
 }
 
 .property-tags {
@@ -485,6 +566,7 @@ export default {
   margin-top: 20px;
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .card-author {
@@ -517,35 +599,29 @@ export default {
   flex-grow: 1; /* Push buttons to the right */
 }
 
-.action-buttons {
-  display: flex;
-  gap: 10px;
+.favorite-button {
+  margin-left: auto; /* 오른쪽으로 이동 */
+  text-align: center; /* 가운데 정렬 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
 }
 
-.edit-button,
-.delete-button {
-  padding: 6px 12px;
+.bookmark-button {
+  margin-left: auto; /* 오른쪽으로 이동 */
+  text-align: center; /* 가운데 정렬 */
+  background: none;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
   cursor: pointer;
 }
 
-.edit-button {
-  background-color: #007bff;
-  color: white;
+.btnImages {
+  width: 20px;
 }
 
-.edit-button:hover {
-  background-color: #0056b3;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-}
-
-.delete-button:hover {
-  background-color: #c82333;
+.btnImages:hover {
+  scale: 1.2;
+  cursor: pointer; /* 마우스 포인터 변경 */
 }
 </style>

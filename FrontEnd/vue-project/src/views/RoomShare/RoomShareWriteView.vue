@@ -1,17 +1,23 @@
 <template>
   <div class="property-form">
-    <h1>매물글 쓰기</h1>
+    <h2>매물글 쓰기</h2>
     <div v-if="isLoading" class="loading-overlay">Submitting...</div>
 
     <form @submit.prevent="submitForm">
       <div class="form-group">
-        <label for="imageFiles">Upload Images</label>
         <draggable v-model="formData.imagePreviews" class="image-preview" @end="onDragEnd">
           <template #item="{ element, index }">
             <div class="image-container">
-              <span class="image-order">{{ index + 1 }}</span>
+              <!-- <span class="image-order">{{ index + 1 }}</span> -->
               <img :src="element" alt="Image preview" />
-              <button type="button" @click="removeImage(index)" class="delete-button">X</button>
+              <button
+                type="button"
+                class="delete-button"
+                @click="removeImage(index)"
+                src="@/assets/button/close-button.png"
+              >
+                <img src="@/assets/button/close-button.png" alt="btnImages" class="btnImages" />
+              </button>
             </div>
           </template>
         </draggable>
@@ -349,151 +355,201 @@ export default {
 
 <style scoped>
 .property-form {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 24px;
+  font-family: 'Arial', sans-serif;
 }
+.main-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  font-family: 'SCore7';
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
 input,
 textarea,
 select {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
 }
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
 button {
   background-color: #007bff;
   color: white;
-  padding: 10px 15px;
+  padding: 12px 18px;
+  font-size: 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
+
 button:hover {
   background-color: #0056b3;
+  transform: translateY(-2px);
 }
+
+button:active {
+  transform: translateY(0);
+}
+
 .hashtag-input {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
-  gap: 5px;
+  border-radius: 8px;
+  padding: 10px;
 }
+
 .input-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
-  width: 100%; /* 부모 요소의 너비만큼 */
+  gap: 10px;
 }
 
 #input-hashtag {
-  width: 100%; /* 부모 요소의 너비만큼 차지 */
   border: none;
   outline: none;
   padding: 5px;
+  flex-grow: 1;
+  min-width: 150px;
 }
 
 .hashtag {
   display: inline-flex;
   align-items: center;
-  background-color: #e0e0e0;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-bottom: 5px; /* 각 태그 간의 하단 여백 추가 */
+  background-color: #f0f0f0;
+  color: #555;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  gap: 8px;
 }
+
 .remove-tag {
-  margin-left: 5px;
+  background-color: transparent;
+  color: #ff4d4f;
   cursor: pointer;
-  color: red;
+  font-size: 14px;
+  border: none;
 }
-.image-order {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  padding: 2px 5px;
-  border-radius: 4px;
-  font-size: 12px;
+
+.remove-tag:hover {
+  color: #ff0000;
 }
+
 .image-preview {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 10px;
 }
+
 .image-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .image-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 8px;
 }
+
 .delete-button {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: rgba(255, 0, 0, 0.8);
-  color: white;
+  top: 3px;
+  right: 3px;
+  background-color: transparent; /* 배경색 제거 */
   border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
   cursor: pointer;
-  font-size: 12px;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.delete-button img {
+  width: 100%; /* 버튼 크기에 맞게 이미지 크기 조정 */
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 50%;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.delete-button:hover img {
+  transform: scale(1.2); /* 호버 시 확대 효과 */
+  opacity: 0.8; /* 살짝 투명하게 */
+}
+
+.dropzone {
+  border: 2px dashed #007bff;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #007bff;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropzone:hover {
+  background-color: #e8f0fc;
 }
 
 .form-group-inline {
   display: flex;
   justify-content: space-between;
-  gap: 20px; /* 요소 사이의 간격 */
+  gap: 20px;
 }
 
 .date-input {
-  flex: 1; /* 동일한 너비로 배치 */
-}
-
-.date-input label {
-  display: block; /* 라벨이 인풋 상단에 표시되도록 설정 */
-  margin-bottom: 5px; /* 라벨과 인풋 간격 */
-}
-
-.address-group {
-  margin-bottom: 15px;
-}
-
-.address-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px; /* 버튼과 입력 필드 사이의 간격 */
-}
-
-.postcode-button {
-  flex-shrink: 0; /* 버튼의 크기를 유지 */
-  padding: 6px 12px; /* 버튼의 패딩 조정 */
-  font-size: 14px; /* 버튼 폰트 크기 */
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.postcode-button:hover {
-  background-color: #0056b3;
+  flex: 1;
 }
 
 .modal-overlay {
@@ -502,7 +558,7 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* 불투명도를 더 높여줌 */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -511,43 +567,32 @@ button:hover {
 
 .modal-content {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  max-width: 90%; /* 모달의 최대 너비 */
-  width: 500px; /* 모달의 너비 */
-  max-height: 80%; /* 모달의 최대 높이 */
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.modal-content img {
-  max-width: 100%; /* 모달 너비에 맞춰 이미지 크기 조정 */
-  max-height: 400px; /* 이미지 최대 높이 */
-  width: auto;
-  height: auto;
-  margin-bottom: 15px; /* 버튼과의 간격 */
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
 }
 
 .crop-button,
 .cancel-button {
-  margin-top: 10px;
-  padding: 8px 16px;
+  margin-top: 12px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 14px;
   cursor: pointer;
 }
 
 .crop-button {
   background-color: #28a745;
-  color: #fff;
+  color: white;
 }
 
 .cancel-button {
   background-color: #dc3545;
-  color: #fff;
+  color: white;
 }
 
 .crop-button:hover {

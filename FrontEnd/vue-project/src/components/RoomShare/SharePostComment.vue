@@ -9,10 +9,13 @@
         placeholder="댓글을 입력하세요"
         rows="3"
         :disabled="isSubmitting"
+        class="comment-textarea"
       ></textarea>
-      <button type="submit" :disabled="!newComment.trim() || isSubmitting">
-        {{ isSubmitting ? '작성 중...' : '댓글 작성' }}
-      </button>
+      <div>
+        <button type="submit" :disabled="!newComment.trim() || isSubmitting">
+          {{ isSubmitting ? '작성 중...' : '댓글 작성' }}
+        </button>
+      </div>
     </form>
 
     <!-- 댓글 리스트 -->
@@ -40,10 +43,18 @@
               <div class="comment-footer">
                 <small>작성일: {{ formatDate(comment.createdAt) }}</small>
                 <div v-if="isAuthor(comment.membersUsername)" class="action-buttons">
-                  <button class="btn-icon btn-edit" @click="startEdit(index, comment.comment)">
+                  <button
+                    v-if="isAuthor(comment.membersUsername)"
+                    class="edit-button"
+                    @click="startEdit(index, comment.comment)"
+                  >
                     수정
                   </button>
-                  <button class="btn-icon btn-delete" @click="deleteComment(comment.id, index)">
+                  <button
+                    v-if="isAuthor(comment.membersUsername)"
+                    class="delete-button"
+                    @click="deleteComment(comment.id, index)"
+                  >
                     삭제
                   </button>
                 </div>
@@ -254,12 +265,13 @@ export default {
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
+  border-top: 1px solid #e0e0e0;
 }
 
 .comments-container {
   max-height: 600px;
   overflow-y: auto;
-  border: 1px solid #eee;
+  /* border: 1px solid #eee; */
   border-radius: 8px;
   padding: 1rem;
   margin-top: 1rem;
@@ -323,18 +335,20 @@ textarea {
 }
 
 button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  margin-left: 88%; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #2054d2; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
 
 button:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
 }
 
 button:disabled {
@@ -360,33 +374,59 @@ button:disabled {
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  justify-content: space-between;
+  margin: 10px 0;
 }
 
-.btn-icon {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-  border-radius: 4px;
-  background: transparent;
-  border: 1px solid #dee2e6;
-  color: #495057;
-  transition: all 0.2s ease;
+.edit-button {
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #2054d2; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
 
-.btn-edit:hover {
-  background-color: #e9ecef;
-  border-color: #ced4da;
-  color: #2b3035;
+.edit-button:hover {
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
 }
 
-.btn-delete {
-  color: #dc3545;
-  border-color: #dc3545;
+.edit-button:active {
+  background-color: #e0f0ff; /* 누를 때 더 밝은 배경 */
+  border-color: #2054d2; /* 테두리 색상 어둡게 */
+  color: #003d7a; /* 텍스트 색상 더 어둡게 */
 }
 
-.btn-delete:hover {
-  background-color: #dc3545;
-  color: white;
+.delete-button {
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #f14e42; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.delete-button:hover {
+  background-color: #fce6d9; /* 살짝 밝은 배경 */
+  color: #d03d3e; /* 텍스트 색상 어둡게 */
+}
+
+.delete-button:active {
+  background-color: #fce6d9; /* 누를 때 더 밝은 배경 */
+  border-color: #f14e42; /* 테두리 색상 어둡게 */
+  color: #ad2f3a; /* 텍스트 색상 더 어둡게 */
+}
+
+.comment-textarea {
+  resize: none;
+  margin: 0px;
 }
 
 .edit-mode {

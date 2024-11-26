@@ -137,24 +137,26 @@ export default {
       this.selectedCard = card
       this.showModal = true
 
-      // 현재 스크롤 위치 저장
-      this.scrollY = window.scrollY
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
 
-      // 스크롤 고정 및 위치 고정
+      document.documentElement.style.overflow = 'hidden'
       document.body.style.position = 'fixed'
-      document.body.style.top = `-${this.scrollY}px`
-
-      console.log(this.selectedCard)
+      document.body.style.top = `-${window.scrollY}px`
+      document.body.style.paddingRight = `${scrollBarWidth}px`
+      document.body.style.width = '100%'
     },
+
     closeModal() {
       this.showModal = false
       this.selectedCard = null
 
-      // 스크롤 복원
+      document.documentElement.style.overflow = ''
       document.body.style.position = ''
+      document.body.style.paddingRight = ''
       document.body.style.top = ''
-      window.scrollTo(0, this.scrollY) // 원래 위치로 복원
+      window.scrollTo(0, this.scrollY)
     },
+
     goToMyPosts() {
       // 내 글 보기 기능 로직
       this.$router.push({ path: 'share/user/1' })
@@ -174,6 +176,18 @@ export default {
 </script>
 
 <style scoped>
+html {
+  overflow: hidden; /* 전체 스크롤 숨김 */
+}
+
+body {
+  position: fixed; /* 스크롤 고정 */
+  width: 100%; /* 스크롤바 제거 시 너비 고정 */
+  height: 100%; /* 페이지 높이 고정 */
+  margin: 0; /* 불필요한 여백 제거 */
+  overflow: hidden; /* 배경 스크롤 방지 */
+}
+
 .room-share-page {
   padding: 20px;
   background-color: #f9f9f9; /* 페이지 배경을 약간 밝게 변경 */
