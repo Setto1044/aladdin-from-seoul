@@ -1,23 +1,5 @@
 <template>
-  <!-- <div class="form-group">
-    <label for="loginId">아이디</label>
-    <input type="text" id="loginId" v-model="loginForm.id" placeholder="아이디를 입력하세요" />
-  </div>
-  <div class="form-group">
-    <label for="loginPassword">비밀번호</label>
-    <input
-      type="password"
-      id="loginPassword"
-      v-model="loginForm.password"
-      placeholder="비밀번호를 입력하세요"
-    />
-  </div>
-  <button type="submit" class="submit-button">로그인</button>
-  <div class="sns-login">
-    <p>SNS로 계속하기</p>
-  </div> -->
   <div class="login-form">
-    <h1>Login</h1>
     <form @submit.prevent="handleLogin">
       <div class="form-group">
         <label for="username">Username</label>
@@ -41,18 +23,8 @@
         />
       </div>
 
-      <div class="form-group remember-me">
-        <input type="checkbox" id="rememberMe" v-model="rememberMe" />
-        <label for="rememberMe">Remember Me</label>
-      </div>
-
       <button type="submit">Login</button>
     </form>
-
-    <div class="links">
-      <router-link to="/forgot-password">Forgot Password?</router-link>
-      <router-link to="/sign-up">Sign Up</router-link>
-    </div>
   </div>
 </template>
 
@@ -129,51 +101,120 @@ export default {
 </script>
 
 <style scoped>
+/* 전체 로그인 폼 컨테이너 */
 .login-form {
-  max-width: 400px;
-  margin: 0 auto;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
+  max-width: 360px;
+  margin: 40px auto;
+  padding: 20px 30px;
+  font-family: 'Roboto', sans-serif;
 }
+
+/* 입력 폼 그룹 */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
 input {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
+
+input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+/* 버튼 스타일 */
 button {
+  width: 100%;
   background-color: #007bff;
   color: white;
-  padding: 10px 15px;
+  font-size: 1rem;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
 }
+
 button:hover {
   background-color: #0056b3;
+  transform: translateY(-2px);
 }
+
+button:active {
+  background-color: #004085;
+  transform: translateY(0);
+}
+
+/* "기억하기" 섹션 */
 .remember-me {
   display: flex;
   align-items: center;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 15px;
 }
+
 .remember-me input {
-  margin-right: 5px;
+  margin-right: 8px;
+  width: auto;
+  height: auto;
 }
+
+/* 링크 스타일 */
 .links {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
 }
+
 .links a {
+  font-size: 0.9rem;
   color: #007bff;
   text-decoration: none;
+  transition: color 0.3s;
 }
+
 .links a:hover {
+  color: #0056b3;
   text-decoration: underline;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .login-form {
+    padding: 15px 20px;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  label {
+    font-size: 0.85rem;
+  }
+
+  input {
+    font-size: 0.9rem;
+  }
 }
 </style>
