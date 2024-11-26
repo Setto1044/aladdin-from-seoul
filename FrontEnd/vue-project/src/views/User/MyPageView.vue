@@ -7,18 +7,12 @@
       <div class="user-details">
         <h2 class="user-name">{{ nickname || 'default nickname' }}</h2>
         <span class="user-type">{{ grade || 'default grade' }}</span>
-        <p class="welcome-message">{{ bio || 'default bio' }}</p>
+        <p class="welcome-message">{{ bio || `(🖐🏻'-' )` }}</p>
       </div>
       <div class="user-actions">
-        <button class="btn-secondary">Log Out</button>
-        <button class="btn-primary" @click="goToEditPage">Edit Profile</button>
-        <button class="btn-primary" @click="goToPWEditPage">Edit password</button>
+        <button class="edit-button" @click="goToEditPage">프로필 수정</button>
+        <button class="edit-button" @click="goToPWEditPage">비밀번호 변경</button>
       </div>
-      <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/4375c0390c2ebe6f7cc8a48da21680487a9b51a064afdf60421a0e7a8892be8b?placeholderIfAbsent=true&apiKey=1cde1290a1ae40d2a6a843379a06e85e"
-        alt=""
-        class="background-image"
-      />
     </section>
 
     <section class="user-posts-section">
@@ -35,9 +29,17 @@
       <div class="posts-image-container">
         <section class="popular-properties">
           <div class="property-grid">
-            <CardComponent :card="fakeCardData"></CardComponent>
-            <CardComponent :card="fakeCardData"></CardComponent>
-            <CardComponent :card="fakeCardData"></CardComponent>
+            <CardComponent
+              v-for="board in boardStats"
+              :key="board.roomBoardVo.id"
+              :card="{
+                id: board.roomBoardVo.id,
+                title: board.roomBoardVo.title,
+                address: board.roomBoardVo.address,
+                image1: board.thumbnailUrl ? board.thumbnailUrl : null,
+                image2: board.profileImagePath ? board.profileImagePath : null,
+              }"
+            />
           </div>
         </section>
       </div>
@@ -48,9 +50,17 @@
       <div class="interests-image-container">
         <section class="popular-properties">
           <div class="property-grid">
-            <CardComponent :card="fakeCardData"></CardComponent>
-            <CardComponent :card="fakeCardData"></CardComponent>
-            <CardComponent :card="fakeCardData"></CardComponent>
+            <CardComponent
+              v-for="bookmark in bookmarks"
+              :key="bookmark.roomBoardVo.id"
+              :card="{
+                id: bookmark.roomBoardVo.id,
+                title: bookmark.roomBoardVo.title,
+                address: bookmark.roomBoardVo.address,
+                image1: null,
+                image2: null,
+              }"
+            />
           </div>
         </section>
       </div>
@@ -73,7 +83,8 @@ import HouseUserCardComponent from '@/components/RoomShare/HouseUserCardComponen
 import MyPageDetailComponent from '@/components/User/MyPageDetailSection.vue'
 import CardComponent from '@/components/RoomShare/PostPreviewCard.vue'
 import useUserStore from '@/stores/user-store'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -88,6 +99,7 @@ export default {
     const bio = computed(() => userStore.memberInfo.bio)
     const profileImagePath = computed(() => userStore.memberInfo.profileImagePath)
     const grade = computed(() => userStore.memberInfo.grade)
+    const username = computed(() => userStore.memberInfo.username)
 
     const handleLogout = () => {
       userStore.logout()
@@ -95,7 +107,62 @@ export default {
       window.location.href = '/login'
     }
 
-    return { nickname, bio, profileImagePath, grade, handleLogout }
+    // Reactive state for API responses
+    const boardStats = ref([])
+    const bookmarks = ref([])
+    const isLoading = ref(true)
+
+    // Fetch boards data
+    const fetchBoards = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/aladin/boards/my/${username.value}`)
+        if (response.data.success) {
+          boardStats.value = response.data.data
+        }
+      } catch (error) {
+        console.error('Failed to fetch board stats:', error)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    // Fetch bookmark data
+    const fetchBookmarks = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/aladin/bookmark/board/${username.value}?pageSize=3`,
+        )
+        if (response.data.success) {
+          bookmarks.value = response.data.data
+        }
+        console.log('fetchBookmarks', response.data)
+      } catch (error) {
+        console.error('Failed to fetch bookmarks:', error)
+      }
+    }
+
+    // Fetch both data sources concurrently
+    const fetchData = async () => {
+      isLoading.value = true
+      await Promise.all([fetchBoards(), fetchBookmarks()])
+      isLoading.value = false
+    }
+
+    // Fetch data on component mount
+    onMounted(() => {
+      fetchData()
+    })
+
+    return {
+      nickname,
+      bio,
+      profileImagePath,
+      grade,
+      handleLogout,
+      boardStats,
+      bookmarks,
+      isLoading,
+    }
   },
   methods: {
     goToEditPage() {
@@ -108,8 +175,7 @@ export default {
   },
   data() {
     return {
-      defaultAvatar:
-        'https://img1.daumcdn.net/thumb/R1280x0/?fname=http://t1.daumcdn.net/brunch/service/user/7r5X/image/9djEiPBPMLu_IvCYyvRPwmZkM1g.jpg',
+      defaultAvatar: './basic/basic1.jpg',
       fakeCardData: {
         id: 4,
         title: 'Card 4',
@@ -175,13 +241,13 @@ export default {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: #ddd;
   margin-bottom: 16px;
 }
 .avatar-image {
   width: 120px;
   height: 120px;
   border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   object-fit: cover;
   margin-bottom: 20px;
 }
@@ -192,10 +258,19 @@ export default {
   margin: 0;
 }
 
-.user-details .user-type {
+.user-details {
   font-size: 14px;
   color: #555;
   margin: 8px 0;
+}
+
+.user-type {
+  font-size: 14px;
+  color: #555;
+  margin: 8px 0;
+  background-color: #ddd;
+  padding: 2px;
+  border-radius: 3%;
 }
 
 .welcome-message {
@@ -210,31 +285,29 @@ export default {
   margin-top: 16px;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+.edit-button {
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #2054d2; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
+.edit-button:hover {
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
 }
 
-.btn-secondary {
-  background-color: #ddd;
-  color: #333;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+.edit-button:active {
+  background-color: #e0f0ff; /* 누를 때 더 밝은 배경 */
+  border-color: #2054d2; /* 테두리 색상 어둡게 */
+  color: #003d7a; /* 텍스트 색상 더 어둡게 */
 }
 
-.btn-secondary:hover {
-  background-color: #bbb;
-}
 .property-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 한 줄에 2개 */
@@ -261,29 +334,30 @@ export default {
   margin: 20px;
 }
 
-.MyPageDetailComponent {
-  display: flex; /* Flexbox 활성화 */
-  flex-direction: column; /* 텍스트를 세로로 쌓기 */
+.posts-title-container {
+  display: flex; /* 내부 내용을 중앙 정렬 */
+  flex-direction: column; /* 내부 콘텐츠를 세로 정렬 */
   justify-content: center; /* 세로축 중앙 정렬 */
   align-items: center; /* 가로축 중앙 정렬 */
-  height: 100%; /* 부모의 높이를 꽉 채움 */
-  text-align: center; /* 텍스트 가운데 정렬 */
-  padding: 16px; /* 여백 추가 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 테두리 그림자 */
+  padding: 16px; /* 내부 여백 */
   border-radius: 8px; /* 둥근 테두리 */
-  background-color: #f9f9f9; /* 배경색 (선택 사항) */
 }
 
-.posts-title-container,
-.posts-image-container,
 .interests-image-container {
   display: flex; /* 내부 내용을 중앙 정렬 */
   flex-direction: column; /* 내부 콘텐츠를 세로 정렬 */
   justify-content: center; /* 세로축 중앙 정렬 */
   align-items: center; /* 가로축 중앙 정렬 */
-  background-color: #f9f9f9; /* 배경색 추가 (선택 사항) */
   padding: 16px; /* 내부 여백 */
-  border: 1px solid #ddd; /* 테두리 추가 */
+  border-radius: 8px; /* 둥근 테두리 */
+}
+
+.posts-image-container {
+  display: flex; /* 내부 내용을 중앙 정렬 */
+  flex-direction: column; /* 내부 콘텐츠를 세로 정렬 */
+  justify-content: center; /* 세로축 중앙 정렬 */
+  align-items: center; /* 가로축 중앙 정렬 */
+  padding: 16px; /* 내부 여백 */
   border-radius: 8px; /* 둥근 테두리 */
 }
 

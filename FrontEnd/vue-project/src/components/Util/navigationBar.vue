@@ -87,28 +87,24 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   background-color: #ffffff;
-  padding: 0 20px;
-  height: 40px;
+  padding: 10px 20px;
+  height: 60px;
+  border-bottom: 1px solid #f0f0f059;
   position: sticky;
   top: 0;
   z-index: 1000;
   transition:
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.5s ease; /* 부드러운 전환 효과 추가 */
+    transform 0.4s ease,
+    opacity 0.4s ease; /* 부드러운 전환 효과 */
 }
 
 .top-bar.hidden {
-  transform: translateY(-100%); /* 위로 사라짐 */
-  opacity: 0; /* 완전히 투명해짐 */
-  pointer-events: none; /* 사라지는 동안 클릭 방지 */
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.top-bar.visible {
-  transform: translateY(0); /* 원래 위치로 */
-  opacity: 1; /* 완전히 보이게 */
-}
-
-.logo-container {
+.top-bar .logo-container {
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -116,37 +112,45 @@ onUnmounted(() => {
 
 .logo {
   height: 40px;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .main-navigation {
   display: flex;
   align-items: center;
-  gap: 20px;
 }
 
 .nav-link {
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333333;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: #ffffff;
-  transition: all 0.3s ease;
+  font-size: 0.9rem; /* 적당한 크기 조정 */
+  font-weight: 500;
+  color: #444444;
+  padding: 8px 16px;
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
 }
 
 .nav-link:hover {
-  background-color: #007bff;
+  background-color: #b399d4; /* 포인터 올렸을 때 색상 변경 */
   color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-2px); /* 약간 위로 올라가는 효과 */
 }
 
 .nav-link:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 클릭 시 그림자 조정 */
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 8px 16px; /* 작은 화면에서 간격 조정 */
+  }
+
+  .nav-link {
+    font-size: 0.8rem; /* 작은 화면에서 폰트 크기 줄임 */
+    padding: 6px 12px; /* 간격 축소 */
+  }
 }
 </style>

@@ -376,47 +376,6 @@ textarea {
   background-color: #b52d3a;
 }
 
-.upload-button {
-  background-color: #007bff;
-  color: #fff;
-  font-size: 14px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-}
-
-.upload-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.image-action-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.image-action-buttons button {
-  background-color: #ff6b6b;
-  color: #fff;
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-}
-
-.image-action-buttons button:hover {
-  background-color: #e63946;
-  transform: translateY(-2px);
-}
-
 /* 모달 스타일 */
 .modal-overlay {
   position: fixed;
@@ -481,24 +440,6 @@ textarea {
   background-color: #0056b3;
 }
 
-/* 제출 버튼 스타일 */
-button[type='submit'] {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #28a745;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button[type='submit']:hover {
-  background-color: #218838;
-}
-
 /* 등급 필드 전체 스타일 */
 .form-group select {
   width: 100%; /* 드롭다운이 컨테이너의 전체 너비를 차지 */
@@ -539,5 +480,83 @@ button[type='submit']:hover {
   padding: 10px; /* 옵션 내부 여백 */
   background-color: #fff; /* 옵션 배경색 */
   color: #333; /* 글씨 색 */
+}
+
+/* 버튼 공통 스타일 */
+button {
+  padding: 8px 16px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본 테두리 제거 */
+  background-color: transparent; /* 기본 배경 투명 */
+  color: #2054d2; /* 텍스트 기본 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  font-weight: 500; /* 약간 두꺼운 글꼴 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
+  margin: 4px; /* 버튼 간격 추가 */
+}
+
+button:hover {
+  background-color: #f0f8ff; /* 밝은 배경색 추가 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
+}
+
+button:active {
+  background-color: #e0f0ff; /* 클릭 시 더 밝은 배경색 */
+  border-color: #2054d2; /* 테두리 색상 추가 */
+  color: #003d7a; /* 텍스트 색상 더 어둡게 */
+}
+
+/* 버튼 컨테이너에 flexbox를 적용한 간격 조정 */
+button + button {
+  margin-left: 10px; /* 버튼들 사이에 가로 간격 추가 */
+}
+
+.upload-button {
+  background-color: #877fa8; /* 업로드 버튼 고유 배경 */
+  color: #fff; /* 텍스트 흰색 */
+  font-weight: bold; /* 강조된 글꼴 */
+  padding: 10px 20px; /* 더 넉넉한 여백 */
+  border-radius: 6px; /* 둥근 테두리 */
+  transition: all 0.3s ease; /* 부드러운 전환 */
+  margin: 4px; /* 업로드 버튼 간격 */
+}
+
+.upload-button:hover {
+  background-color: #564f74; /* 호버 시 배경 어둡게 */
+  transform: translateY(-2px); /* 살짝 위로 이동 */
+  color: #fff; /* 텍스트 흰색 */
+}
+
+.upload-button:active {
+  background-color: #003d7a; /* 클릭 시 더 어두운 배경 */
+}
+
+.btn-danger {
+  background-color: #f59193; /* 강렬한 레드 */
+  color: #fff; /* 텍스트 흰색 */
+  border: none; /* 기본 테두리 제거 */
+  padding: 10px 20px; /* 여유로운 내부 여백 */
+  border-radius: 6px; /* 둥근 테두리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  transition: background-color 0.3s ease; /* 부드러운 전환 */
+  margin: 4px; /* 버튼 간격 추가 */
+}
+
+.btn-danger:hover {
+  background-color: #b52d3a; /* 더 어두운 빨간색 */
+  color: #fff; /* 텍스트 흰색 */
+}
+
+.btn-danger:active {
+  background-color: #91262c; /* 클릭 시 가장 어두운 빨간색 */
+}
+
+/* 버튼 그룹에 공통 여백 추가 */
+button-container {
+  display: flex; /* 플렉스박스 레이아웃 */
+  flex-wrap: wrap; /* 버튼이 넘칠 경우 줄바꿈 허용 */
+  gap: 12px; /* 버튼들 사이의 간격 */
+  justify-content: center; /* 버튼 그룹 가운데 정렬 */
 }
 </style>

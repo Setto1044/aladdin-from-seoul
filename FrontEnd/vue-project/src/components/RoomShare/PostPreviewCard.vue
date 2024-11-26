@@ -1,13 +1,23 @@
 <template>
   <article class="card" @click="$emit('card-click', card)">
     <div class="card-image-container">
-      <div class="card-image"></div>
+      <div
+        class="card-image"
+        :style="{
+          backgroundImage: `url(${card.image1 || './basic/basic1.jpg'})`,
+        }"
+      ></div>
     </div>
     <div class="card-content">
       <h3 class="card-title">{{ card.title }}</h3>
       <div class="card-description-author">
-        <p class="card-description">{{ card.description }}</p>
-        <div class="author-avatar"></div>
+        <p class="card-description">{{ card.address }}</p>
+        <div
+          class="author-avatar"
+          :style="{
+            backgroundImage: `url(${card.image2 || './basic/basic2.jpg'})`,
+          }"
+        ></div>
       </div>
     </div>
   </article>
@@ -47,10 +57,12 @@ export default {
 
 <style scoped>
 .card {
+  width: 200px; /* 카드의 고정 너비 */
+  height: 300px; /* 카드의 고정 높이 */
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  justify-content: space-between; /* 상하 균형 맞추기 */
   padding: 16px;
   border: 1px solid #ddd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -59,7 +71,7 @@ export default {
     box-shadow 0.2s;
   cursor: pointer;
   background-color: #fff;
-  max-width: 180px; /* 카드의 최대 너비 제한 */
+  overflow: hidden; /* 내용이 넘치지 않도록 설정 */
 }
 
 .card:hover {
@@ -68,30 +80,64 @@ export default {
 }
 
 .card-image-container {
+  width: 100%;
+  height: 50%; /* 카드 높이의 절반을 이미지에 할당 */
+  overflow: hidden;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  border-radius: 8px;
-  height: 150px;
 }
 
 .card-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 이미지 비율을 유지하면서 카드 크기에 맞게 조정 */
+}
+
+.card-content {
+  padding: 8px 0 0 0; /* 상단 여백 최소화 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-description {
+  font-size: 14px;
+  color: #555;
+  white-space: normal; /* 줄바꿈 허용 */
+  overflow: visible; /* 텍스트가 잘리지 않도록 설정 */
+  text-overflow: unset; /* 말줄임표 제거 */
+}
+
+.card-description-author {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px; /* 간격 조정 */
+}
+
+.author-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc;
+  background-size: cover;
+  background-position: center;
 }
 
 .card-container {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(300px, 1fr)
-  ); /* 카드의 최소 크기를 설정하고 자동으로 맞춤 */
-  gap: 16px; /* 카드들 사이의 간격 */
-  width: 100%; /* 컨테이너가 전체 너비를 차지하도록 설정 */
-  justify-content: space-between; /* 카드들 사이의 간격을 균등하게 */
-  padding: 0 16px; /* 좌우 여백 */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 고정 너비에 따라 카드 배치 */
+  gap: 16px;
+  justify-content: center; /* 카드들을 가운데 정렬 */
+  padding: 16px;
 }
 
 .card-title,
@@ -100,28 +146,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block; /* 블록 요소로 설정 */
-}
-
-.card-description-author {
-  display: flex; /* Flexbox를 사용하여 가로 정렬 */
-  align-items: center; /* 세로축 중앙 정렬 */
-  justify-content: space-between; /* 왼쪽과 오른쪽에 요소를 배치 */
-}
-
-.card-description {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
-  flex: 1; /* 남은 공간을 차지하여 description이 더 넓게 표시 */
-}
-
-.author-avatar {
-  width: 30px;
-  height: 30px;
-  background-color: #ccc;
-  border-radius: 50%; /* 둥근 형태로 변경 */
-  flex-shrink: 0; /* 크기 축소 방지 */
-  margin-left: 10px; /* description과의 간격 조정 */
 }
 
 .card-tags {
@@ -148,50 +172,5 @@ export default {
   cursor: pointer;
   color: #007bff;
   position: relative;
-}
-
-.tooltip {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 8px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  white-space: nowrap;
-}
-
-.more-tags:hover .tooltip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.card-author {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* 아이템 간의 간격 */
-  font-size: 14px;
-  color: #333;
-  margin-top: 12px; /* 다른 요소와의 간격 */
-}
-
-.created-time {
-  margin-right: 8px;
-  color: #999;
-}
-.edit-button {
-  padding: 4px 8px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.edit-button:hover {
-  background-color: #0056b3;
 }
 </style>

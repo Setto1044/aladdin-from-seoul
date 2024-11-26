@@ -4,7 +4,7 @@
     <p class="section-description">{{ description }}</p>
     <ul class="interests-list">
       <li class="interest-item" @click="goToPage">
-        <span class="interest-icon">❤️</span>
+        <span class="interest-icon">🔽</span>
         <h3 class="interest-title">더보기</h3>
       </li>
     </ul>
@@ -57,13 +57,13 @@ export default {
 }
 
 .interest-item {
+  width: 130px;
   display: flex; /* Flexbox로 내부 아이템 정렬 */
   flex-direction: column; /* 아이콘과 제목을 세로 정렬 */
   align-items: center; /* 가로축 중앙 정렬 */
   justify-content: center; /* 세로축 중앙 정렬 */
   text-align: center; /* 텍스트 정렬 */
   padding: 16px; /* 내부 여백 */
-  border: 1px solid #ddd; /* 외곽선 */
   border-radius: 8px; /* 둥근 테두리 */
   background-color: #f9f9f9; /* 배경색 */
   cursor: pointer;
