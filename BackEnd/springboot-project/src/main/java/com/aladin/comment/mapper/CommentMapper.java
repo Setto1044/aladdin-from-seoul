@@ -19,5 +19,6 @@ public interface CommentMapper {
 
 	CommentResponseDto findCommentById(@Param("id") Long id);
 
-	List<CommentResponseDto> findCommentsByRoomBoardId(@Param("roomboardsId") Long roomboardsId, @Param("cursorId") Long cursorId, @Param("pageSize") Long pageSize);
+	List<CommentResponseDto> findCommentsByRoomBoardId(@Param("roomboardsId") Long roomboardsId, @Param("cursorId") Long cursorId,
+			@Param("pageSize") Long pageSize);
 }

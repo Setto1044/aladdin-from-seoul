@@ -74,7 +74,7 @@
 		<if test="cursorId != null">
 			AND rb.id &lt; #{cursorId}
 		</if>
-		ORDER BY rb.id DESC
+		ORDER BY b.created_at DESC
 		LIMIT #{pageSize}
 	</select>
 
