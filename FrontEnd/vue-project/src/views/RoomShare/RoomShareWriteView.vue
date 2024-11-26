@@ -89,26 +89,26 @@
       </div>
 
       <div class="form-group">
-        <label for="pricePer">Price Per</label>
+        <label for="pricePer">방세 구분</label>
         <select id="pricePer" v-model="formData.pricePer">
-          <option value="WEEK">Week</option>
-          <option value="MONTH">Month</option>
+          <option value="WEEK">매주</option>
+          <option value="MONTH">매월</option>
         </select>
       </div>
 
       <div class="form-group form-group-inline">
         <div class="date-input">
-          <label for="rentStart">Rent Start Date</label>
+          <label for="rentStart">시작일</label>
           <input type="date" id="rentStart" v-model="formData.rentStart" required />
         </div>
         <div class="date-input">
-          <label for="rentEnd">Rent End Date</label>
+          <label for="rentEnd">종료일</label>
           <input type="date" id="rentEnd" v-model="formData.rentUntil" required />
         </div>
       </div>
 
       <div class="form-group">
-        <label for="hashtags">Hashtags</label>
+        <label for="hashtags">해시태그</label>
         <div class="hashtag-input">
           <div class="input-container">
             <div class="hashtag" v-for="(tag, index) in formData.hashtags" :key="index">
@@ -122,7 +122,7 @@
               @keydown.enter.prevent="addTag"
               @keyup.space="addTag"
               @keydown.backspace="removeLastTag"
-              placeholder="Type and press space or enter"
+              placeholder="스페이스바 혹은 엔터를 통해 입력"
             />
           </div>
         </div>
@@ -391,11 +391,14 @@ input,
 textarea,
 select {
   width: 100%;
-  padding: 10px;
+  padding: 12px 14px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d1d1;
   font-size: 14px;
-  transition: border-color 0.3s ease;
+  font-family: inherit;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 input:focus,
