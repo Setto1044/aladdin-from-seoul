@@ -41,7 +41,7 @@
           <div
             class="author-avatar"
             :style="{
-              backgroundImage: `url(${authorImageUrl || './basic/basic2.jpg'})`,
+              backgroundImage: `url(${hostImageUrls || './basic/basic2.jpg'})`,
             }"
           ></div>
         </div>
