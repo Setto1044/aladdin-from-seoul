@@ -32,6 +32,7 @@ const checkMapAndSearchHouseCard = () => {
     // 지도 중심 설정
     const { latitude, longitude } = props.searchHouseCard
     mapInstance.setCenter(new kakao.maps.LatLng(latitude, longitude))
+    mapInstance.setLevel(3) // 지도 레벨 설정
     console.log('지도 중심이 설정되었습니다:', latitude, longitude)
 
     // 이벤트 발생

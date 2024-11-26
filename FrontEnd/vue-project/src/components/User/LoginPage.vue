@@ -2,18 +2,12 @@
   <div class="login-form">
     <form @submit.prevent="handleLogin">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          v-model="username"
-          placeholder="Enter your username"
-          required
-        />
+        <label for="username">아이디</label>
+        <input type="text" id="username" v-model="username" placeholder="Enter your ID" required />
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">비밀번호</label>
         <input
           type="password"
           id="password"
@@ -103,15 +97,14 @@ export default {
 <style scoped>
 /* 전체 로그인 폼 컨테이너 */
 .login-form {
-  max-width: 360px;
-  margin: 40px auto;
-  padding: 20px 30px;
   font-family: 'Roboto', sans-serif;
+  width: 100%;
 }
 
 /* 입력 폼 그룹 */
 .form-group {
   margin-bottom: 20px;
+  width: 100%;
 }
 
 label {
@@ -142,7 +135,7 @@ input:focus {
 /* 버튼 스타일 */
 button {
   width: 100%;
-  background-color: #007bff;
+  background-color: #6f6db8;
   color: white;
   font-size: 1rem;
   padding: 12px;
@@ -155,12 +148,12 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #494949;
   transform: translateY(-2px);
 }
 
 button:active {
-  background-color: #004085;
+  background-color: #620879;
   transform: translateY(0);
 }
 

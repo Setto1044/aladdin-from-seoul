@@ -32,9 +32,9 @@
             <!-- 수정 모드 -->
             <div v-if="editingIndex === index" class="edit-mode">
               <textarea v-model="editCommentContent" class="edit-textarea" rows="3"></textarea>
-              <div class="edit-buttons">
-                <button @click="confirmEdit(comment.id, index)" class="btn-confirm">확인</button>
-                <button @click="cancelEdit" class="btn-cancel">취소</button>
+              <div class="action-buttons">
+                <button @click="confirmEdit(comment.id, index)">확인</button>
+                <!-- <button @click="cancelEdit">취소</button> -->
               </div>
             </div>
             <!-- 일반 모드 -->
@@ -434,6 +434,7 @@ button:disabled {
 }
 
 .edit-textarea {
+  resize: none;
   margin: 0.5rem 0;
   width: 100%;
   padding: 0.5rem;
@@ -452,7 +453,6 @@ button:disabled {
 .btn-confirm {
   background-color: #198754;
   color: white;
-  padding: 0.4rem 1rem;
   font-size: 0.9rem;
 }
 
@@ -463,7 +463,6 @@ button:disabled {
 .btn-cancel {
   background-color: #6c757d;
   color: white;
-  padding: 0.4rem 1rem;
   font-size: 0.9rem;
 }
 

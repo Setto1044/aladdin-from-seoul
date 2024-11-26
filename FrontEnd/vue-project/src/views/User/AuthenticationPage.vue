@@ -109,7 +109,7 @@ export default {
   padding: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* 상단 정렬 */
 }
 
 .welcome-container h1 {
@@ -129,41 +129,40 @@ export default {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd; /* 구분선 추가 */
 }
 
 .tabs button {
   padding: 10px 20px;
   font-size: 0.9rem;
+  width: 130px;
   color: #555;
   background-color: #f1f1f1;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .tabs button.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: #e9f5ff; /* 누를 때 더 밝은 배경 */
+  border-color: #6f6db8; /* 테두리 색상 어둡게 */
+  color: #050505; /* 텍스트 색상 더 어둡게 */
 }
 
 .tabs button:hover {
-  background-color: #e9f3ff;
-  color: #007bff;
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
 }
 
 /* 폼 컨테이너 */
 .form-container {
   width: 100%;
   max-width: 400px;
-  margin: auto;
+  margin: 20px auto 0; /* 위로 약간의 간격 추가 */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
 }
 
 /* 이미지 섹션 */

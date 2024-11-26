@@ -1,7 +1,7 @@
 <template>
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-content">
-      <div class="title">도착지의 주소 검색</div>
+      <div class="title">🔍︎ 도착지의 주소 검색</div>
       <div class="address-input">
         <input type="text" v-model="currentAddress" placeholder="출발지는 현재 조회 위치" />
         <button class="address-button" @click="searchAddress">검색</button>
@@ -113,7 +113,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+  background-color: rgba(255, 255, 255, 0.5); /* 반투명 배경 */
   display: flex;
   justify-content: center;
   align-items: center;
