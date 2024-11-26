@@ -21,10 +21,9 @@ public class ChatGPTController {
 
 	@PostMapping
 	public String getOpenaiResponse(@RequestBody String prompt) {
-		ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-3.5-turbo", prompt);
+		ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-3.5-mini", prompt);
 
-		chatCompletionResponse response = restTemplate.postForObject("https://api.openai.com/v1/chat/completions", chatCompletionRequest,
-				chatCompletionResponse.class);
+		chatCompletionResponse response = restTemplate.postForObject("https://api.openai.com/v1/chat/completions", chatCompletionRequest, chatCompletionResponse.class);
 
 		return response.getChoices().get(0).getMessage().getContent();
 	}
