@@ -184,7 +184,7 @@ export default {
   margin: 0 auto;
   background-color: #fff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 50px 20px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -200,39 +200,43 @@ export default {
   font-weight: bold;
   margin-bottom: 10px;
   color: #333;
+  font-family: 'SCore7';
 }
 
 .button-group {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  justify-content: center; /* 버튼 그룹을 가로 중앙 정렬 */
+  align-items: center;
+  gap: 12px; /* 버튼 간의 간격 */
+  margin: 10px;
 }
 
 .action-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  transition:
-    background-color 0.3s,
-    transform 0.2s;
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #5c509c; /* 버튼 텍스트 색상 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 18px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
 
 .action-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
+  background-color: #e5ccf4; /* 살짝 밝은 배경 */
+  color: #382d72; /* 텍스트 색상 어둡게 */
 }
 
 .create-button {
-  background-color: #28a745;
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #5c509c; /* 버튼 텍스트 색상 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 18px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
 
 .create-button:hover {
-  background-color: #218838;
+  background-color: #e5ccf4; /* 살짝 밝은 배경 */
+  color: #382d72; /* 텍스트 색상 어둡게 */
 }
 
 .search-form {

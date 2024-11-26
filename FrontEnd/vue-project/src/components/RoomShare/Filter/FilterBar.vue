@@ -76,7 +76,7 @@
         type="text"
         id="search-input"
         class="header-search-input"
-        placeholder="Search in site"
+        placeholder="해시태그 검색하기"
         aria-label="Search in site"
       />
     </form>
@@ -249,10 +249,8 @@ export default {
   display: flex;
   gap: 16px;
   align-items: center;
-  padding: 12px 16px;
+  padding: 8px 16px;
   background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 드롭다운 버튼 */

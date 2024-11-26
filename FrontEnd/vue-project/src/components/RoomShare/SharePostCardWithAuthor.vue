@@ -4,7 +4,7 @@
       <div
         class="card-image"
         :style="{
-          backgroundImage: `url(${card.imageUrls[0] || 'https://via.placeholder.com/150'})`,
+          backgroundImage: `url(${card.imageUrls[0] || './basic/basic1.jpg'})`,
         }"
       ></div>
     </div>
@@ -12,7 +12,7 @@
       <h3 class="card-title">{{ card.title }}</h3>
       <p class="card-description">{{ card.address }}</p>
       <div class="card-tag">
-        <span v-for="(tag, index) in visibleTags" :key="index" class="tag-label">{{ tag }}</span>
+        <span v-for="(tag, index) in visibleTags" :key="index" class="tag-label">#{{ tag }}</span>
         <span
           v-if="hiddenTags.length > 0"
           class="more-tags"
@@ -21,16 +21,18 @@
         >
           +{{ hiddenTags.length }}개
           <div v-if="showTooltip" class="tooltip">
-            <span v-for="(tag, index) in hiddenTags" :key="index" class="tag-label">{{ tag }}</span>
-          </div>
-        </span>
+            <span v-for="(tag, index) in hiddenTags" :key="index" class="tag-label"
+              >#{{ tag }}</span
+            >
+          </div> </span
+        >⠀
       </div>
       <div class="card-author">
         <div class="author-avatar-container">
           <div
             class="author-avatar"
             :style="{
-              backgroundImage: `url(${card.hostImageUrls || 'https://via.placeholder.com/150'})`,
+              backgroundImage: `url(${card.hostImageUrls || './basic/basic2.jpg'})`,
             }"
           ></div>
         </div>
@@ -62,12 +64,23 @@ export default {
   },
   computed: {
     visibleTags() {
-      const maxVisibleTags = 3 // 보이는 해시태그의 최대 개수
-      return this.card.tags.slice(0, maxVisibleTags)
+      const maxTagLength = 10 // 보이는 태그의 최대 총 문자열 길이
+      const maxVisibleTags = 3 // 최대 표시할 태그 수
+      const tags = []
+      let currentLength = 0
+
+      for (let tag of this.card.tags) {
+        if (tags.length >= maxVisibleTags) break // 최대 3개까지만 추가
+        if (currentLength + tag.length > maxTagLength) break // 최대 문자열 길이 초과 시 중단
+        tags.push(tag)
+        currentLength += tag.length
+      }
+
+      return tags
     },
     hiddenTags() {
-      const maxVisibleTags = 3 // 보이는 해시태그의 최대 개수
-      return this.card.tags.length > maxVisibleTags ? this.card.tags.slice(maxVisibleTags) : []
+      const visible = this.visibleTags // visibleTags에서 이미 계산된 태그 가져오기
+      return this.card.tags.slice(visible.length) // 나머지 태그 반환
     },
     formattedCreatedAt() {
       // 현재 시간 (UTC)
@@ -121,10 +134,10 @@ export default {
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  width: 300px;
+  height: 360px;
+  gap: 22px;
   padding: 16px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -132,6 +145,7 @@ export default {
   background-color: #fff;
   flex: 1 1 calc(33% - 16px);
   max-width: 300px; /* 카드의 최대 너비 제한 */
+  margin: auto;
 }
 
 .card:hover {
@@ -144,7 +158,6 @@ export default {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-radius: 8px;
   height: 150px;
 }
 
@@ -167,7 +180,16 @@ export default {
   padding: 0 16px; /* 좌우 여백 */
 }
 
-.card-title,
+.card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; /* 블록 요소로 설정 */
+  font-size: 14px;
+  margin-top: 0px;
+  color: #555;
+}
+
 .author-name {
   white-space: nowrap;
   overflow: hidden;
@@ -181,6 +203,7 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 18px;
 }
 
 .card-tags {
@@ -188,7 +211,6 @@ export default {
   align-items: center;
   gap: 8px; /* 태그 간의 가로 간격 */
   row-gap: 4px; /* 태그 줄 간의 세로 간격 */
-  font-size: 12px;
   margin-bottom: 8px;
   flex-wrap: wrap; /* 여러 줄로 나열 */
   position: relative;
@@ -201,12 +223,14 @@ export default {
   color: #555;
   border: 1px solid #ccc;
   margin: 4px; /* 태그 간의 여백 */
+  font-size: 12px;
 }
 
 .more-tags {
   cursor: pointer;
-  color: #007bff;
+  color: #2054d2;
   position: relative;
+  font-size: 12px;
 }
 
 .tooltip {
@@ -270,14 +294,25 @@ export default {
   color: #999;
 }
 .edit-button {
-  padding: 4px 8px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
+  margin-left: auto; /* 버튼을 오른쪽 끝으로 밀기 */
+  padding: 6px 12px; /* 여유로운 내부 여백 */
+  border: 1px solid transparent; /* 기본적으로 테두리 투명 */
+  background-color: transparent; /* 배경 투명 */
+  color: #2054d2; /* 버튼 텍스트 색상 */
+  border-radius: 4px; /* 둥근 모서리 */
+  cursor: pointer; /* 클릭 가능 표시 */
+  font-size: 14px; /* 적당한 폰트 크기 */
+  transition: all 0.3s ease; /* 부드러운 전환 효과 */
 }
+
 .edit-button:hover {
-  background-color: #0056b3;
+  background-color: #f0f8ff; /* 살짝 밝은 배경 */
+  color: #0056b3; /* 텍스트 색상 어둡게 */
+}
+
+.edit-button:active {
+  background-color: #e0f0ff; /* 누를 때 더 밝은 배경 */
+  border-color: #2054d2; /* 테두리 색상 어둡게 */
+  color: #003d7a; /* 텍스트 색상 더 어둡게 */
 }
 </style>
