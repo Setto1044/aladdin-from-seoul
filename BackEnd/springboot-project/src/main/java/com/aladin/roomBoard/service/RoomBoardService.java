@@ -27,4 +27,6 @@ public interface RoomBoardService {
 	List<RoomBoardCardDto> findBoardsWithFilters(RoomBoardFilterRequestDto filterRequestDto);
 
 	List<RoomBoardCardDto> findTop3ViewsBoardCard();
+
+	List<RoomBoardCardDto> findBoardCardsByUsername(String usermame);
 }
