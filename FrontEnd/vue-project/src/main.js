@@ -1,29 +1,3 @@
-import './assets/main.css'
-import '@vueform/slider/themes/default.css'
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import 'v-calendar/dist/style.css'
-import VCalendar from 'v-calendar'
-
-import App from './App.vue'
-import router from './router'
-
-import VueFullPage from 'vue-fullpage.js' // 여기!
-
-// No need for dotenv in the browser
-console.log(import.meta.env.VITE_ODSAY_DEV_API_KEY) // Access environment variables
-
-const app = createApp(App)
-
-const pinia = createPinia()
-
-// Pinia plugin registration
-pinia.use(piniaPluginPersistedstate)
-
-app.use(pinia)
-app.use(router)
-app.use(VCalendar, {})
-app.use(VueFullPage)
-
-app.mount('#app')
+version https://git-lfs.github.com/spec/v1
+oid sha256:efe746032c829063f59bcce013941b85dbafe651c3027c0cdb041f438caecd34
+size 731

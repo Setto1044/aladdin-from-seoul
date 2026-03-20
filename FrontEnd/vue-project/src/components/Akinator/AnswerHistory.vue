@@ -1,36 +1,3 @@
-<template>
-  <div class="answer-history">
-    <h3>Answer History</h3>
-    <ul>
-      <li v-for="(answer, index) in answers" :key="index">
-        <strong>{{ answer.question }}</strong
-        >: {{ answer.answer }}
-      </li>
-    </ul>
-  </div>
-</template>
-
-<script>
-export default {
-  props: {
-    answers: {
-      type: Array,
-      required: true,
-    },
-  },
-}
-</script>
-
-<style scoped>
-.answer-history {
-  margin: 20px 0;
-  text-align: left;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  margin: 5px 0;
-}
-</style>
+version https://git-lfs.github.com/spec/v1
+oid sha256:19cd189a70db5a67ab541518b18c98051c3ab8759a5bca4f0901d1cb8d18445f
+size 524
