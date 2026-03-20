@@ -1,14 +1,17 @@
 services:
   mysql:
     image: 'mysql:latest'
+    container_name: 'aladdin_mysql'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_DATABASE=${DB_NAME}'
+      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
+      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
+      - 'MYSQL_USER=${DB_USERNAME}'
     ports:
-      - '3306'
+      - '3307:3306'
   redis:
     image: 'redis:latest'
+    container_name: 'aladdin_redis'
+    restart: always
     ports:
-      - '6379'
+      - '6379:6379'
