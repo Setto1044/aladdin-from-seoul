@@ -20,9 +20,6 @@ public class HouseInfoDetails {
     @JoinColumn(name="apt_seq")
     private HouseInfo houseInfo;
 
-    @Column(columnDefinition = "TEXT")
-    private String aptName;
-
     @Column(name = "household_count", columnDefinition = "TEXT")
     private String householdCount;
 

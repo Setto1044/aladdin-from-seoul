@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.geolatte.geom.Point;
 
 @Entity
 @Table(name="houseinfos")
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class HouseInfo {
 
     @Id
-    @Column(name="apt_seq")
+    @Column(name="apt_seq", length = 20)
     private String aptSeq;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,6 +56,10 @@ public class HouseInfo {
     @Column(name="longitude", length = 45)
     private String longitude;
 
+    @Column(name = "location", columnDefinition = "POINT")
+    private Point location;
 
+    @OneToOne(mappedBy = "houseInfo", fetch = FetchType.LAZY)
+    private HouseDealsStat stat;
 
 }

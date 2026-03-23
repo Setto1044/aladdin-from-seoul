@@ -24,14 +24,32 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	// web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
+	// dev tool
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
+	// Querydsl
+	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
+	// JPA annotation
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	// docker compose
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+	// mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	//spacial location
+	implementation 'org.hibernate.orm:hibernate-spatial'
+	implementation 'org.locationtech.jts:jts-core:1.19.0'
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
