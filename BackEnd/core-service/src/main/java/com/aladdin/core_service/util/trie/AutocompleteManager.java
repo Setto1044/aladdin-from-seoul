@@ -20,7 +20,7 @@ public class AutocompleteManager {
     private final AutocompleteService autocompleteService;
     private static final int BATCH_SIZE = 1000;
 
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public void init() {
         log.info("🚧 initializing AutocompleteService");
         List<HouseSearchResult> allHouses = houseRepository.findAll().stream()

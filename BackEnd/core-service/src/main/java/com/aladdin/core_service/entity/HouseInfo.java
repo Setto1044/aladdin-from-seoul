@@ -7,7 +7,12 @@ import lombok.NoArgsConstructor;
 import org.geolatte.geom.Point;
 
 @Entity
-@Table(name="houseinfos")
+@Table(
+        name = "houseinfos",
+        indexes = {
+                @Index(name = "idx_houseinfos_lat_lon", columnList = "latitude, longitude")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HouseInfo {
@@ -51,10 +56,10 @@ public class HouseInfo {
     private Integer buildYear;
 
     @Column(name="latitude", length = 45)
-    private String latitude;
+    private Double latitude;
 
     @Column(name="longitude", length = 45)
-    private String longitude;
+    private Double longitude;
 
     @Column(name = "location", columnDefinition = "POINT")
     private Point location;

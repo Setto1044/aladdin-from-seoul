@@ -33,6 +33,4 @@ public class HouseController implements HouseInfoApi {
     public List<HouseSearchResult> autocomplete(String keyword) {
         return autocompleteService.search(keyword);
     }
-
-
 }

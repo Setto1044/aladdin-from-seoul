@@ -38,4 +38,16 @@ public class HouseRepositoryImpl implements HouseCustomRepository {
                 .fetch();
 
     }
+
+    @Override
+    public List<HouseInfo> getHouseSummaryInGrid(double minLat, double maxLat, double minLon, double maxLon) {
+        return queryFactory
+                .selectFrom(houseInfo)
+                .leftJoin(houseInfo.stat, stat).fetchJoin()
+                .where(
+                        houseInfo.latitude.between(minLat, maxLat),
+                        houseInfo.longitude.between(minLon, maxLon)
+                )
+                .fetch();
+    }
 }

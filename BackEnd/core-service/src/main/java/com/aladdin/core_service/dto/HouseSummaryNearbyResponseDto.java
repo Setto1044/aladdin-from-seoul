@@ -30,8 +30,8 @@ public class HouseSummaryNearbyResponseDto {
     public static class HouseSummaryDto {
         private String aptSeq;
         private String aptName;
-        private String latitude;
-        private String longitude;
+        private Double latitude;
+        private Double longitude;
 
         private String sidoName;
         private String gugunName;
