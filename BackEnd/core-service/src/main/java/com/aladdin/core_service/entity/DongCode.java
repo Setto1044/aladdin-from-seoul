@@ -17,13 +17,13 @@ public class DongCode {
     @Column(name = "dong_code", length = 10)
     private String dongCode;
 
-    @Column(name="sido_name")
+    @Column(name="sido_name", length = 30)
     private String sidoName;
 
-    @Column(name="gugun_name")
+    @Column(name="gugun_name", length = 30)
     private String gugunName;
 
-    @Column(name="dong_name")
+    @Column(name="dong_name", length = 30)
     private String dongName;
 
 }

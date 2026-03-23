@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.Date;
 
@@ -17,7 +19,7 @@ public class HouseDealsStat {
     @Column(name = "apt_seq")
     private String aptSeq;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId // HouseInfo PK(aptSeq)-> housedeals PK
     @JoinColumn(name = "apt_seq")
     private HouseInfo houseInfo;
@@ -34,10 +36,10 @@ public class HouseDealsStat {
     @Column(name = "exclu_use_ar_max")
     private Double excluUseArMax;
 
-    @Column(name = "deal_amount_min")
-    private Double dealAmountMin;
+    @Column(name = "deal_amount_min", length = 10)
+    private String dealAmountMin;
 
-    @Column(name = "deal_amount_max")
-    private Double dealAmountMax;
+    @Column(name = "deal_amount_max", length = 10)
+    private String dealAmountMax;
 
 }

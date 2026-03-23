@@ -20,10 +20,10 @@ public class HouseDeals {
     @JoinColumn(name = "apt_seq")
     private HouseInfo houseInfo;
 
-    @Column(name="apt_dong")
+    @Column(name="apt_dong", length = 40)
     private String aptDong;
 
-    @Column(name="floor")
+    @Column(name="floor", length = 3)
     private String floor;
 
     @Column(name="deal_year")
@@ -38,7 +38,7 @@ public class HouseDeals {
     @Column(name="exclu_use_ar")
     private Double excluUseAr;
 
-    @Column(name="deal_amount")
+    @Column(name="deal_amount", length = 10)
     private String dealAmount;
 
     @Column(name="views", columnDefinition = "INT DEFAULT 0")
