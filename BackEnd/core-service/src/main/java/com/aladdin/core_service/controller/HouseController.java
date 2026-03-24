@@ -1,8 +1,8 @@
 package com.aladdin.core_service.controller;
 
-import com.aladdin.core_service.dto.HouseSearchResult;
-import com.aladdin.core_service.dto.HouseSummaryNearbyRequestDto;
-import com.aladdin.core_service.dto.HouseSummaryNearbyResponseDto;
+import com.aladdin.core_service.dto.HouseSearchResultDto;
+import com.aladdin.core_service.dto.HouseMapSearchRequestDto;
+import com.aladdin.core_service.dto.HouseMapSearchResponseDto;
 import com.aladdin.core_service.service.HouseService;
 import com.aladdin.core_service.util.trie.AutocompleteService;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,13 @@ public class HouseController implements HouseInfoApi {
 
     @Override
     @GetMapping("/nearby")
-    public HouseSummaryNearbyResponseDto getHouseSummaryNearby(HouseSummaryNearbyRequestDto requestDto) {
+    public HouseMapSearchResponseDto getHouseSummaryNearby(HouseMapSearchRequestDto requestDto) {
         return houseService.getHouseSummaryNearby(requestDto);
     }
 
     @Override
     @GetMapping("/autocomplete")
-    public List<HouseSearchResult> autocomplete(String keyword) {
+    public List<HouseSearchResultDto> autocomplete(String keyword) {
         return autocompleteService.search(keyword);
     }
 }

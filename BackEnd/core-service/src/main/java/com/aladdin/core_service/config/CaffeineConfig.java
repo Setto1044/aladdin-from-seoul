@@ -1,6 +1,6 @@
 package com.aladdin.core_service.config;
 
-import com.aladdin.core_service.dto.HouseSummaryNearbyResponseDto;
+import com.aladdin.core_service.dto.HouseSummaryDto;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.annotation.EnableCaching;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CaffeineConfig {
     @Bean
-    public Cache<String, List<HouseSummaryNearbyResponseDto.HouseSummaryDto>> caffeineCache() {
+    public Cache<String, List<HouseSummaryDto>> caffeineCache() {
         return Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(10_0000)

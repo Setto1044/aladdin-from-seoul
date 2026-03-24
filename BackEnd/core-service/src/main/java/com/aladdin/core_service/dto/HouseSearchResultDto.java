@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HouseSearchResult {
+public class HouseSearchResultDto {
     private String aptSeq;
     private String aptName;
     private String umdName;
     private String roadName;
 
-    public static HouseSearchResult of(HouseInfo info) {
-        return HouseSearchResult.builder()
+    public static HouseSearchResultDto of(HouseInfo info) {
+        return HouseSearchResultDto.builder()
                 .aptSeq(info.getAptSeq())
                 .aptName(info.getAptName())
                 .umdName(info.getUmdName())

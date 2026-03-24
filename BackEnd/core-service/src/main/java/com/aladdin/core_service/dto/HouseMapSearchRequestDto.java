@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class HouseSummaryNearbyRequestDto {
+public class HouseMapSearchRequestDto {
     private Double latitude;
     private Double longitude;
-    private Double distanceMeter;
+    private MapSearchScope scope;
 }

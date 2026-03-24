@@ -55,10 +55,10 @@ public class HouseInfo {
     @Column(name="build_year")
     private Integer buildYear;
 
-    @Column(name="latitude", length = 45)
+    @Column(name="latitude")
     private Double latitude;
 
-    @Column(name="longitude", length = 45)
+    @Column(name="longitude")
     private Double longitude;
 
     @Column(name = "location", columnDefinition = "POINT")

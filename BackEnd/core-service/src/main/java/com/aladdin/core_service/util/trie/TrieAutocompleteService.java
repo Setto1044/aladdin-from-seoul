@@ -1,6 +1,6 @@
 package com.aladdin.core_service.util.trie;
 
-import com.aladdin.core_service.dto.HouseSearchResult;
+import com.aladdin.core_service.dto.HouseSearchResultDto;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -8,11 +8,11 @@ import java.util.*;
 
 @Service
 @Primary
-public class TrieAutocompleteService implements AutocompleteService<HouseSearchResult, HouseSearchResult> {
+public class TrieAutocompleteService implements AutocompleteService<HouseSearchResultDto, HouseSearchResultDto> {
 
     private final TrieNode root = new TrieNode();
 
-    private final Map<String, HouseSearchResult> houseMap = new HashMap<>();
+    private final Map<String, HouseSearchResultDto> houseMap = new HashMap<>();
 
     private static class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
@@ -20,7 +20,7 @@ public class TrieAutocompleteService implements AutocompleteService<HouseSearchR
     }
 
     @Override
-    public void initializeData(String keyword, HouseSearchResult data) {
+    public void initializeData(String keyword, HouseSearchResultDto data) {
         String seq = String.valueOf(data.getAptSeq());
         houseMap.putIfAbsent(seq, data);
 
@@ -36,7 +36,7 @@ public class TrieAutocompleteService implements AutocompleteService<HouseSearchR
     }
 
     @Override
-    public List<HouseSearchResult> search(String keyword) {
+    public List<HouseSearchResultDto> search(String keyword) {
         TrieNode current = root;
         for (char ch : keyword.toCharArray()) {
             current = current.children.get(ch);
@@ -50,8 +50,8 @@ public class TrieAutocompleteService implements AutocompleteService<HouseSearchR
     }
 
     @Override
-    public void initializeDataBulk(List<HouseSearchResult> dataList) {
-        for (HouseSearchResult house : dataList) {
+    public void initializeDataBulk(List<HouseSearchResultDto> dataList) {
+        for (HouseSearchResultDto house : dataList) {
             initializeData(house.getAptName(), house);
         }
     }

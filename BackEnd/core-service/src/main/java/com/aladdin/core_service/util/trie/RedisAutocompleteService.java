@@ -1,8 +1,7 @@
 package com.aladdin.core_service.util.trie;
 
-import com.aladdin.core_service.dto.HouseSearchResult;
+import com.aladdin.core_service.dto.HouseSearchResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 @Service
 //@Primary
 @RequiredArgsConstructor
-public class RedisAutocompleteService implements AutocompleteService<HouseSearchResult, HouseSearchResult> {
+public class RedisAutocompleteService implements AutocompleteService<HouseSearchResultDto, HouseSearchResultDto> {
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -21,10 +20,10 @@ public class RedisAutocompleteService implements AutocompleteService<HouseSearch
     private static final int N = 2;
     private static final int RESULT_COUNT = 10;
 
-    private final Map<String, HouseSearchResult> houseMap = new HashMap<>();
+    private final Map<String, HouseSearchResultDto> houseMap = new HashMap<>();
 
     @Override
-    public void initializeData(String keyword, HouseSearchResult data) {
+    public void initializeData(String keyword, HouseSearchResultDto data) {
         String seq = String.valueOf(data.getAptSeq());
         houseMap.putIfAbsent(seq, data);
 
@@ -39,7 +38,7 @@ public class RedisAutocompleteService implements AutocompleteService<HouseSearch
     }
 
     @Override
-    public List<HouseSearchResult> search(String keyword) {
+    public List<HouseSearchResultDto> search(String keyword) {
         int len = keyword.length();
 
         if (len < N) {
@@ -76,11 +75,11 @@ public class RedisAutocompleteService implements AutocompleteService<HouseSearch
     }
 
     @Override
-    public void initializeDataBulk(List<HouseSearchResult> dataList) {
+    public void initializeDataBulk(List<HouseSearchResultDto> dataList) {
 
         redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
 
-            for (HouseSearchResult house : dataList) {
+            for (HouseSearchResultDto house : dataList) {
                 String keyword = house.getAptName();
                 if (keyword == null || keyword.length() < 2) continue;
 
