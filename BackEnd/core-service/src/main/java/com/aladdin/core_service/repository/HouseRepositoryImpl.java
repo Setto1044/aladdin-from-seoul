@@ -6,10 +6,12 @@ import com.aladdin.core_service.entity.QDongCode;
 import com.aladdin.core_service.entity.QHouseDealsStat;
 import com.aladdin.core_service.entity.QHouseInfo;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -20,26 +22,34 @@ public class HouseRepositoryImpl implements HouseCustomRepository {
     private final JPAQueryFactory queryFactory;
     private final QHouseInfo houseInfo = QHouseInfo.houseInfo;
     private final QHouseDealsStat stat = QHouseDealsStat.houseDealsStat;
+    private final EntityManager em;
 
     @Override
     public List<HouseInfo> getHouseSummaryNearby(Double latitude, Double longitude, Double distance) {
-        String pointWkt = String.format("POINT(%f %f)", latitude, longitude);
+        double latDelta = distance / 111_000.0;
+        double lngDelta = distance / (111_000.0 * Math.cos(Math.toRadians(latitude)));
 
-        NumberExpression<Double> distanceExpr = Expressions.numberTemplate(Double.class,
-                "ST_Distance_Sphere({0}, ST_GeomFromText({1}, 4326))",
-                houseInfo.location, pointWkt);
+        // MySQL SRID 4326 = (위도 경도) 순서
+        String centerWkt = String.format("POINT(%f %f)", latitude, longitude);
+        String polygonWkt = String.format(
+                "POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))",
+                latitude - latDelta, longitude - lngDelta,
+                latitude + latDelta, longitude - lngDelta,
+                latitude + latDelta, longitude + lngDelta,
+                latitude - latDelta, longitude + lngDelta,
+                latitude - latDelta, longitude - lngDelta
+        );
 
+        String sql = String.format("""
+                SELECT hi.*
+                FROM houseinfos hi
+                WHERE hi.location IS NOT NULL
+                  AND MBRContains(ST_GeomFromText('%s', 4326), hi.location)
+                  AND ST_Distance_Sphere(hi.location, ST_GeomFromText('%s', 4326)) <= %f
+                ORDER BY ST_Distance_Sphere(hi.location, ST_GeomFromText('%s', 4326))
+                """, polygonWkt, centerWkt, distance, centerWkt);
 
-        return queryFactory
-                .selectFrom(houseInfo)
-                .leftJoin(houseInfo.stat, stat).fetchJoin()
-                .where(
-                        houseInfo.location.isNotNull(),
-                        distanceExpr.loe(distance)
-                )
-                .orderBy(distanceExpr.asc())
-                .fetch();
-
+        return em.createNativeQuery(sql, HouseInfo.class).getResultList();
     }
 
     @Override

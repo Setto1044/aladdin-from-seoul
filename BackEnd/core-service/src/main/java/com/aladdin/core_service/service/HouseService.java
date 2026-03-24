@@ -5,4 +5,5 @@ import com.aladdin.core_service.dto.HouseMapSearchResponseDto;
 
 public interface HouseService {
     HouseMapSearchResponseDto getHouseSummaryNearby(HouseMapSearchRequestDto requestDto);
+    HouseMapSearchResponseDto getHouseSummaryNearbyOld(HouseMapSearchRequestDto requestDto);
 }

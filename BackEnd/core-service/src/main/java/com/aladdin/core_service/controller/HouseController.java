@@ -33,4 +33,10 @@ public class HouseController implements HouseInfoApi {
     public List<HouseSearchResultDto> autocomplete(String keyword) {
         return autocompleteService.search(keyword);
     }
+
+    @Override
+    @GetMapping("/old")
+    public HouseMapSearchResponseDto getHouseSummaryNearbyOld(HouseMapSearchRequestDto requestDto) {
+        return houseService.getHouseSummaryNearbyOld(requestDto);
+    }
 }

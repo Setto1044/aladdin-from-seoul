@@ -10,7 +10,7 @@ import org.geolatte.geom.Point;
 @Table(
         name = "houseinfos",
         indexes = {
-                @Index(name = "idx_houseinfos_lat_lon", columnList = "latitude, longitude")
+                @Index(name = "idx_houseinfos_location", columnList = "location")
         }
 )
 @Getter
@@ -61,7 +61,7 @@ public class HouseInfo {
     @Column(name="longitude")
     private Double longitude;
 
-    @Column(name = "location", columnDefinition = "POINT")
+    @Column(name = "location", columnDefinition = "POINT SRID 4326")
     private Point location;
 
     @OneToOne(mappedBy = "houseInfo", fetch = FetchType.LAZY)

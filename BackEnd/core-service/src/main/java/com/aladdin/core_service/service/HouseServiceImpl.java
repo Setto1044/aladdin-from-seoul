@@ -1,6 +1,7 @@
 package com.aladdin.core_service.service;
 
 import com.aladdin.core_service.dto.*;
+import com.aladdin.core_service.entity.HouseInfo;
 import com.aladdin.core_service.repository.HouseRepository;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,17 @@ public class HouseServiceImpl implements HouseService {
         if (!requestDto.getScope().isDetailed()) {
             return getClusteredSummary(requestDto);
         }
+        log.info("✅ use new");
         return getHouseSummary(requestDto);
+    }
+
+    @Override
+    public HouseMapSearchResponseDto getHouseSummaryNearbyOld(HouseMapSearchRequestDto requestDto) {
+        List<HouseInfo> houses = houseRepository.getHouseSummaryNearby(requestDto.getLatitude(), requestDto.getLongitude(), requestDto.getScope().getDistanceMeter());
+        List<HouseSummaryDto> list = houses.stream().map(HouseSummaryDto::of).toList();
+
+        log.info("✅ use old");
+        return HouseMapSearchResponseDto.ofHouse(list);
     }
 
     private HouseMapSearchResponseDto getHouseSummary(HouseMapSearchRequestDto requestDto) {
@@ -56,7 +67,7 @@ public class HouseServiceImpl implements HouseService {
         for (String key : gridKeys) {
             List<HouseSummaryDto> l1 = caffeineCache.getIfPresent(key);
             if (l1 != null) {
-                log.info("✅ L1 hit: {}", key);
+                //log.info("✅ L1 hit: {}", key);
                 l1Hits.put(key, l1);
             } else {
                 l1Misses.add(key);
@@ -75,7 +86,7 @@ public class HouseServiceImpl implements HouseService {
                 String key = l1Misses.get(i);
                 List<HouseSummaryDto> val = l2Values.get(i);
                 if (val != null) {
-                    log.info("✅ L2 hit: {}", key);
+                    //log.info("✅ L2 hit: {}", key);
                     l2Hits.put(key, val);
                     caffeineCache.put(key, val);
                 } else {
@@ -91,7 +102,7 @@ public class HouseServiceImpl implements HouseService {
             List<HouseSummaryDto> data = loadFromDb(key);
             l3Results.put(key, data);
             caffeineCache.put(key, data);
-            log.info("✅ L3 loaded: {} → {} items", key, data.size());
+            //log.info("✅ L3 loaded: {} → {} items", key, data.size());
         }
 
         if (!l3Results.isEmpty()) {
