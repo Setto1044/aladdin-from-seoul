@@ -195,19 +195,3 @@ core-service/
 │       └── TrieAutocompleteService.java  # TRIE 기반 실시간 자동완성
 └── build.gradle
 ```
-
-<br>
-
-## ⚙️ 실행 방법
-
-```bash
-# 저장소 클론
-git clone https://github.com/Setto1044/aladdin-from-seoul.git
-cd aladdin-from-seoul
-
-# Redis 실행 (Docker)
-docker-compose up -d redis
-
-# 애플리케이션 실행
-./gradlew bootRun
-```
